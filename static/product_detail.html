@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product — Sero Leather Africa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ============================================================
+           § 1. DESIGN TOKENS
+           ============================================================ */
+        :root {
+            --ember:    #C15C3D;
+            --bark:     #2C1E16;
+            --savannah: #D4A847;
+            --dusk:     #8B5E3C;
+            --midnight: #1A0F08;
+            --bone:     #F5EDD8;
+        }
+
+        /* ============================================================
+           § 2. RESET & BASE
+           ============================================================ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Jost', sans-serif; background: var(--midnight); color: var(--bone); overflow-x: hidden; cursor: none; min-height: 100vh; }
+
+        /* ============================================================
+           § 3. CUSTOM CURSOR
+           ============================================================ */
+        .cursor      { width: 12px; height: 12px; background: var(--savannah); border-radius: 50%; position: fixed; pointer-events: none; z-index: 99999; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background 0.3s; }
+        .cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(212, 168, 71, 0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 99998; transform: translate(-50%, -50%); transition: left 0.12s ease-out, top 0.12s ease-out, width 0.3s, height 0.3s; }
+        .cursor.expand      { width: 20px; height: 20px; background: var(--ember); }
+        .cursor-ring.expand { width: 60px; height: 60px; border-color: var(--ember); }
+
+        /* ============================================================
+           § 4. FILM GRAIN TEXTURE OVERLAY
+           ============================================================ */
+        .grain::after {
+            content: '';
+            position: fixed;
+            inset: -200%;
+            width: 400%; height: 400%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.035;
+            pointer-events: none;
+            z-index: 9997;
+            animation: grain 0.5s steps(2) infinite;
+        }
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0);   }
+            25%       { transform: translate(-2%, -3%); }
+            50%       { transform: translate(3%, 2%);  }
+            75%       { transform: translate(-1%, 4%); }
+        }
+
+        /* ============================================================
+           § 5. KENTE STRIPE
+           ============================================================ */
+        .kente {
+            height: 6px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--ember)    0,     var(--ember)    20px,
+                var(--savannah) 20px,  var(--savannah) 40px,
+                var(--bark)     40px,  var(--bark)     60px,
+                var(--savannah) 60px,  var(--savannah) 80px,
+                var(--ember)    80px,  var(--ember)    100px,
+                var(--dusk)     100px, var(--dusk)     120px
+            );
+        }
+
+        /* ============================================================
+           § 6. NAVIGATION
+           ============================================================ */
+        nav { position: sticky; top: 0; z-index: 1000; background: rgba(26, 15, 8, 0.96); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212, 168, 71, 0.12); }
+        .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--savannah); color: var(--bark); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+        /* ============================================================
+           § 7. TYPOGRAPHY & GLASS UTILITIES
+           ============================================================ */
+        .display { font-family: 'Cormorant Garamond', serif; }
+        .glass   { background: rgba(44, 30, 22, 0.45); backdrop-filter: blur(16px); border: 1px solid rgba(212, 168, 71, 0.12); }
+
+        /* ============================================================
+           § 8. SKELETON LOADING SHIMMER
+           ============================================================ */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(44,30,22,0.8) 25%, rgba(44,30,22,0.3) 50%, rgba(44,30,22,0.8) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ============================================================
+           § 9. TOAST NOTIFICATION
+           ============================================================ */
+        .toast      { position: fixed; bottom: 32px; right: 32px; background: var(--bark); border-left: 3px solid var(--savannah); color: var(--bone); padding: 14px 22px; font-size: 13px; letter-spacing: 0.05em; z-index: 9999; transform: translateY(120px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ============================================================
+           § 10. SCROLL-REVEAL ANIMATIONS
+           ============================================================ */
+        .reveal         { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ============================================================
+           § 11. PRODUCT IMAGE WRAPPER
+           ============================================================ */
+        .img-wrap          { overflow: hidden; border: 1px solid rgba(212, 168, 71, 0.12); position: relative; }
+        .img-wrap img      { width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform 0.8s ease; display: block; filter: sepia(8%) contrast(1.05); }
+        .img-wrap:hover img { transform: scale(1.05); }
+
+        /* ============================================================
+           § 12. QUANTITY CONTROLS & ADD-TO-BAG BUTTON
+           ============================================================ */
+        .qty-btn      { padding: 12px 18px; background: transparent; border: none; color: rgba(245, 237, 216, 0.4); transition: color 0.2s, background 0.2s; cursor: none; }
+        .qty-btn:hover { color: var(--bone); background: rgba(193, 92, 61, 0.1); }
+
+        .bag-btn           { flex: 1; padding: 16px; background: var(--savannah); color: var(--bark); border: none; font-family: 'Jost', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; transition: background 0.3s, color 0.3s; cursor: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .bag-btn:hover     { background: var(--ember); color: var(--bone); }
+        .bag-btn:disabled  { opacity: 0.3; cursor: not-allowed; }
+
+        /* ============================================================
+           § 13. FEATURE TILES — trust badges below add-to-bag
+           ============================================================ */
+        .feature-tile       { border: 1px solid rgba(212, 168, 71, 0.1); padding: 20px; transition: transform 0.3s, border-color 0.3s; }
+        .feature-tile:hover { transform: translateY(-3px); border-color: rgba(212, 168, 71, 0.25); }
+
+        /* ============================================================
+           § 14. MISC — hide number input spinners
+           ============================================================ */
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        /* ============================================================
+           § 15. FOOTER — SOCIAL ICON BUTTONS
+           ============================================================ */
+        .social-icon {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(212, 168, 71, 0.2);
+            color: rgba(245, 237, 216, 0.35);
+            text-decoration: none;
+            transition: border-color 0.3s, color 0.3s, transform 0.3s;
+        }
+        .social-icon:hover {
+            border-color: rgba(212, 168, 71, 0.65);
+            color: var(--savannah);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body class="grain">
+
+    <!-- ============================================================
+         CURSOR
+         ============================================================ -->
+    <div class="cursor"      id="cursor"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- ============================================================
+         TOAST
+         ============================================================ -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ============================================================
+         KENTE STRIPE — fixed top strip
+         ============================================================ -->
+    <div class="kente fixed top-0 left-0 right-0 z-[1001]"></div>
+
+
+    <!-- ============================================================
+         NAVIGATION — "Collections" is active on product pages
+         ============================================================ -->
+    <nav class="pt-1.5">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+
+                <!-- Brand mark -->
+                <a href="/" class="flex items-center gap-4 group">
+                    <img src="/static/images/logo.jpeg" alt="Sero"
+                         class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition"
+                         onerror="this.style.display='none'">
+                    <div>
+                        <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
+                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color: var(--savannah);">Leather Africa</div>
+                    </div>
+                </a>
+
+                <!-- Desktop links -->
+                <div class="hidden md:flex items-center gap-10">
+                    <a href="/"         class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Home</a>
+                    <a href="/products" class="text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--savannah);">Collections</a>
+                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Our Story</a>
+                    <a href="/cart" class="relative text-bone/60 hover:text-bone transition ml-4">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        <span id="cart-count" class="cart-badge hidden">0</span>
+                    </a>
+                </div>
+
+                <!-- Mobile hamburger -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-bone/60 hover:text-bone">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ============================================================
+         MOBILE MENU
+         ============================================================ -->
+    <div id="mobile-menu"
+         class="hidden fixed inset-0 z-[999] pt-24 px-8"
+         style="background: rgba(26, 15, 8, 0.98); backdrop-filter: blur(20px);">
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <div class="space-y-8">
+            <a href="/"         onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Home</a>
+            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color: var(--savannah);">Collections</a>
+            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Our Story</a>
+            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Your Bag</a>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+         MAIN CONTENT — breadcrumb + product detail layout
+         ============================================================ -->
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+
+        <!-- Breadcrumb trail -->
+        <nav class="flex items-center gap-2 text-[10px] tracking-widest text-bone/30 mb-12 font-light uppercase">
+            <a href="/"         class="hover:text-bone transition">Home</a>
+            <span>/</span>
+            <a href="/products" class="hover:text-bone transition">Collections</a>
+            <span>/</span>
+            <span id="breadcrumb-name" style="color: var(--savannah);">Loading...</span>
+        </nav>
+
+        <!-- ── SKELETON — shown while product data loads ── -->
+        <div id="product-skeleton" class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div class="skeleton w-full" style="aspect-ratio: 1;"></div>
+            <div class="space-y-6 py-4">
+                <div class="skeleton h-3 w-1/4"></div>
+                <div class="skeleton h-14 w-full"></div>
+                <div class="skeleton h-8 w-1/3"></div>
+                <div class="skeleton h-20 w-full"></div>
+                <div class="skeleton h-14 w-full mt-6"></div>
+            </div>
+        </div>
+
+        <!-- ── PRODUCT CONTENT — revealed after data loads ── -->
+        <div id="product-content" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+
+                <!-- Product image -->
+                <div class="reveal">
+                    <div class="img-wrap">
+                        <img id="main-product-image" src="" alt="Product">
+                        <!-- Sold-out badge -->
+                        <div id="out-of-stock-badge"
+                             class="hidden absolute top-4 left-4 text-[9px] tracking-[0.3em] uppercase px-3 py-2"
+                             style="background: rgba(26,15,8,0.9); border: 1px solid rgba(212,168,71,0.3); color: rgba(212,168,71,0.7);">
+                            Sold Out
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 kente" style="height: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- Product details -->
+                <div class="reveal" style="transition-delay: 0.15s;">
+                    <p id="product-category" class="text-[9px] tracking-[0.5em] uppercase font-light mb-4" style="color: var(--savannah);">Leather Goods</p>
+                    <h1 id="product-name"    class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-5"></h1>
+
+                    <!-- Price -->
+                    <div class="display text-3xl font-light mb-8 pb-6 border-b" style="color: var(--savannah); border-color: rgba(212,168,71,0.1);">
+                        KES <span id="product-price"></span>
+                    </div>
+
+                    <!-- Description + stock info -->
+                    <p id="product-description" class="text-bone/60 leading-relaxed font-light mb-4 text-lg"></p>
+                    <p id="stock-info"          class="text-[10px] tracking-[0.25em] uppercase text-bone/30 mb-10 font-light"></p>
+
+                    <!-- Quantity selector + Add to Bag -->
+                    <div class="glass p-6 mb-6">
+                        <div class="flex flex-col sm:flex-row gap-4 items-stretch">
+                            <div class="flex-shrink-0">
+                                <label class="block text-[9px] tracking-[0.3em] uppercase text-bone/35 mb-3">Quantity</label>
+                                <div class="flex items-center border" style="border-color: rgba(212,168,71,0.2);">
+                                    <button class="qty-btn" onclick="updateQty(-1)"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                                    <input type="number" id="qty-input" value="1" min="1"
+                                           class="w-14 text-center bg-transparent font-medium text-bone focus:outline-none text-sm py-3" readonly>
+                                    <button class="qty-btn" onclick="updateQty(1)"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex flex-col">
+                                <label class="block text-[9px] tracking-[0.3em] uppercase text-bone/35 mb-3 opacity-0 select-none">Action</label>
+                                <button id="add-to-cart-btn" class="bag-btn" onclick="addToCart()">
+                                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                    Add to Bag
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trust feature tiles -->
+                    <div class="grid grid-cols-2 gap-2 mb-8">
+                        <div class="feature-tile">
+                            <i data-lucide="globe"        class="w-5 h-5 mb-3" style="color: var(--savannah);"></i>
+                            <h4 class="text-xs font-semibold text-bone mb-1 tracking-wide">Authentic Origins</h4>
+                            <p class="text-[10px] text-bone/40 font-light">Local Kenyan artisans</p>
+                        </div>
+                        <div class="feature-tile">
+                            <i data-lucide="shield-check" class="w-5 h-5 mb-3" style="color: var(--savannah);"></i>
+                            <h4 class="text-xs font-semibold text-bone mb-1 tracking-wide">Quality Guarantee</h4>
+                            <p class="text-[10px] text-bone/40 font-light">Built to last a lifetime</p>
+                        </div>
+                        <div class="feature-tile">
+                            <i data-lucide="truck"        class="w-5 h-5 mb-3" style="color: var(--savannah);"></i>
+                            <h4 class="text-xs font-semibold text-bone mb-1 tracking-wide">Nairobi Delivery</h4>
+                            <p class="text-[10px] text-bone/40 font-light">Same-day within CBD</p>
+                        </div>
+                        <div class="feature-tile">
+                            <i data-lucide="refresh-cw"   class="w-5 h-5 mb-3" style="color: var(--savannah);"></i>
+                            <h4 class="text-xs font-semibold text-bone mb-1 tracking-wide">Easy Returns</h4>
+                            <p class="text-[10px] text-bone/40 font-light">7-day return policy</p>
+                        </div>
+                    </div>
+
+                    <!-- Back link -->
+                    <a href="/products" class="inline-flex items-center gap-2 text-bone/30 hover:text-bone transition text-[10px] tracking-widest uppercase font-light">
+                        <i data-lucide="arrow-left" class="w-3 h-3"></i> Back to Collections
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── ERROR STATE — shown if product not found ── -->
+        <div id="error-state" class="hidden text-center py-32">
+            <div class="display text-5xl font-light text-bone/25 mb-4">Product Not Found</div>
+            <p class="text-bone/20 font-light mb-10 text-sm tracking-wide">This piece may no longer be available.</p>
+            <a href="/products"
+               class="text-[10px] tracking-[0.3em] uppercase font-light border px-8 py-3 transition"
+               style="border-color: rgba(212,168,71,0.3); color: var(--savannah);"
+               onmouseover="this.style.background='rgba(212,168,71,0.08)'"
+               onmouseout="this.style.background='transparent'">
+                Browse Collections
+            </a>
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================
+         FOOTER — links · contact · payments · social · copyright
+         ============================================================ -->
+    <footer style="background: var(--midnight); border-top: 1px solid rgba(212, 168, 71, 0.1);">
+
+        <div class="kente"></div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+
+            <!-- Brand line -->
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+                <div class="display text-xl font-light text-bone/40 tracking-[0.2em] uppercase">Sero Leather Africa</div>
+            </div>
+
+            <!-- ── Payments · Social · Copyright ── -->
+            <div class="border-t pt-8" style="border-color: rgba(212, 168, 71, 0.1);">
+
+                <!-- Payment Methods -->
+                <p class="text-[9px] tracking-[0.4em] uppercase text-bone/25 mb-5 text-center">Secure Payments Accepted</p>
+                <div class="flex flex-wrap justify-center items-center gap-3 mb-6">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="40" height="22" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="13" height="15" viewBox="0 0 13 16" fill="rgba(245,237,216,0.72)"><path d="M11 8.39c-.03-2.06 1.69-3.06 1.77-3.11-.97-1.41-2.47-1.6-3-1.63C8.45 3.52 7.13 4.5 6.43 4.5c-.72 0-1.81-.98-2.99-.95C2.01 3.57.59 4.44-.19 5.79c-1.52 2.62-.27 6.93 1.19 9.31.73 1.17 1.59 2.48 2.72 2.44 1.1-.05 1.51-.7 2.84-.7 1.32 0 1.7.7 2.84.67 1.18-.02 1.92-1.19 2.63-2.37.83-1.35 1.17-2.67 1.18-2.74C13.25 12 11 11.12 11 8.39zm-2-6.14C9.67 1.47 10.1.39 9.97-.68c-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.8-.99 2.85.95.08 2.14-.51 2.77-1.33z"/></svg><span style="font-family:Arial;font-size:12px;font-weight:600;color:rgba(245,237,216,0.72);margin-left:5px;">Pay</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
+                </div>
+
+                <!-- Social Icons -->
+                <div class="flex justify-center items-center gap-4 mb-8">
+                    <a href="#" class="social-icon" title="Facebook"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="#" class="social-icon" title="Instagram"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                    <a href="#" class="social-icon" title="TikTok"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.73a4.85 4.85 0 01-1.01-.04z"/></svg></a>
+                    <a href="#" class="social-icon" title="YouTube"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                    <a href="#" class="social-icon" title="WhatsApp"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t" style="border-color: rgba(212, 168, 71, 0.08);">
+                    <p class="text-bone/20 text-xs tracking-widest font-light">&copy; 2026 · Sero Leather Africa</p>
+                    <p class="text-bone/15 text-xs tracking-widest font-light">Crafted ♦ Nairobi</p>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================================================================
+         JAVASCRIPT — all logic in clearly labelled function blocks
+         ================================================================ -->
+    <script>
+
+        /* ============================================================
+           JS § 1. STATE
+           ============================================================ */
+        const API          = '/api';
+        let   cart         = JSON.parse(localStorage.getItem('sero-cart')) || [];
+        let   currentProduct = null;
+
+
+        /* ============================================================
+           JS § 2. CUSTOM CURSOR
+           ============================================================ */
+        (function initCursor() {
+            const cur  = document.getElementById('cursor');
+            const ring = document.getElementById('cursor-ring');
+
+            document.addEventListener('mousemove', e => {
+                cur.style.left  = e.clientX + 'px';
+                cur.style.top   = e.clientY + 'px';
+                ring.style.left = e.clientX + 'px';
+                ring.style.top  = e.clientY + 'px';
+            });
+
+            document.querySelectorAll('a, button, input').forEach(el => {
+                el.addEventListener('mouseenter', () => { cur.classList.add('expand'); ring.classList.add('expand'); });
+                el.addEventListener('mouseleave', () => { cur.classList.remove('expand'); ring.classList.remove('expand'); });
+            });
+        })();
+
+
+        /* ============================================================
+           JS § 3. SCROLL-REVEAL OBSERVER
+           ============================================================ */
+        const revealObs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+
+        /* ============================================================
+           JS § 4. LOAD PRODUCT — fetch single product from API
+           ============================================================ */
+        function getProductId() {
+            return parseInt(new URLSearchParams(window.location.search).get('id'));
+        }
+
+        async function loadProduct() {
+            const id = getProductId();
+            if (!id) { showError(); return; }
+
+            try {
+                const res  = await fetch(`${API}/products/${id}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                const p    = data.product;
+                currentProduct = {
+                    id:          p[0],
+                    name:        p[1],
+                    description: p[2],
+                    price:       parseFloat(p[3]),
+                    image:       p[4],
+                    quantity:    p[5],
+                    available:   p[6]
+                };
+                displayProduct();
+            } catch {
+                showError();
+            }
+        }
+
+
+        /* ============================================================
+           JS § 5. DISPLAY PRODUCT — populate DOM with product data
+           ============================================================ */
+        function displayProduct() {
+            document.title = `${currentProduct.name} — Sero Leather Africa`;
+            document.getElementById('breadcrumb-name').textContent     = currentProduct.name;
+            document.getElementById('product-name').textContent        = currentProduct.name;
+            document.getElementById('product-price').textContent       = currentProduct.price.toLocaleString();
+            document.getElementById('product-description').textContent = currentProduct.description || 'A premium handcrafted leather piece made with care in Nairobi, Kenya.';
+
+            const fallback = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop';
+            const img      = document.getElementById('main-product-image');
+            img.src        = currentProduct.image || fallback;
+            img.onerror    = () => { img.src = fallback; };
+
+            if (!currentProduct.available || currentProduct.quantity === 0) {
+                document.getElementById('out-of-stock-badge').classList.remove('hidden');
+                const btn         = document.getElementById('add-to-cart-btn');
+                btn.disabled      = true;
+                btn.style.opacity = '0.3';
+                btn.style.cursor  = 'not-allowed';
+                document.getElementById('stock-info').textContent = 'This item is currently out of stock';
+            } else {
+                document.getElementById('stock-info').textContent = `${currentProduct.quantity} in stock`;
+            }
+
+            document.getElementById('product-skeleton').classList.add('hidden');
+            document.getElementById('product-content').classList.remove('hidden');
+            lucide.createIcons();
+
+            setTimeout(() => {
+                document.querySelectorAll('.reveal').forEach(el => {
+                    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+                });
+            }, 50);
+        }
+
+
+        /* ============================================================
+           JS § 6. ERROR STATE — product not found
+           ============================================================ */
+        function showError() {
+            document.getElementById('product-skeleton').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+
+        /* ============================================================
+           JS § 7. QUANTITY CONTROL — increment / decrement
+           ============================================================ */
+        function updateQty(change) {
+            const input  = document.getElementById('qty-input');
+            const newVal = parseInt(input.value) + change;
+            const max    = currentProduct?.quantity || 99;
+            if (newVal >= 1 && newVal <= max) input.value = newVal;
+        }
+
+
+        /* ============================================================
+           JS § 8. CART — add item, persist to localStorage
+           ============================================================ */
+        function addToCart() {
+            if (!currentProduct) return;
+            const qty      = parseInt(document.getElementById('qty-input').value);
+            const existing = cart.find(i => i.id === currentProduct.id);
+
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({
+                    id:       currentProduct.id,
+                    name:     currentProduct.name,
+                    price:    currentProduct.price,
+                    image:    currentProduct.image,
+                    quantity: qty
+                });
+            }
+
+            localStorage.setItem('sero-cart', JSON.stringify(cart));
+            updateCartCount();
+            showToast(`${currentProduct.name} — added to your bag`);
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            const badge = document.getElementById('cart-count');
+            if (badge) { badge.textContent = count; badge.classList.toggle('hidden', count === 0); }
+        }
+
+
+        /* ============================================================
+           JS § 9. TOAST NOTIFICATION
+           ============================================================ */
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+
+        /* ============================================================
+           JS § 10. MOBILE MENU TOGGLE
+           ============================================================ */
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+
+        /* ============================================================
+           JS § 11. INIT — run once DOM is ready
+           ============================================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateCartCount();
+            loadProduct();
+        });
+
+    </script>
+
+</body>
+</html>
