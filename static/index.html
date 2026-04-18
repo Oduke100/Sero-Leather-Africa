@@ -4,88 +4,417 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sero Leather Africa — Carry The Spirit</title>
+
+    <!-- ============================================================
+         FONTS
+         Cormorant Garamond → display/serif headings
+         Jost              → body / UI text
+    ============================================================ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- ============================================================
+         LIBRARIES
+    ============================================================ -->
     <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
     <script src="/static/js/currency.js"></script>
+
     <style>
-        :root { --dust:#E8C99A;--ember:#C15C3D;--bark:#2C1E16;--savannah:#D4A847;--dusk:#8B5E3C;--midnight:#1A0F08;--bone:#F5EDD8;--smoke:rgba(26,15,8,0.7); }
-        *{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
-        body{font-family:'Jost',sans-serif;background:var(--midnight);color:var(--bone);overflow-x:hidden;cursor:none;}
-        .cursor{width:12px;height:12px;background:var(--savannah);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
-        .cursor-ring{width:40px;height:40px;border:1px solid rgba(212,168,71,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:transform .15s ease-out,width .3s,height .3s;}
-        .cursor.expand{width:20px;height:20px;background:var(--ember);}.cursor-ring.expand{width:60px;height:60px;border-color:var(--ember);}
-        .grain::after{content:'';position:fixed;inset:-200%;width:400%;height:400%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:.035;pointer-events:none;z-index:9997;animation:grain .5s steps(2) infinite;}
-        @keyframes grain{0%,100%{transform:translate(0,0);}25%{transform:translate(-2%,-3%);}50%{transform:translate(3%,2%);}75%{transform:translate(-1%,4%);}}
-        .kente-border{height:8px;background:repeating-linear-gradient(90deg,var(--ember) 0px,var(--ember) 20px,var(--savannah) 20px,var(--savannah) 40px,var(--bark) 40px,var(--bark) 60px,var(--savannah) 60px,var(--savannah) 80px,var(--ember) 80px,var(--ember) 100px,var(--dusk) 100px,var(--dusk) 120px);}
-        nav{position:fixed;top:0;left:0;right:0;z-index:1000;transition:all .5s;}
-        nav.scrolled{background:rgba(26,15,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,168,71,0.2);}
-        .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--savannah);color:var(--bark);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
-        .hero{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-        .hero-bg{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,15,8,0.3) 0%,rgba(26,15,8,0.1) 40%,rgba(26,15,8,0.6) 100%),url('/static/gallery/landing_page.webp') center/cover no-repeat;transform:scale(1.05);transition:transform 8s ease-out;}
-        .hero-bg.loaded{transform:scale(1);}
-        .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,9rem);font-weight:300;letter-spacing:.15em;line-height:.9;}
-        .hero-title span{color:var(--savannah);font-style:italic;}
-        @media(max-width:768px){.hero-title{font-size:clamp(2.5rem,14vw,5rem);}}
-        .scroll-track{display:flex;gap:2px;animation:scroll-left 30s linear infinite;width:max-content;}
-        .scroll-track:hover{animation-play-state:paused;}
-        @keyframes scroll-left{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-        .product-card{position:relative;overflow:hidden;background:rgba(44,30,22,0.6);border:1px solid rgba(212,168,71,0.1);transition:all .5s;display:block;text-decoration:none;cursor:none;}
-        .product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,15,8,0.9) 0%,transparent 60%);z-index:1;}
-        .product-card:hover{border-color:rgba(212,168,71,0.4);transform:translateY(-8px);box-shadow:0 30px 60px -10px rgba(193,92,61,0.3);}
-        .product-card img{width:100%;height:380px;object-fit:cover;transition:transform .7s ease;display:block;}
-        .product-card:hover img{transform:scale(1.08);}
-        .product-card-content{position:absolute;bottom:0;left:0;right:0;padding:24px;z-index:2;}
-        .skeleton{background:linear-gradient(90deg,rgba(44,30,22,0.8) 25%,rgba(44,30,22,0.4) 50%,rgba(44,30,22,0.8) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;}
-        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-        .leopard-section{background-color:var(--midnight);background-image:radial-gradient(ellipse 12px 8px at 50px 50px,rgba(212,168,71,0.08) 60%,transparent 70%),radial-gradient(ellipse 8px 12px at 120px 80px,rgba(212,168,71,0.06) 60%,transparent 70%),radial-gradient(ellipse 10px 7px at 200px 30px,rgba(212,168,71,0.07) 60%,transparent 70%);background-size:400px 140px;}
-        .zebra-accent{background:repeating-linear-gradient(120deg,transparent,transparent 8px,rgba(212,168,71,0.04) 8px,rgba(212,168,71,0.04) 16px);}
-        .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease;}
-        .reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .8s ease,transform .8s ease;}
-        .reveal-right{opacity:0;transform:translateX(40px);transition:opacity .8s ease,transform .8s ease;}
-        .reveal.visible,.reveal-left.visible,.reveal-right.visible{opacity:1;transform:translate(0);}
-        .btn-savannah{display:inline-block;padding:14px 40px;border:1px solid var(--savannah);color:var(--savannah);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;background:transparent;cursor:none;position:relative;overflow:hidden;transition:color .4s;}
-        .btn-savannah::before{content:'';position:absolute;inset:0;background:var(--savannah);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:-1;}
-        .btn-savannah:hover::before{transform:scaleX(1);}.btn-savannah:hover{color:var(--bark);}
-        .btn-ember{display:inline-block;padding:14px 40px;background:var(--ember);color:var(--bone);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;border:1px solid var(--ember);cursor:none;transition:all .4s;}
-        .btn-ember:hover{background:transparent;color:var(--ember);}
-        .toast{position:fixed;bottom:32px;right:32px;background:var(--bark);border-left:3px solid var(--savannah);color:var(--bone);padding:16px 24px;font-size:14px;letter-spacing:.05em;z-index:9999;transform:translateY(120px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
-        .toast.show{transform:translateY(0);opacity:1;}
-        .display{font-family:'Cormorant Garamond',serif;}
-        .stat-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--savannah);line-height:1;}
-        .social-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(212,168,71,0.2);color:rgba(245,237,216,0.35);text-decoration:none;transition:border-color .3s,color .3s,transform .3s;}
-        .social-icon:hover{border-color:rgba(212,168,71,0.65);color:var(--savannah);transform:translateY(-3px);}
+        /* ==============================================================
+           1. DESIGN TOKENS — Brand colour palette
+              Usage: var(--token-name)
+        ============================================================== */
+        :root {
+            --dust:     #E8C99A;   /* light tan */
+            --ember:    #C15C3D;   /* terracotta CTA */
+            --bark:     #2C1E16;   /* dark brown surface */
+            --savannah: #D4A847;   /* golden accent */
+            --dusk:     #8B5E3C;   /* mid-brown */
+            --midnight: #1A0F08;   /* near-black background */
+            --bone:     #F5EDD8;   /* off-white text */
+            --smoke:    rgba(26,15,8,0.7); /* dark overlay */
+        }
+
+        /* ==============================================================
+           2. RESET & BASE
+        ============================================================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--midnight);
+            color: var(--bone);
+            overflow-x: hidden;
+            cursor: none; /* replaced by custom cursor below */
+        }
+
+        /* ==============================================================
+           3. CUSTOM CURSOR
+              .cursor      → small filled dot that follows instantly
+              .cursor-ring → larger ring that lags behind for elegance
+              .expand      → hover state on interactive elements
+        ============================================================== */
+        .cursor {
+            width: 12px; height: 12px;
+            background: var(--savannah);
+            border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width .3s, height .3s, background .3s;
+        }
+        .cursor-ring {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(212,168,71,0.5);
+            border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: transform .15s ease-out, width .3s, height .3s;
+        }
+        .cursor.expand   { width: 20px; height: 20px; background: var(--ember); }
+        .cursor-ring.expand { width: 60px; height: 60px; border-color: var(--ember); }
+
+        /* ==============================================================
+           4. GRAIN / NOISE OVERLAY
+              Adds subtle texture over the entire page via a pseudo-element.
+        ============================================================== */
+        .grain::after {
+            content: '';
+            position: fixed; inset: -200%;
+            width: 400%; height: 400%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            opacity: .035;
+            pointer-events: none; z-index: 9997;
+            animation: grain .5s steps(2) infinite;
+        }
+        @keyframes grain {
+            0%,100% { transform: translate(0,0); }
+            25%     { transform: translate(-2%,-3%); }
+            50%     { transform: translate(3%,2%); }
+            75%     { transform: translate(-1%,4%); }
+        }
+
+        /* ==============================================================
+           5. KENTE BORDER
+              Repeating Kente-cloth stripe used as decorative divider.
+        ============================================================== */
+        .kente-border {
+            height: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--ember)    0px,  var(--ember)    20px,
+                var(--savannah) 20px, var(--savannah) 40px,
+                var(--bark)     40px, var(--bark)     60px,
+                var(--savannah) 60px, var(--savannah) 80px,
+                var(--ember)    80px, var(--ember)    100px,
+                var(--dusk)     100px,var(--dusk)     120px
+            );
+        }
+
+        /* ==============================================================
+           6. NAVIGATION BAR
+              Fixed at top; becomes opaque + blurred after scrolling 60px.
+              .scrolled class is toggled via JS.
+        ============================================================== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000;
+            transition: all .5s;
+        }
+        nav.scrolled {
+            background: rgba(26,15,8,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212,168,71,0.2);
+        }
+
+        /* --- LOGO ---
+           Increase h-10 (40px) to h-14 (56px) or h-16 (64px) for a bigger logo.
+           Always keep width:auto so the aspect ratio is preserved.
+           The class below maps to the <img> inside the nav <a> tag.
+        */
+        .nav-logo {
+            height: 70px;   /* ← change this value to resize the logo */
+            width: auto;
+            object-fit: contain;
+            opacity: 0.9;
+            transition: opacity .3s;
+        }
+        .nav-logo:hover { opacity: 1; }
+
+        /* --- CART BADGE --- */
+        .cart-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--savannah); color: var(--bark);
+            border-radius: 50%; width: 18px; height: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700;
+        }
+
+        /* ==============================================================
+           7. HERO SECTION
+        ============================================================== */
+        .hero {
+            height: 100vh; min-height: 700px;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(to bottom,
+                    rgba(26,15,8,0.3) 0%,
+                    rgba(26,15,8,0.1) 40%,
+                    rgba(26,15,8,0.6) 100%),
+                url('/static/gallery/landing_page.webp') center/cover no-repeat;
+            transform: scale(1.05);
+            transition: transform 8s ease-out;
+        }
+        .hero-bg.loaded { transform: scale(1); } /* subtle zoom-out on load */
+
+        /* Fluid type scale: 3.5rem at mobile → 9rem at wide screens */
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3.5rem, 10vw, 9rem);
+            font-weight: 300;
+            letter-spacing: .15em;
+            line-height: .9;
+        }
+        .hero-title span { color: var(--savannah); font-style: italic; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: clamp(2.5rem, 14vw, 5rem); }
+        }
+
+        /* ==============================================================
+           8. SCROLLING TICKER BANNER
+        ============================================================== */
+        .scroll-track {
+            display: flex; gap: 2px;
+            animation: scroll-left 30s linear infinite;
+            width: max-content;
+        }
+        .scroll-track:hover { animation-play-state: paused; }
+
+        @keyframes scroll-left {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ==============================================================
+           9. PRODUCT CARDS
+        ============================================================== */
+        .product-card {
+            position: relative; overflow: hidden;
+            background: rgba(44,30,22,0.6);
+            border: 1px solid rgba(212,168,71,0.1);
+            transition: all .5s;
+            display: block; text-decoration: none; cursor: none;
+        }
+        /* Dark gradient overlay so text is readable on any image */
+        .product-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(26,15,8,0.9) 0%, transparent 60%);
+            z-index: 1;
+        }
+        .product-card:hover {
+            border-color: rgba(212,168,71,0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -10px rgba(193,92,61,0.3);
+        }
+        .product-card img {
+            width: 100%; height: 380px; object-fit: cover;
+            transition: transform .7s ease; display: block;
+        }
+        .product-card:hover img { transform: scale(1.08); }
+        .product-card-content {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 24px; z-index: 2;
+        }
+
+        /* ==============================================================
+           10. SKELETON LOADER (shown while products are fetching)
+        ============================================================== */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                rgba(44,30,22,0.8) 25%,
+                rgba(44,30,22,0.4) 50%,
+                rgba(44,30,22,0.8) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ==============================================================
+           11. SECTION BACKGROUNDS
+              .leopard-section → subtle radial spots
+              .zebra-accent    → diagonal stripe overlay
+        ============================================================== */
+        .leopard-section {
+            background-color: var(--midnight);
+            background-image:
+                radial-gradient(ellipse 12px 8px at 50px  50px, rgba(212,168,71,0.08) 60%, transparent 70%),
+                radial-gradient(ellipse  8px 12px at 120px 80px, rgba(212,168,71,0.06) 60%, transparent 70%),
+                radial-gradient(ellipse 10px  7px at 200px 30px, rgba(212,168,71,0.07) 60%, transparent 70%);
+            background-size: 400px 140px;
+        }
+        .zebra-accent {
+            background: repeating-linear-gradient(
+                120deg,
+                transparent, transparent 8px,
+                rgba(212,168,71,0.04) 8px, rgba(212,168,71,0.04) 16px
+            );
+        }
+
+        /* ==============================================================
+           12. SCROLL REVEAL ANIMATIONS
+              .reveal       → fade up
+              .reveal-left  → slide in from left
+              .reveal-right → slide in from right
+              .visible is added by IntersectionObserver in JS
+        ============================================================== */
+        .reveal       { opacity:0; transform:translateY(40px);  transition:opacity .8s ease, transform .8s ease; }
+        .reveal-left  { opacity:0; transform:translateX(-40px); transition:opacity .8s ease, transform .8s ease; }
+        .reveal-right { opacity:0; transform:translateX(40px);  transition:opacity .8s ease, transform .8s ease; }
+        .reveal.visible,
+        .reveal-left.visible,
+        .reveal-right.visible { opacity:1; transform:translate(0); }
+
+        /* ==============================================================
+           13. BUTTONS
+              .btn-savannah → outlined gold, fills on hover
+              .btn-ember    → solid terracotta, outlines on hover
+        ============================================================== */
+        .btn-savannah {
+            display: inline-block; padding: 14px 40px;
+            border: 1px solid var(--savannah); color: var(--savannah);
+            font-family: 'Jost', sans-serif; font-size: 11px;
+            font-weight: 500; letter-spacing: .3em; text-transform: uppercase;
+            text-decoration: none; background: transparent;
+            cursor: none; position: relative; overflow: hidden;
+            transition: color .4s;
+        }
+        .btn-savannah::before {
+            content: ''; position: absolute; inset: 0;
+            background: var(--savannah);
+            transform: scaleX(0); transform-origin: left;
+            transition: transform .4s cubic-bezier(.4,0,.2,1); z-index: -1;
+        }
+        .btn-savannah:hover::before { transform: scaleX(1); }
+        .btn-savannah:hover         { color: var(--bark); }
+
+        .btn-ember {
+            display: inline-block; padding: 14px 40px;
+            background: var(--ember); color: var(--bone);
+            font-family: 'Jost', sans-serif; font-size: 11px;
+            font-weight: 500; letter-spacing: .3em; text-transform: uppercase;
+            text-decoration: none; border: 1px solid var(--ember);
+            cursor: none; transition: all .4s;
+        }
+        .btn-ember:hover { background: transparent; color: var(--ember); }
+
+        /* ==============================================================
+           14. TOAST NOTIFICATION
+        ============================================================== */
+        .toast {
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--bark);
+            border-left: 3px solid var(--savannah);
+            color: var(--bone);
+            padding: 16px 24px; font-size: 14px; letter-spacing: .05em;
+            z-index: 9999;
+            transform: translateY(120px); opacity: 0;
+            transition: all .4s cubic-bezier(.34,1.56,.64,1);
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ==============================================================
+           15. TYPOGRAPHY UTILITIES
+        ============================================================== */
+        .display  { font-family: 'Cormorant Garamond', serif; }
+        .stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem; font-weight: 300;
+            color: var(--savannah); line-height: 1;
+        }
+
+        /* ==============================================================
+           16. SOCIAL ICONS (footer)
+        ============================================================== */
+        .social-icon {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(212,168,71,0.2);
+            color: rgba(245,237,216,0.35);
+            text-decoration: none;
+            transition: border-color .3s, color .3s, transform .3s;
+        }
+        .social-icon:hover {
+            border-color: rgba(212,168,71,0.65);
+            color: var(--savannah);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
+
+<!-- ================================================================
+     BODY — grain class applies the noise texture pseudo-element
+================================================================ -->
 <body class="grain">
+
+    <!-- ── CUSTOM CURSOR ─────────────────────────────────────────── -->
     <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- ── TOAST NOTIFICATION ────────────────────────────────────── -->
     <div class="toast" id="toast"></div>
+
+    <!-- ── KENTE BORDER (pinned to very top, above nav) ─────────── -->
     <div class="kente-border fixed top-0 left-0 right-0 z-[1001]"></div>
 
+    <!-- ==============================================================
+         NAVIGATION BAR
+         Logo size: change h-14 (56px) on .nav-logo in the <style>
+         block above (section 6 "LOGO") — or use Tailwind class h-14.
+    ============================================================== -->
     <nav id="navbar" class="pt-2">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
+
+                <!-- Brand logo -->
                 <a href="/" class="flex items-center gap-4 group">
-                    <img src="/static/images/logo.webp" alt="Sero" class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition" onerror="this.style.display='none'">
-                    <div>
-                        <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
-                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color:var(--savannah);">Leather Africa</div>
-                    </div>
+                    <img
+                        src="/static/images/logo.webp"
+                        alt="Sero Leather Africa"
+                        class="nav-logo"   
+                        onerror="this.style.display='none'"
+                    >
                 </a>
+
+                <!-- Desktop navigation links -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="/" class="text-xs tracking-[0.25em] uppercase font-medium" style="color:var(--savannah);">Home</a>
+                    <a href="/"         class="text-xs tracking-[0.25em] uppercase font-medium"                    style="color:var(--savannah);">Home</a>
                     <a href="/products" class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Collections</a>
-                    <a href="/about" class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Our Story</a>
+                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Our Story</a>
+
+                    <!-- Cart icon with badge -->
                     <a href="/cart" class="relative text-bone/70 hover:text-bone transition">
                         <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                         <span id="cart-count" class="cart-badge hidden">0</span>
                     </a>
-                    <!-- CURRENCY SWITCHER -->
+
+                    <!-- Currency switcher (mounted by JS) -->
                     <div id="sero-currency-mount"></div>
                 </div>
+
+                <!-- Mobile hamburger -->
                 <button onclick="toggleMobileMenu()" class="md:hidden text-bone/70 hover:text-bone transition">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
@@ -93,36 +422,58 @@
         </div>
     </nav>
 
-    <div id="mobile-menu" class="hidden fixed inset-0 z-[999] pt-24 px-8" style="background:rgba(26,15,8,0.98);backdrop-filter:blur(20px);">
-        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <!-- ==============================================================
+         MOBILE MENU (full-screen overlay)
+    ============================================================== -->
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[999] pt-24 px-8"
+         style="background:rgba(26,15,8,0.98);backdrop-filter:blur(20px);">
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
         <div class="space-y-8">
-            <a href="/" onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color:var(--savannah);">Home</a>
+            <a href="/"         onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color:var(--savannah);">Home</a>
             <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Collections</a>
-            <a href="/about" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Our Story</a>
-            <a href="/cart" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Your Bag</a>
+            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Our Story</a>
+            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Your Bag</a>
             <div class="pt-4" id="sero-currency-mount-mobile"></div>
         </div>
     </div>
 
+    <!-- ==============================================================
+         HERO SECTION
+    ============================================================== -->
     <section class="hero">
         <div class="hero-bg" id="hero-bg"></div>
+
         <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
-            <div class="reveal" style="transition-delay:.3s;"><p class="text-xs tracking-[0.5em] uppercase mb-8 font-light" style="color:var(--savannah);">Est. Nairobi, Kenya</p></div>
-            <h1 class="hero-title mb-8 reveal" style="transition-delay:.5s;">Carry The<br><span>Spirit</span><br>Of Africa</h1>
-            <p class="text-lg font-light tracking-widest text-bone/70 max-w-xl mx-auto mb-12 reveal" style="transition-delay:.7s;">Handcrafted leather goods born from the savannah.<br>Worn by the world.</p>
+            <div class="reveal" style="transition-delay:.3s;">
+                <p class="text-xs tracking-[0.5em] uppercase mb-8 font-light" style="color:var(--savannah);">Est. Nairobi, Kenya</p>
+            </div>
+            <h1 class="hero-title mb-8 reveal" style="transition-delay:.5s;">
+                Carry The<br><span>Spirit</span><br>Of Africa
+            </h1>
+            <p class="text-lg font-light tracking-widest text-bone/70 max-w-xl mx-auto mb-12 reveal" style="transition-delay:.7s;">
+                Handcrafted leather goods born from the savannah.<br>Worn by the world.
+            </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay:.9s;">
                 <a href="/products" class="btn-savannah">Explore Collections</a>
-                <a href="/about" class="btn-ember">Our Story</a>
+                <a href="/about"    class="btn-ember">Our Story</a>
             </div>
         </div>
+
+        <!-- Scroll indicator -->
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-bone/40 animate-bounce">
             <span class="text-[9px] tracking-[0.4em] uppercase">Scroll</span>
             <i data-lucide="chevron-down" class="w-4 h-4"></i>
         </div>
     </section>
 
+    <!-- ── KENTE DIVIDER ─────────────────────────────────────────── -->
     <div class="kente-border"></div>
 
+    <!-- ==============================================================
+         TICKER / SCROLLING BANNER
+    ============================================================== -->
     <div class="py-4 overflow-hidden" style="background:var(--bark);">
         <div class="scroll-track">
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Premium Full-Grain Leather</span>
@@ -133,6 +484,7 @@
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Ships Across Kenya &amp; Beyond</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
+            <!-- Duplicate set for seamless loop -->
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Premium Full-Grain Leather</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Handcrafted in Nairobi</span>
@@ -144,8 +496,13 @@
         </div>
     </div>
 
+    <!-- ==============================================================
+         PRODUCTS GRID SECTION
+    ============================================================== -->
     <section class="leopard-section py-28 px-6 lg:px-8 relative">
         <div class="max-w-7xl mx-auto">
+
+            <!-- Section header -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                 <div class="reveal">
                     <p class="text-xs tracking-[0.4em] uppercase mb-3 font-light" style="color:var(--savannah);">New Season</p>
@@ -153,16 +510,25 @@
                 </div>
                 <a href="/products" class="btn-savannah self-start md:self-auto reveal" style="transition-delay:.2s;">View All Pieces</a>
             </div>
+
+            <!-- Cards — replaced by renderProducts() JS function -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" id="products-grid">
+                <!-- Skeleton placeholders while loading -->
                 <div class="skeleton" style="height:380px;"></div>
                 <div class="skeleton" style="height:380px;"></div>
                 <div class="skeleton" style="height:380px;"></div>
                 <div class="skeleton" style="height:380px;"></div>
             </div>
-            <div id="no-products" class="hidden text-center py-20"><p class="text-bone/40 tracking-widest text-sm uppercase">No products available right now</p></div>
+
+            <div id="no-products" class="hidden text-center py-20">
+                <p class="text-bone/40 tracking-widest text-sm uppercase">No products available right now</p>
+            </div>
         </div>
     </section>
 
+    <!-- ==============================================================
+         STATS / SOCIAL PROOF STRIP
+    ============================================================== -->
     <section class="zebra-accent py-20 px-6 lg:px-8 border-y" style="border-color:rgba(212,168,71,0.1);">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             <div class="reveal"><div class="stat-num">500+</div><p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Happy Customers</p></div>
@@ -172,32 +538,55 @@
         </div>
     </section>
 
+    <!-- ==============================================================
+         BRAND STORY / EDITORIAL SECTION
+    ============================================================== -->
     <section class="py-28 px-6 lg:px-8 relative overflow-hidden">
         <div class="absolute inset-0" style="background:radial-gradient(ellipse at 70% 50%,rgba(193,92,61,0.08) 0%,transparent 60%);"></div>
+
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
+
+            <!-- Image with decorative frame lines -->
             <div class="reveal-left">
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80" alt="Leather craftsmanship" class="w-full aspect-square object-cover" style="filter:sepia(20%) contrast(1.05);">
+                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80"
+                         alt="Leather craftsmanship"
+                         class="w-full aspect-square object-cover"
+                         style="filter:sepia(20%) contrast(1.05);">
                     <div class="absolute -bottom-4 -right-4 w-32 h-32 border" style="border-color:rgba(212,168,71,0.3);"></div>
-                    <div class="absolute -top-4 -left-4 w-32 h-32 border" style="border-color:rgba(193,92,61,0.3);"></div>
+                    <div class="absolute -top-4  -left-4  w-32 h-32 border" style="border-color:rgba(193,92,61,0.3);"></div>
                     <div class="absolute bottom-0 left-0 right-0 kente-border" style="height:4px;"></div>
                 </div>
             </div>
+
+            <!-- Text copy -->
             <div class="reveal-right">
                 <p class="text-xs tracking-[0.5em] uppercase mb-6 font-light" style="color:var(--savannah);">Born From The Earth</p>
-                <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-8">Where the<br><em style="color:var(--savannah);">Savannah</em><br>Meets<br>Craft</h2>
+                <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-8">
+                    Where the<br><em style="color:var(--savannah);">Savannah</em><br>Meets<br>Craft
+                </h2>
                 <div class="w-16 h-px mb-8" style="background:var(--ember);"></div>
-                <p class="text-bone/60 leading-relaxed text-lg font-light mb-6">Every bag we make begins with a story — the acacia trees at dusk, the deep reds of Kenyan soil, the golden light that sweeps across the Mara at sunrise. We pour that spirit into every stitch.</p>
-                <p class="text-bone/50 leading-relaxed font-light mb-10">Our artisans in Nairobi have spent years perfecting their craft, blending traditional African techniques with modern precision to create leather goods that are both beautiful and built to last a lifetime.</p>
+                <p class="text-bone/60 leading-relaxed text-lg font-light mb-6">
+                    Every bag we make begins with a story — the acacia trees at dusk, the deep reds of Kenyan soil,
+                    the golden light that sweeps across the Mara at sunrise. We pour that spirit into every stitch.
+                </p>
+                <p class="text-bone/50 leading-relaxed font-light mb-10">
+                    Our artisans in Nairobi have spent years perfecting their craft, blending traditional African
+                    techniques with modern precision to create leather goods that are both beautiful and built to last a lifetime.
+                </p>
                 <a href="/about" class="btn-savannah">Discover Our Story</a>
             </div>
         </div>
     </section>
 
+    <!-- ── DECORATIVE WAVE DIVIDER with SVG acacia silhouettes ───── -->
     <div style="height:120px;background:linear-gradient(to bottom,var(--midnight),var(--bark));position:relative;overflow:hidden;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" style="position:absolute;bottom:0;width:100%;height:100%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none"
+             style="position:absolute;bottom:0;width:100%;height:100%;">
             <path fill="#1A0F08" d="M0,120 L0,60 C180,120 360,0 540,60 C720,120 900,0 1080,60 C1260,120 1380,40 1440,60 L1440,120 Z"/>
-            <circle cx="720" cy="35" r="28" fill="rgba(212,168,71,0.15)"/><circle cx="720" cy="35" r="18" fill="rgba(212,168,71,0.2)"/>
+            <circle cx="720" cy="35" r="28" fill="rgba(212,168,71,0.15)"/>
+            <circle cx="720" cy="35" r="18" fill="rgba(212,168,71,0.2)"/>
+            <!-- Acacia tree silhouettes -->
             <g fill="#1A0F08" opacity="0.8">
                 <ellipse cx="350" cy="95" rx="15" ry="8"/><rect x="342" y="95" width="4" height="12"/><rect x="358" y="95" width="4" height="12"/><ellipse cx="355" cy="87" rx="8" ry="6"/>
                 <ellipse cx="420" cy="98" rx="12" ry="7"/><rect x="414" y="98" width="3" height="10"/><rect x="428" y="98" width="3" height="10"/><ellipse cx="424" cy="91" rx="7" ry="5"/>
@@ -206,70 +595,139 @@
         </svg>
     </div>
 
+    <!-- ==============================================================
+         TRUST / USP ICONS STRIP
+    ============================================================== -->
     <section style="background:var(--bark);" class="py-20 px-6 lg:px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-1">
-            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);"><i data-lucide="truck" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Nairobi Delivery</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Same-day delivery within Nairobi. Nationwide shipping available.</p></div>
-            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);transition-delay:.15s;"><i data-lucide="award" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Lifetime Guarantee</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Every piece is built to outlast trends. We stand behind our craft.</p></div>
-            <div class="p-8 reveal" style="transition-delay:.3s;"><i data-lucide="heart" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Artisan Made</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Every hide selected with care.</p></div>
+            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);">
+                <i data-lucide="truck"  class="w-6 h-6 mb-6" style="color:var(--savannah);"></i>
+                <h3 class="display text-xl font-semibold text-bone mb-3">Nairobi Delivery</h3>
+                <p class="text-bone/50 font-light leading-relaxed text-sm">Same-day delivery within Nairobi. Nationwide shipping available.</p>
+            </div>
+            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);transition-delay:.15s;">
+                <i data-lucide="award" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i>
+                <h3 class="display text-xl font-semibold text-bone mb-3">Lifetime Guarantee</h3>
+                <p class="text-bone/50 font-light leading-relaxed text-sm">Every piece is built to outlast trends. We stand behind our craft.</p>
+            </div>
+            <div class="p-8 reveal" style="transition-delay:.3s;">
+                <i data-lucide="heart" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i>
+                <h3 class="display text-xl font-semibold text-bone mb-3">Artisan Made</h3>
+                <p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Every hide selected with care.</p>
+            </div>
         </div>
     </section>
 
+    <!-- ==============================================================
+         NEWSLETTER SIGNUP
+    ============================================================== -->
     <section class="py-28 px-6 lg:px-8 relative overflow-hidden">
         <div class="absolute inset-0" style="background:radial-gradient(ellipse at 30% 50%,rgba(193,92,61,0.06) 0%,transparent 60%);"></div>
         <div class="max-w-2xl mx-auto text-center relative z-10">
             <div class="reveal">
                 <p class="text-xs tracking-[0.5em] uppercase mb-4 font-light" style="color:var(--savannah);">Join The Herd</p>
-                <h2 class="display text-4xl md:text-5xl font-light text-bone mb-4">Stay Connected<br><em style="color:var(--savannah);">to the Wild</em></h2>
+                <h2 class="display text-4xl md:text-5xl font-light text-bone mb-4">
+                    Stay Connected<br><em style="color:var(--savannah);">to the Wild</em>
+                </h2>
                 <p class="text-bone/50 font-light mb-10">New arrivals, exclusive drops and stories from the savannah.</p>
                 <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-0 max-w-md mx-auto">
-                    <input type="email" placeholder="your@email.com" required class="flex-1 px-5 py-4 bg-transparent border text-bone font-light text-sm focus:outline-none placeholder:text-bone/30 tracking-widest" style="border-color:rgba(212,168,71,0.3);border-right:none;">
+                    <input type="email" placeholder="your@email.com" required
+                           class="flex-1 px-5 py-4 bg-transparent border text-bone font-light text-sm focus:outline-none placeholder:text-bone/30 tracking-widest"
+                           style="border-color:rgba(212,168,71,0.3);border-right:none;">
                     <button type="submit" class="btn-ember px-8 py-4 text-xs" style="border-left:none;">Subscribe</button>
                 </form>
             </div>
         </div>
     </section>
 
+    <!-- ==============================================================
+         FOOTER
+    ============================================================== -->
     <footer style="background:var(--midnight);border-top:1px solid rgba(212,168,71,0.1);">
         <div class="kente-border"></div>
+
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+
+                <!-- Brand blurb -->
                 <div class="md:col-span-2">
                     <div class="display text-3xl font-light text-bone tracking-[0.2em] uppercase mb-2">Sero Leather</div>
                     <div class="text-xs tracking-[0.4em] uppercase mb-6 font-light" style="color:var(--savannah);">Africa</div>
-                    <p class="text-bone/40 font-light leading-relaxed max-w-xs text-sm">Born from the red soils of Kenya. Built for those who carry their roots with pride.</p>
+                    <p class="text-bone/40 font-light leading-relaxed max-w-xs text-sm">
+                        Born from the red soils of Kenya. Built for those who carry their roots with pride.
+                    </p>
                 </div>
+
+                <!-- Nav links -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/50 mb-6 font-medium">Navigate</h4>
                     <ul class="space-y-3">
-                        <li><a href="/" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Home</a></li>
+                        <li><a href="/"         class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Home</a></li>
                         <li><a href="/products" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Collections</a></li>
-                        <li><a href="/about" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Our Story</a></li>
-                        <li><a href="/cart" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Your Bag</a></li>
+                        <li><a href="/about"    class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Our Story</a></li>
+                        <li><a href="/cart"     class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Your Bag</a></li>
                     </ul>
                 </div>
+
+                <!-- Contact -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/50 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="mail" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke</li>
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="phone" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567</li>
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya</li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
+                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke
+                        </li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
+                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567
+                        </li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
+                            <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya
+                        </li>
                     </ul>
                 </div>
             </div>
+
+            <!-- Payment badges + social + copyright -->
             <div class="border-t pt-10" style="border-color:rgba(212,168,71,0.1);">
+
                 <p class="text-[9px] tracking-[0.4em] uppercase text-bone/25 mb-5 text-center">Secure Payments Accepted</p>
+
+                <!-- Payment method icons -->
                 <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="40" height="22" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;">
+                        <span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;">
+                        <svg width="40" height="22" viewBox="0 0 40 22" fill="none">
+                            <circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/>
+                            <circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/>
+                            <path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/>
+                        </svg>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;">
+                        <span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;">
+                        <span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;">
+                        <span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span>
+                    </div>
                 </div>
+
+                <!-- Social icons -->
                 <div class="flex justify-center items-center gap-4 mb-10">
-                    <a href="#" class="social-icon" title="Facebook"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-                    <a href="#" class="social-icon" title="Instagram"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-                    <a href="#" class="social-icon" title="WhatsApp"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                    <a href="#" class="social-icon" title="Facebook">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon" title="Instagram">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon" title="WhatsApp">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </a>
                 </div>
+
+                <!-- Copyright bar -->
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t" style="border-color:rgba(212,168,71,0.08);">
                     <p class="text-bone/30 text-xs tracking-widest font-light">&copy; 2026 Sero Leather Africa. All rights reserved.</p>
                     <p class="text-bone/20 text-xs tracking-widest font-light">Crafted with ♦ in Nairobi</p>
@@ -278,81 +736,141 @@
         </div>
     </footer>
 
+    <!-- ==============================================================
+         JAVASCRIPT — organised into named IIFE blocks
+    ============================================================== -->
     <script>
-        const API  = '/api';
-        let   cart = JSON.parse(localStorage.getItem('sero-cart')) || [];
-        let   lastProducts = [];
+        /* ----------------------------------------------------------
+           GLOBALS
+        ---------------------------------------------------------- */
+        const API = '/api';
+        let cart         = JSON.parse(localStorage.getItem('sero-cart')) || [];
+        let lastProducts = [];
 
+        /* ----------------------------------------------------------
+           CUSTOM CURSOR
+           Moves the dot instantly; the ring follows with an 80ms lag.
+        ---------------------------------------------------------- */
         (function initCursor() {
             const cursor = document.getElementById('cursor');
             const ring   = document.getElementById('cursor-ring');
+
             document.addEventListener('mousemove', e => {
-                cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
-                setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top  = e.clientY + 'px';
+                setTimeout(() => {
+                    ring.style.left = e.clientX + 'px';
+                    ring.style.top  = e.clientY + 'px';
+                }, 80);
             });
+
+            // Expand cursor on interactive elements
             document.querySelectorAll('a, button').forEach(el => {
-                el.addEventListener('mouseenter', () => { cursor.classList.add('expand'); ring.classList.add('expand'); });
+                el.addEventListener('mouseenter', () => { cursor.classList.add('expand');    ring.classList.add('expand');    });
                 el.addEventListener('mouseleave', () => { cursor.classList.remove('expand'); ring.classList.remove('expand'); });
             });
         })();
 
+        /* ----------------------------------------------------------
+           NAVBAR — becomes opaque after scrolling 60px
+        ---------------------------------------------------------- */
         (function initNavbar() {
-            window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60); });
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+            });
         })();
 
-        window.addEventListener('load', () => { document.getElementById('hero-bg').classList.add('loaded'); });
+        /* ----------------------------------------------------------
+           HERO IMAGE — zoom-out effect triggers after full page load
+        ---------------------------------------------------------- */
+        window.addEventListener('load', () => {
+            document.getElementById('hero-bg').classList.add('loaded');
+        });
 
+        /* ----------------------------------------------------------
+           SCROLL REVEAL — IntersectionObserver adds .visible
+        ---------------------------------------------------------- */
         const revealObserver = new IntersectionObserver(entries => {
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
         }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
 
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right')
+                .forEach(el => revealObserver.observe(el));
+
+        /* ----------------------------------------------------------
+           PRODUCTS — fetch, filter, render
+        ---------------------------------------------------------- */
         async function fetchProducts() {
             try {
-                const res      = await fetch(`${API}/products`);
-                const data     = await res.json();
-                lastProducts   = (data.products || []).filter(p => p[6] === true).slice(0, 4);
-                if (!lastProducts.length) { document.getElementById('no-products').classList.remove('hidden'); document.getElementById('products-grid').innerHTML = ''; return; }
+                const res    = await fetch(`${API}/products`);
+                const data   = await res.json();
+                // Only show active (p[6] === true) products, max 4 on homepage
+                lastProducts = (data.products || []).filter(p => p[6] === true).slice(0, 4);
+
+                if (!lastProducts.length) {
+                    document.getElementById('no-products').classList.remove('hidden');
+                    document.getElementById('products-grid').innerHTML = '';
+                    return;
+                }
                 renderProducts(lastProducts);
             } catch {
-                document.getElementById('products-grid').innerHTML = '<div class="col-span-4 py-20 text-center text-bone/30 text-sm tracking-widest uppercase">Could not load products</div>';
+                document.getElementById('products-grid').innerHTML =
+                    '<div class="col-span-4 py-20 text-center text-bone/30 text-sm tracking-widest uppercase">Could not load products</div>';
             }
         }
 
         function renderProducts(products) {
             document.getElementById('products-grid').innerHTML = products.map(p => {
-                const id    = p[0], name = p[1], desc = p[2] || '', price = parseFloat(p[3]);
+                const id    = p[0];
+                const name  = p[1];
+                const desc  = p[2] || '';
+                const price = parseFloat(p[3]);
                 const image = p[4] || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop';
                 const qty   = p[5];
+
                 return `
                 <a href="/product?id=${id}" class="product-card reveal" style="text-decoration:none;display:block;cursor:none;">
-                    <img src="${image}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
-                    ${qty === 0 ? '<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>' : ''}
+                    <img src="${image}" alt="${name}"
+                         onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
+                    ${qty === 0
+                        ? '<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>'
+                        : ''}
                     <div class="product-card-content">
                         <p class="text-[9px] tracking-[0.4em] uppercase font-light mb-2" style="color:var(--savannah);">Leather Goods</p>
                         <h3 class="display text-xl font-semibold text-bone mb-1 line-clamp-1">${name}</h3>
                         <p class="text-xs text-bone/50 font-light mb-4 line-clamp-1">${desc}</p>
                         <div class="flex items-center justify-between">
                             <span class="display text-lg font-light" style="color:var(--savannah);">${convertPrice(price)}</span>
-                            <button onclick="event.stopPropagation(); addToCart(${id}, '${name.replace(/'/g,"\\'")}', ${price}, '${image}')"
-                                    ${qty === 0 ? 'disabled' : ''}
-                                    class="text-[9px] tracking-[0.3em] uppercase px-4 py-2 border transition disabled:opacity-30"
-                                    style="border-color:rgba(212,168,71,0.4);color:var(--savannah);">
+                            <button
+                                onclick="event.stopPropagation(); addToCart(${id}, '${name.replace(/'/g,"\\'")}', ${price}, '${image}')"
+                                ${qty === 0 ? 'disabled' : ''}
+                                class="text-[9px] tracking-[0.3em] uppercase px-4 py-2 border transition disabled:opacity-30"
+                                style="border-color:rgba(212,168,71,0.4);color:var(--savannah);">
                                 ${qty === 0 ? 'Sold Out' : 'Add to Bag'}
                             </button>
                         </div>
                     </div>
                 </a>`;
             }).join('');
+
+            // Observe newly added cards for reveal animation
             document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             lucide.createIcons();
         }
 
+        // Called by currency switcher to re-render prices in new currency
         window.seroRefreshPrices = () => { if (lastProducts.length) renderProducts(lastProducts); };
 
+        /* ----------------------------------------------------------
+           CART — add item, persist to localStorage, update badge
+        ---------------------------------------------------------- */
         function addToCart(id, name, price, image) {
             const existing = cart.find(i => i.id === id);
-            if (existing) { existing.quantity++; } else { cart.push({ id, name, price, image, quantity: 1 }); }
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1 });
+            }
             localStorage.setItem('sero-cart', JSON.stringify(cart));
             updateCartCount();
             showToast(`${name} — added to your bag`);
@@ -361,24 +879,49 @@
         function updateCartCount() {
             const count = cart.reduce((s, i) => s + i.quantity, 0);
             const badge = document.getElementById('cart-count');
-            if (badge) { badge.textContent = count; badge.classList.toggle('hidden', count === 0); }
+            if (badge) {
+                badge.textContent = count;
+                badge.classList.toggle('hidden', count === 0);
+            }
         }
 
+        /* ----------------------------------------------------------
+           TOAST NOTIFICATION
+        ---------------------------------------------------------- */
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.textContent = msg; t.classList.add('show');
+            t.textContent = msg;
+            t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
-        function handleNewsletter(e) { e.preventDefault(); showToast('Welcome to the herd ✦'); e.target.reset(); }
+        /* ----------------------------------------------------------
+           MOBILE MENU TOGGLE
+        ---------------------------------------------------------- */
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
 
+        /* ----------------------------------------------------------
+           NEWSLETTER FORM
+        ---------------------------------------------------------- */
+        function handleNewsletter(e) {
+            e.preventDefault();
+            showToast('Welcome to the herd ✦');
+            e.target.reset();
+        }
+
+        /* ----------------------------------------------------------
+           INIT — runs after DOM is ready
+        ---------------------------------------------------------- */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateCartCount();
             fetchProducts();
             mountCurrencySwitcher('sero-currency-mount');
             mountCurrencySwitcher('sero-currency-mount-mobile');
+
+            // Trigger reveal for elements already in viewport on load
             setTimeout(() => {
                 document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
                     if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
@@ -388,4 +931,3 @@
     </script>
 </body>
 </html>
-

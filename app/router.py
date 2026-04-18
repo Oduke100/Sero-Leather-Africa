@@ -61,12 +61,18 @@ def upload_image(file: UploadFile = File(...)):
                 detail="Only JPEG, PNG and WebP images are allowed."
             )
 
-        ext      = file.filename.rsplit(".", 1)[-1]
-        filename = f"{uuid.uuid4()}.{ext}"
-        filepath = f"uploads/{filename}"
+        contents = file.file.read()
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
 
-        with open(filepath, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        max_width = 1200
+        if image.width > max_width:
+            ratio = max_width / image.width
+            new_height = int(image.height * ratio)
+            image = image.resize((max_width, new_height), Image.LANCZOS)
+
+        filename = f"{uuid.uuid4()}.webp"
+        filepath = f"uploads/{filename}"
+        image.save(filepath, "WEBP", quality=82, method=6)
 
         return {"url": f"/uploads/{filename}"}
 
@@ -378,3 +384,4 @@ def update_order_status(id: int, update: OrderStatusUpdate):
             conn.close()
         except Exception:
             pass
+
