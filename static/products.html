@@ -6,281 +6,105 @@
     <title>Collections — Sero Leather Africa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script src="/static/js/currency.js"></script>
     <style>
-        /* ============================================================
-           § 1. DESIGN TOKENS
-           ============================================================ */
-        :root {
-            --ember:    #C15C3D;
-            --bark:     #2C1E16;
-            --savannah: #D4A847;
-            --dusk:     #8B5E3C;
-            --midnight: #1A0F08;
-            --bone:     #F5EDD8;
-        }
-
-        /* ============================================================
-           § 2. RESET & BASE
-           ============================================================ */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Jost', sans-serif; background: var(--midnight); color: var(--bone); overflow-x: hidden; cursor: none; }
-
-        /* ============================================================
-           § 3. CUSTOM CURSOR
-           ============================================================ */
-        .cursor      { width: 12px; height: 12px; background: var(--savannah); border-radius: 50%; position: fixed; pointer-events: none; z-index: 99999; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, background 0.3s; }
-        .cursor-ring { width: 40px; height: 40px; border: 1px solid rgba(212, 168, 71, 0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 99998; transform: translate(-50%, -50%); transition: left 0.12s ease-out, top 0.12s ease-out, width 0.3s, height 0.3s; }
-        .cursor.expand      { width: 20px; height: 20px; background: var(--ember); }
-        .cursor-ring.expand { width: 60px; height: 60px; border-color: var(--ember); }
-
-        /* ============================================================
-           § 4. FILM GRAIN TEXTURE OVERLAY
-           ============================================================ */
-        .grain::after {
-            content: '';
-            position: fixed;
-            inset: -200%;
-            width: 400%; height: 400%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-            opacity: 0.035;
-            pointer-events: none;
-            z-index: 9997;
-            animation: grain 0.5s steps(2) infinite;
-        }
-        @keyframes grain {
-            0%, 100% { transform: translate(0, 0);   }
-            25%       { transform: translate(-2%, -3%); }
-            50%       { transform: translate(3%, 2%);  }
-            75%       { transform: translate(-1%, 4%); }
-        }
-
-        /* ============================================================
-           § 5. KENTE STRIPE
-           ============================================================ */
-        .kente {
-            height: 6px;
-            background: repeating-linear-gradient(
-                90deg,
-                var(--ember)    0,     var(--ember)    20px,
-                var(--savannah) 20px,  var(--savannah) 40px,
-                var(--bark)     40px,  var(--bark)     60px,
-                var(--savannah) 60px,  var(--savannah) 80px,
-                var(--ember)    80px,  var(--ember)    100px,
-                var(--dusk)     100px, var(--dusk)     120px
-            );
-        }
-
-        /* ============================================================
-           § 6. NAVIGATION
-           ============================================================ */
-        nav { position: sticky; top: 0; z-index: 1000; background: rgba(26, 15, 8, 0.96); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(212, 168, 71, 0.12); }
-        .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--savannah); color: var(--bark); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
-
-        /* ============================================================
-           § 7. TYPOGRAPHY UTILITY
-           ============================================================ */
-        .display { font-family: 'Cormorant Garamond', serif; }
-
-        /* ============================================================
-           § 8. PRODUCT CARDS
-           ============================================================ */
-        .product-card         { position: relative; overflow: hidden; background: rgba(44, 30, 22, 0.5); border: 1px solid rgba(212, 168, 71, 0.08); transition: all 0.5s ease; display: block; text-decoration: none; cursor: none; }
-        .product-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,15,8,0.95) 0%, rgba(26,15,8,0.3) 50%, transparent 100%); z-index: 1; }
-        .product-card:hover   { border-color: rgba(212, 168, 71, 0.35); transform: translateY(-8px); box-shadow: 0 32px 64px -12px rgba(193, 92, 61, 0.3); }
-        .product-card img     { width: 100%; height: 380px; object-fit: cover; transition: transform 0.8s ease; display: block; }
-        .product-card:hover img { transform: scale(1.1); }
-        .product-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 20px; z-index: 2; }
-
-        /* Hover hint overlay */
-        .view-hint              { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; opacity: 0; transition: opacity 0.4s; text-align: center; pointer-events: none; }
-        .product-card:hover .view-hint { opacity: 1; }
-
-        /* ============================================================
-           § 9. ADD-TO-BAG BUTTON (on cards)
-           ============================================================ */
-        .add-btn          { display: inline-block; padding: 8px 18px; border: 1px solid rgba(212, 168, 71, 0.5); color: var(--savannah); font-size: 9px; font-family: 'Jost', sans-serif; letter-spacing: 0.3em; text-transform: uppercase; background: transparent; transition: all 0.3s; cursor: none; }
-        .add-btn:hover    { background: rgba(212, 168, 71, 0.15); }
-        .add-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* ============================================================
-           § 10. SKELETON LOADING SHIMMER
-           ============================================================ */
-        .skeleton {
-            background: linear-gradient(90deg, rgba(44,30,22,0.8) 25%, rgba(44,30,22,0.3) 50%, rgba(44,30,22,0.8) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s infinite;
-        }
-        @keyframes shimmer {
-            0%   { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* ============================================================
-           § 11. TOAST NOTIFICATION
-           ============================================================ */
-        .toast      { position: fixed; bottom: 32px; right: 32px; background: var(--bark); border-left: 3px solid var(--savannah); color: var(--bone); padding: 14px 22px; font-size: 13px; letter-spacing: 0.05em; z-index: 9999; transform: translateY(120px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .toast.show { transform: translateY(0); opacity: 1; }
-
-        /* ============================================================
-           § 12. SCROLL-REVEAL ANIMATIONS
-           ============================================================ */
-        .reveal         { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-
-        /* ============================================================
-           § 13. SEARCH & SORT CONTROLS
-           ============================================================ */
-        .search-input             { width: 100%; background: rgba(44, 30, 22, 0.6); border: 1px solid rgba(212, 168, 71, 0.2); color: var(--bone); padding: 10px 16px 10px 40px; font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: 0.05em; outline: none; transition: border-color 0.3s; }
-        .search-input::placeholder { color: rgba(245, 237, 216, 0.25); }
-        .search-input:focus        { border-color: rgba(212, 168, 71, 0.5); }
-
-        .sort-select { background: rgba(44, 30, 22, 0.6); border: 1px solid rgba(212, 168, 71, 0.2); color: var(--bone); padding: 10px 16px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 0.1em; outline: none; cursor: none; }
-
-        /* ============================================================
-           § 14. BACKGROUND TEXTURE — subtle leopard radial pattern
-           ============================================================ */
-        .leopard {
-            background-color: var(--midnight);
-            background-image:
-                radial-gradient(ellipse 12px 8px  at 50px  50px, rgba(212, 168, 71, 0.06) 60%, transparent 70%),
-                radial-gradient(ellipse 8px  12px at 150px 90px, rgba(212, 168, 71, 0.05) 60%, transparent 70%),
-                radial-gradient(ellipse 10px 7px  at 250px 35px, rgba(212, 168, 71, 0.06) 60%, transparent 70%),
-                radial-gradient(circle 2px at 55px  55px,  rgba(212, 168, 71, 0.10) 100%, transparent),
-                radial-gradient(circle 2px at 155px 95px,  rgba(212, 168, 71, 0.08) 100%, transparent);
-            background-size: 350px 130px;
-        }
-
-        /* ============================================================
-           § 15. FOOTER — SOCIAL ICON BUTTONS
-           ============================================================ */
-        .social-icon {
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(212, 168, 71, 0.2);
-            color: rgba(245, 237, 216, 0.35);
-            text-decoration: none;
-            transition: border-color 0.3s, color 0.3s, transform 0.3s;
-        }
-        .social-icon:hover {
-            border-color: rgba(212, 168, 71, 0.65);
-            color: var(--savannah);
-            transform: translateY(-3px);
-        }
+        :root{--ember:#C15C3D;--bark:#2C1E16;--savannah:#D4A847;--dusk:#8B5E3C;--midnight:#1A0F08;--bone:#F5EDD8;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Jost',sans-serif;background:var(--midnight);color:var(--bone);overflow-x:hidden;cursor:none;}
+        .cursor{width:12px;height:12px;background:var(--savannah);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
+        .cursor-ring{width:40px;height:40px;border:1px solid rgba(212,168,71,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:left .12s ease-out,top .12s ease-out,width .3s,height .3s;}
+        .cursor.expand{width:20px;height:20px;background:var(--ember);}.cursor-ring.expand{width:60px;height:60px;border-color:var(--ember);}
+        .grain::after{content:'';position:fixed;inset:-200%;width:400%;height:400%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:.035;pointer-events:none;z-index:9997;animation:grain .5s steps(2) infinite;}
+        @keyframes grain{0%,100%{transform:translate(0,0);}25%{transform:translate(-2%,-3%);}50%{transform:translate(3%,2%);}75%{transform:translate(-1%,4%);}}
+        .kente{height:6px;background:repeating-linear-gradient(90deg,var(--ember) 0,var(--ember) 20px,var(--savannah) 20px,var(--savannah) 40px,var(--bark) 40px,var(--bark) 60px,var(--savannah) 60px,var(--savannah) 80px,var(--ember) 80px,var(--ember) 100px,var(--dusk) 100px,var(--dusk) 120px);}
+        nav{position:sticky;top:0;z-index:1000;background:rgba(26,15,8,0.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,168,71,0.12);}
+        .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--savannah);color:var(--bark);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+        .display{font-family:'Cormorant Garamond',serif;}
+        .product-card{position:relative;overflow:hidden;background:rgba(44,30,22,0.5);border:1px solid rgba(212,168,71,0.08);transition:all .5s ease;display:block;text-decoration:none;cursor:none;}
+        .product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,15,8,0.95) 0%,rgba(26,15,8,0.3) 50%,transparent 100%);z-index:1;}
+        .product-card:hover{border-color:rgba(212,168,71,0.35);transform:translateY(-8px);box-shadow:0 32px 64px -12px rgba(193,92,61,0.3);}
+        .product-card img{width:100%;height:380px;object-fit:cover;transition:transform .8s ease;display:block;}
+        .product-card:hover img{transform:scale(1.1);}
+        .product-card-content{position:absolute;bottom:0;left:0;right:0;padding:24px 20px;z-index:2;}
+        .view-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;opacity:0;transition:opacity .4s;text-align:center;pointer-events:none;}
+        .product-card:hover .view-hint{opacity:1;}
+        .add-btn{display:inline-block;padding:8px 18px;border:1px solid rgba(212,168,71,0.5);color:var(--savannah);font-size:9px;font-family:'Jost',sans-serif;letter-spacing:.3em;text-transform:uppercase;background:transparent;transition:all .3s;cursor:none;}
+        .add-btn:hover{background:rgba(212,168,71,0.15);}.add-btn:disabled{opacity:.3;cursor:not-allowed;}
+        .skeleton{background:linear-gradient(90deg,rgba(44,30,22,0.8) 25%,rgba(44,30,22,0.3) 50%,rgba(44,30,22,0.8) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;}
+        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+        .toast{position:fixed;bottom:32px;right:32px;background:var(--bark);border-left:3px solid var(--savannah);color:var(--bone);padding:14px 22px;font-size:13px;letter-spacing:.05em;z-index:9999;transform:translateY(120px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+        .toast.show{transform:translateY(0);opacity:1;}
+        .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
+        .reveal.visible{opacity:1;transform:translateY(0);}
+        .search-input{width:100%;background:rgba(44,30,22,0.6);border:1px solid rgba(212,168,71,0.2);color:var(--bone);padding:10px 16px 10px 40px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:.05em;outline:none;transition:border-color .3s;}
+        .search-input::placeholder{color:rgba(245,237,216,0.25);}.search-input:focus{border-color:rgba(212,168,71,0.5);}
+        .sort-select{background:rgba(44,30,22,0.6);border:1px solid rgba(212,168,71,0.2);color:var(--bone);padding:10px 16px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.1em;outline:none;cursor:none;}
+        .leopard{background-color:var(--midnight);background-image:radial-gradient(ellipse 12px 8px at 50px 50px,rgba(212,168,71,0.06) 60%,transparent 70%),radial-gradient(ellipse 8px 12px at 150px 90px,rgba(212,168,71,0.05) 60%,transparent 70%);background-size:350px 130px;}
+        .social-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(212,168,71,0.2);color:rgba(245,237,216,0.35);text-decoration:none;transition:border-color .3s,color .3s,transform .3s;}
+        .social-icon:hover{border-color:rgba(212,168,71,0.65);color:var(--savannah);transform:translateY(-3px);}
     </style>
 </head>
-
 <body class="grain">
-
-    <!-- ============================================================
-         CURSOR
-         ============================================================ -->
-    <div class="cursor"      id="cursor"></div>
+    <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
-
-    <!-- ============================================================
-         TOAST
-         ============================================================ -->
     <div id="toast" class="toast"></div>
-
-    <!-- ============================================================
-         KENTE STRIPE — fixed top strip
-         ============================================================ -->
     <div class="kente fixed top-0 left-0 right-0 z-[1001]"></div>
 
-
-    <!-- ============================================================
-         NAVIGATION — "Collections" link is active
-         ============================================================ -->
     <nav class="pt-1.5">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-
-                <!-- Brand mark -->
                 <a href="/" class="flex items-center gap-4 group">
-                    <img src="/static/images/logo.jpeg" alt="Sero"
-                         class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition"
-                         onerror="this.style.display='none'">
+                    <img src="/static/images/logo.webp" alt="Sero" class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition" onerror="this.style.display='none'">
                     <div>
                         <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
-                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color: var(--savannah);">Leather Africa</div>
+                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color:var(--savannah);">Leather Africa</div>
                     </div>
                 </a>
-
-                <!-- Desktop links -->
-                <div class="hidden md:flex items-center gap-10">
-                    <a href="/"         class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Home</a>
-                    <a href="/products" class="text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--savannah);">Collections</a>
-                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Our Story</a>
-                    <a href="/cart" class="relative text-bone/60 hover:text-bone transition ml-4">
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Home</a>
+                    <a href="/products" class="text-xs tracking-[0.25em] uppercase font-medium" style="color:var(--savannah);">Collections</a>
+                    <a href="/about" class="text-xs tracking-[0.25em] uppercase font-light text-bone/60 hover:text-bone transition">Our Story</a>
+                    <a href="/cart" class="relative text-bone/60 hover:text-bone transition">
                         <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                         <span id="cart-count" class="cart-badge hidden">0</span>
                     </a>
+                    <!-- CURRENCY SWITCHER -->
+                    <div id="sero-currency-mount"></div>
                 </div>
-
-                <!-- Mobile hamburger -->
-                <button onclick="toggleMobileMenu()" class="md:hidden text-bone/60 hover:text-bone">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden text-bone/60 hover:text-bone"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </div>
         </div>
     </nav>
 
-
-    <!-- ============================================================
-         MOBILE MENU
-         ============================================================ -->
-    <div id="mobile-menu"
-         class="hidden fixed inset-0 z-[999] pt-24 px-8"
-         style="background: rgba(26, 15, 8, 0.98); backdrop-filter: blur(20px);">
-        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[999] pt-24 px-8" style="background:rgba(26,15,8,0.98);backdrop-filter:blur(20px);">
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone"><i data-lucide="x" class="w-6 h-6"></i></button>
         <div class="space-y-8">
-            <a href="/"         onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Home</a>
-            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color: var(--savannah);">Collections</a>
-            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Our Story</a>
-            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Your Bag</a>
+            <a href="/" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Home</a>
+            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color:var(--savannah);">Collections</a>
+            <a href="/about" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Our Story</a>
+            <a href="/cart" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/70">Your Bag</a>
+            <div class="pt-4" id="sero-currency-mount-mobile"></div>
         </div>
     </div>
 
-
-    <!-- ============================================================
-         HERO — page title over blurred Savannah photo
-         ============================================================ -->
-    <div class="relative py-24 px-6 overflow-hidden"
-         style="background: linear-gradient(to bottom, rgba(26,15,8,0.75), var(--midnight)), url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920&auto=format&fit=crop&q=60') center / cover no-repeat;">
+    <div class="relative py-24 px-6 overflow-hidden" style="background:linear-gradient(to bottom,rgba(26,15,8,0.75),var(--midnight)),url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920&auto=format&fit=crop&q=60') center/cover no-repeat;">
         <div class="max-w-7xl mx-auto relative z-10">
-            <p class="text-xs tracking-[0.5em] uppercase mb-4 font-light reveal" style="color: var(--savannah);">The Full Range</p>
-            <h1 class="display text-6xl md:text-7xl font-light text-bone leading-none reveal" style="transition-delay: 0.1s;">
-                Our<br><em style="color: var(--savannah);">Collections</em>
-            </h1>
-            <p class="text-bone/50 font-light tracking-widest text-sm mt-6 reveal" style="transition-delay: 0.2s;">Premium leather goods handcrafted in Nairobi, Kenya</p>
+            <p class="text-xs tracking-[0.5em] uppercase mb-4 font-light reveal" style="color:var(--savannah);">The Full Range</p>
+            <h1 class="display text-6xl md:text-7xl font-light text-bone leading-none reveal" style="transition-delay:.1s;">Our<br><em style="color:var(--savannah);">Collections</em></h1>
+            <p class="text-bone/50 font-light tracking-widest text-sm mt-6 reveal" style="transition-delay:.2s;">Premium leather goods handcrafted in Nairobi, Kenya</p>
         </div>
     </div>
 
-
-    <!-- ============================================================
-         KENTE DIVIDER
-         ============================================================ -->
     <div class="kente"></div>
 
-
-    <!-- ============================================================
-         SEARCH & SORT BAR — sticky below nav
-         ============================================================ -->
-    <div class="leopard sticky top-[86px] z-40 border-b" style="border-color: rgba(212, 168, 71, 0.1);">
+    <div class="leopard sticky top-[86px] z-40 border-b" style="border-color:rgba(212,168,71,0.1);">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex flex-col md:flex-row gap-4 justify-between items-center">
-
-            <!-- Search input -->
             <div class="relative w-full md:w-80">
-                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color: rgba(212, 168, 71, 0.4);"></i>
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style="color:rgba(212,168,71,0.4);"></i>
                 <input type="text" id="search-input" placeholder="Search the collection..." class="search-input">
             </div>
-
-            <!-- Sort dropdown -->
             <select id="sort-select" onchange="renderProducts()" class="sort-select">
                 <option value="default">Sort by</option>
                 <option value="price-low">Price: Low to High</option>
@@ -289,22 +113,14 @@
         </div>
     </div>
 
-
-    <!-- ============================================================
-         PRODUCTS GRID — skeleton shown while loading
-         ============================================================ -->
     <section class="leopard py-16 px-6 lg:px-8 min-h-screen">
         <div class="max-w-7xl mx-auto">
-
-            <!-- Product cards — populated by JS -->
             <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
             </div>
-
-            <!-- Empty / no-results state -->
             <div id="empty-state" class="hidden text-center py-32">
                 <p class="display text-3xl font-light text-bone/30 mb-3">Nothing found</p>
                 <p class="text-xs tracking-[0.3em] uppercase text-bone/20">Try a different search</p>
@@ -312,146 +128,77 @@
         </div>
     </section>
 
-
-    <!-- ============================================================
-         FOOTER — links · contact · payments · social · copyright
-         ============================================================ -->
-    <footer style="background: var(--midnight); border-top: 1px solid rgba(212, 168, 71, 0.1);">
-
+    <footer style="background:var(--midnight);border-top:1px solid rgba(212,168,71,0.1);">
         <div class="kente"></div>
-
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-
-            <!-- ── Footer top grid: brand | nav | contact ── -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-
-                <!-- Brand blurb -->
                 <div>
                     <div class="display text-2xl font-light text-bone tracking-[0.2em] uppercase mb-2">Sero Leather</div>
-                    <div class="text-[9px] tracking-[0.4em] uppercase mb-4 font-light" style="color: var(--savannah);">Africa</div>
+                    <div class="text-[9px] tracking-[0.4em] uppercase mb-4 font-light" style="color:var(--savannah);">Africa</div>
                     <p class="text-bone/40 font-light text-sm">Born from the red soils of Kenya.</p>
                 </div>
-
-                <!-- Navigation links -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/40 mb-6 font-medium">Navigate</h4>
                     <ul class="space-y-3">
-                        <li><a href="/"         class="text-sm text-bone/50 hover:text-bone transition font-light">Home</a></li>
+                        <li><a href="/" class="text-sm text-bone/50 hover:text-bone transition font-light">Home</a></li>
                         <li><a href="/products" class="text-sm text-bone/50 hover:text-bone transition font-light">Collections</a></li>
-                        <li><a href="/about"    class="text-sm text-bone/50 hover:text-bone transition font-light">Our Story</a></li>
-                        <li><a href="/cart"     class="text-sm text-bone/50 hover:text-bone transition font-light">Your Bag</a></li>
+                        <li><a href="/about" class="text-sm text-bone/50 hover:text-bone transition font-light">Our Story</a></li>
+                        <li><a href="/cart" class="text-sm text-bone/50 hover:text-bone transition font-light">Your Bag</a></li>
                     </ul>
                 </div>
-
-                <!-- Contact details -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/40 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
-                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            support@seroleather.co.ke
-                        </li>
-                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            +254 701 234 567
-                        </li>
-                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            Nairobi, Kenya
-                        </li>
+                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light"><i data-lucide="mail" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke</li>
+                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light"><i data-lucide="phone" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567</li>
+                        <li class="flex items-center gap-3 text-bone/40 text-sm font-light"><i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya</li>
                     </ul>
                 </div>
             </div>
-
-            <!-- ── Footer bottom: payments · social · copyright ── -->
-            <div class="border-t pt-10" style="border-color: rgba(212, 168, 71, 0.1);">
-
-                <!-- Payment Methods -->
+            <div class="border-t pt-10" style="border-color:rgba(212,168,71,0.1);">
                 <p class="text-[9px] tracking-[0.4em] uppercase text-bone/25 mb-5 text-center">Secure Payments Accepted</p>
                 <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span></div>
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="40" height="22" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="13" height="15" viewBox="0 0 13 16" fill="rgba(245,237,216,0.72)"><path d="M11 8.39c-.03-2.06 1.69-3.06 1.77-3.11-.97-1.41-2.47-1.6-3-1.63C8.45 3.52 7.13 4.5 6.43 4.5c-.72 0-1.81-.98-2.99-.95C2.01 3.57.59 4.44-.19 5.79c-1.52 2.62-.27 6.93 1.19 9.31.73 1.17 1.59 2.48 2.72 2.44 1.1-.05 1.51-.7 2.84-.7 1.32 0 1.7.7 2.84.67 1.18-.02 1.92-1.19 2.63-2.37.83-1.35 1.17-2.67 1.18-2.74C13.25 12 11 11.12 11 8.39zm-2-6.14C9.67 1.47 10.1.39 9.97-.68c-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.8-.99 2.85.95.08 2.14-.51 2.77-1.33z"/></svg><span style="font-family:Arial;font-size:12px;font-weight:600;color:rgba(245,237,216,0.72);margin-left:5px;">Pay</span></div>
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
                 </div>
-
-                <!-- Social Icons -->
                 <div class="flex justify-center items-center gap-4 mb-8">
-                    <a href="#" class="social-icon" title="Facebook"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-                    <a href="#" class="social-icon" title="Instagram"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-                    <a href="#" class="social-icon" title="TikTok"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.73a4.85 4.85 0 01-1.01-.04z"/></svg></a>
-                    <a href="#" class="social-icon" title="YouTube"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
-                    <a href="#" class="social-icon" title="WhatsApp"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
                 </div>
-
-                <!-- Copyright -->
-                <div class="flex justify-between items-center pt-6 border-t" style="border-color: rgba(212, 168, 71, 0.08);">
+                <div class="flex justify-between items-center pt-6 border-t" style="border-color:rgba(212,168,71,0.08);">
                     <p class="text-bone/20 text-xs tracking-widest font-light">&copy; 2026 Sero Leather Africa</p>
                     <p class="text-bone/15 text-xs tracking-widest font-light">Crafted ♦ Nairobi</p>
                 </div>
-
-            </div><!-- end footer bottom -->
-        </div><!-- end footer inner -->
+            </div>
+        </div>
     </footer>
 
-
-    <!-- ================================================================
-         JAVASCRIPT — all logic in clearly labelled function blocks
-         ================================================================ -->
     <script>
-
-        /* ============================================================
-           JS § 1. STATE
-           ============================================================ */
         const API         = '/api';
         let   allProducts = [];
         let   cart        = JSON.parse(localStorage.getItem('sero-cart')) || [];
 
-
-        /* ============================================================
-           JS § 2. CUSTOM CURSOR
-           — initial bind; re-bound after each grid render
-           ============================================================ */
         (function initCursor() {
-            const cur  = document.getElementById('cursor');
-            const ring = document.getElementById('cursor-ring');
-
-            document.addEventListener('mousemove', e => {
-                cur.style.left  = e.clientX + 'px';
-                cur.style.top   = e.clientY + 'px';
-                ring.style.left = e.clientX + 'px';
-                ring.style.top  = e.clientY + 'px';
-            });
-
+            const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
+            document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px'; });
             bindCursor();
         })();
 
         function bindCursor() {
-            const cur  = document.getElementById('cursor');
-            const ring = document.getElementById('cursor-ring');
-
+            const cur = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
             document.querySelectorAll('a, button, select, input, .product-card, .add-btn').forEach(el => {
                 el.addEventListener('mouseenter', () => { cur.classList.add('expand'); ring.classList.add('expand'); });
                 el.addEventListener('mouseleave', () => { cur.classList.remove('expand'); ring.classList.remove('expand'); });
             });
         }
 
-
-        /* ============================================================
-           JS § 3. SCROLL-REVEAL OBSERVER
-           ============================================================ */
-        const revealObs = new IntersectionObserver(entries => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
-
+        const revealObs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-
-        /* ============================================================
-           JS § 4. FETCH PRODUCTS — load all available items from API
-           ============================================================ */
         async function fetchProducts() {
             try {
                 const res  = await fetch(`${API}/products`);
@@ -459,81 +206,53 @@
                 allProducts = data.products || [];
                 renderProducts();
             } catch {
-                document.getElementById('products-grid').innerHTML =
-                    `<div class="col-span-4 py-32 text-center text-bone/30 text-sm tracking-widest uppercase">Could not reach the server</div>`;
+                document.getElementById('products-grid').innerHTML = '<div class="col-span-4 py-32 text-center text-bone/30 text-sm tracking-widest uppercase">Could not reach the server</div>';
             }
         }
 
-        /* ============================================================
-           JS § 5. RENDER PRODUCTS — filter by search, sort, build HTML
-           ============================================================ */
         function renderProducts() {
             const grid  = document.getElementById('products-grid');
             const empty = document.getElementById('empty-state');
             const q     = document.getElementById('search-input').value.toLowerCase();
             const s     = document.getElementById('sort-select').value;
-
             let filtered = allProducts.filter(p => p[1].toLowerCase().includes(q));
             if (s === 'price-low')  filtered.sort((a, b) => a[3] - b[3]);
             if (s === 'price-high') filtered.sort((a, b) => b[3] - a[3]);
-
-            if (!filtered.length) {
-                grid.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
-            }
+            if (!filtered.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
-
             grid.innerHTML = filtered.map(p => {
-                const id       = p[0];
-                const name     = p[1];
-                const desc     = p[2] || '';
-                const price    = parseFloat(p[3]);
-                const img      = p[4] || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop';
-                const qty      = p[5];
-                const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const safeImg  = img.replace(/'/g, "\\'");
-
+                const id = p[0], name = p[1], desc = p[2] || '', price = parseFloat(p[3]);
+                const img = p[4] || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop';
+                const qty = p[5];
+                const safeName = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+                const safeImg  = img.replace(/'/g,"\\'");
                 return `
                 <a href="/product?id=${id}" class="product-card">
-                    <img src="${img}" alt="${name}"
-                         onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
-                    ${qty === 0
-                        ? `<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>`
-                        : ''}
-                    <div class="view-hint">
-                        <div class="text-[9px] tracking-[0.4em] uppercase text-bone/70 font-light border-b border-bone/30 pb-1">View Details</div>
-                    </div>
+                    <img src="${img}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
+                    ${qty === 0 ? '<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>' : ''}
+                    <div class="view-hint"><div class="text-[9px] tracking-[0.4em] uppercase text-bone/70 font-light border-b border-bone/30 pb-1">View Details</div></div>
                     <div class="product-card-content">
                         <p class="text-[9px] tracking-[0.4em] uppercase font-light mb-1" style="color:var(--savannah);">Leather Goods</p>
                         <h3 class="display text-xl font-semibold text-bone mb-1 line-clamp-1">${name}</h3>
                         <p class="text-xs text-bone/40 font-light mb-4 line-clamp-1">${desc}</p>
                         <div class="flex items-center justify-between">
-                            <span class="display text-lg font-light" style="color:var(--savannah);">KES ${price.toLocaleString()}</span>
-                            <button class="add-btn" ${qty === 0 ? 'disabled' : ''}
-                                onclick="event.preventDefault(); event.stopPropagation(); addToCart(${id}, '${safeName}', ${price}, '${safeImg}')">
+                            <span class="display text-lg font-light" style="color:var(--savannah);">${convertPrice(price)}</span>
+                            <button class="add-btn" ${qty === 0 ? 'disabled' : ''} onclick="event.preventDefault();event.stopPropagation();addToCart(${id},'${safeName}',${price},'${safeImg}')">
                                 ${qty === 0 ? 'Sold Out' : 'Add to Bag'}
                             </button>
                         </div>
                     </div>
                 </a>`;
             }).join('');
-
             lucide.createIcons();
             bindCursor();
         }
 
+        window.seroRefreshPrices = renderProducts;
 
-        /* ============================================================
-           JS § 6. CART — add item, persist to localStorage
-           ============================================================ */
         function addToCart(id, name, price, image) {
             const existing = cart.find(i => i.id === id);
-            if (existing) {
-                existing.quantity++;
-            } else {
-                cart.push({ id, name, price, image, quantity: 1 });
-            }
+            if (existing) { existing.quantity++; } else { cart.push({ id, name, price, image, quantity: 1 }); }
             localStorage.setItem('sero-cart', JSON.stringify(cart));
             updateCartCount();
             showToast(`${name} — added to your bag`);
@@ -545,49 +264,19 @@
             if (badge) { badge.textContent = count; badge.classList.toggle('hidden', count === 0); }
         }
 
+        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        /* ============================================================
-           JS § 7. TOAST NOTIFICATION
-           ============================================================ */
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3500);
-        }
-
-
-        /* ============================================================
-           JS § 8. MOBILE MENU TOGGLE
-           ============================================================ */
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-
-
-        /* ============================================================
-           JS § 9. INIT — run once DOM is ready
-           ============================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             bindCursor();
             updateCartCount();
             fetchProducts();
-
-            // Wire up search input
+            mountCurrencySwitcher('sero-currency-mount');
+            mountCurrencySwitcher('sero-currency-mount-mobile');
             document.getElementById('search-input').addEventListener('input', renderProducts);
-
-            // Immediately reveal elements already in viewport
-            setTimeout(() => {
-                document.querySelectorAll('.reveal').forEach(el => {
-                    if (el.getBoundingClientRect().top < window.innerHeight) {
-                        el.classList.add('visible');
-                    }
-                });
-            }, 100);
+            setTimeout(() => { document.querySelectorAll('.reveal').forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible'); }); }, 100);
         });
-
     </script>
-
 </body>
 </html>

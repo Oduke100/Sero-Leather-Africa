@@ -7,408 +7,85 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script src="/static/js/currency.js"></script>
     <style>
-        /* ============================================================
-           § 1. DESIGN TOKENS  — single source of truth for all colors
-           ============================================================ */
-        :root {
-            --dust:     #E8C99A;
-            --ember:    #C15C3D;
-            --bark:     #2C1E16;
-            --savannah: #D4A847;
-            --dusk:     #8B5E3C;
-            --midnight: #1A0F08;
-            --bone:     #F5EDD8;
-            --smoke:    rgba(26, 15, 8, 0.7);
-        }
-
-        /* ============================================================
-           § 2. RESET & BASE
-           ============================================================ */
-        *    { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Jost', sans-serif;
-            background: var(--midnight);
-            color: var(--bone);
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* ============================================================
-           § 3. CUSTOM CURSOR
-           ============================================================ */
-        .cursor {
-            width: 12px; height: 12px;
-            background: var(--savannah);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 99999;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background 0.3s;
-        }
-        .cursor-ring {
-            width: 40px; height: 40px;
-            border: 1px solid rgba(212, 168, 71, 0.5);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 99998;
-            transform: translate(-50%, -50%);
-            transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
-        }
-        .cursor.expand      { width: 20px;  height: 20px;  background: var(--ember); }
-        .cursor-ring.expand { width: 60px;  height: 60px;  border-color: var(--ember); }
-
-        /* ============================================================
-           § 4. FILM GRAIN TEXTURE OVERLAY
-           ============================================================ */
-        .grain::after {
-            content: '';
-            position: fixed;
-            inset: -200%;
-            width: 400%; height: 400%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-            opacity: 0.035;
-            pointer-events: none;
-            z-index: 9997;
-            animation: grain 0.5s steps(2) infinite;
-        }
-        @keyframes grain {
-            0%, 100% { transform: translate(0, 0);   }
-            25%       { transform: translate(-2%, -3%); }
-            50%       { transform: translate(3%, 2%);  }
-            75%       { transform: translate(-1%, 4%); }
-        }
-
-        /* ============================================================
-           § 5. KENTE STRIPE  — reused across header, dividers, footer
-           ============================================================ */
-        .kente-border {
-            height: 8px;
-            background: repeating-linear-gradient(
-                90deg,
-                var(--ember)    0px,   var(--ember)    20px,
-                var(--savannah) 20px,  var(--savannah) 40px,
-                var(--bark)     40px,  var(--bark)     60px,
-                var(--savannah) 60px,  var(--savannah) 80px,
-                var(--ember)    80px,  var(--ember)    100px,
-                var(--dusk)     100px, var(--dusk)     120px
-            );
-        }
-
-        /* ============================================================
-           § 6. NAVIGATION
-           ============================================================ */
-        nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            transition: all 0.5s;
-        }
-        nav.scrolled {
-            background: rgba(26, 15, 8, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(212, 168, 71, 0.2);
-        }
-        .cart-badge {
-            position: absolute;
-            top: -6px; right: -6px;
-            background: var(--savannah);
-            color: var(--bark);
-            border-radius: 50%;
-            width: 18px; height: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 700;
-        }
-
-        /* ============================================================
-           § 7. HERO SECTION
-           ============================================================ */
-        .hero {
-            height: 100vh;
-            min-height: 700px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(to bottom, rgba(26,15,8,0.3) 0%, rgba(26,15,8,0.1) 40%, rgba(26,15,8,0.6) 100%),
-                url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920&auto=format&fit=crop&q=80') center / cover no-repeat;
-            transform: scale(1.05);
-            transition: transform 8s ease-out;
-        }
-        .hero-bg.loaded { transform: scale(1); }
-
-        .hero-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(3.5rem, 10vw, 9rem);
-            font-weight: 300;
-            letter-spacing: 0.15em;
-            line-height: 0.9;
-        }
-        .hero-title span { color: var(--savannah); font-style: italic; }
-
-        @media (max-width: 768px) { .hero-title { font-size: clamp(2.5rem, 14vw, 5rem); } }
-
-        /* ============================================================
-           § 8. MARQUEE / SCROLLING TICKER
-           ============================================================ */
-        .scroll-track {
-            display: flex;
-            gap: 2px;
-            animation: scroll-left 30s linear infinite;
-            width: max-content;
-        }
-        .scroll-track:hover { animation-play-state: paused; }
-        @keyframes scroll-left {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* ============================================================
-           § 9. PRODUCT CARDS
-           ============================================================ */
-        .product-card {
-            position: relative;
-            overflow: hidden;
-            background: rgba(44, 30, 22, 0.6);
-            border: 1px solid rgba(212, 168, 71, 0.1);
-            transition: all 0.5s;
-            display: block;
-            text-decoration: none;
-            cursor: none;
-        }
-        .product-card::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(26,15,8,0.9) 0%, transparent 60%);
-            z-index: 1;
-        }
-        .product-card:hover {
-            border-color: rgba(212, 168, 71, 0.4);
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px -10px rgba(193, 92, 61, 0.3);
-        }
-        .product-card img          { width: 100%; height: 380px; object-fit: cover; transition: transform 0.7s ease; display: block; }
-        .product-card:hover img    { transform: scale(1.08); }
-        .product-card-content      { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; z-index: 2; }
-
-        /* ============================================================
-           § 10. SKELETON LOADING SHIMMER
-           ============================================================ */
-        .skeleton {
-            background: linear-gradient(
-                90deg,
-                rgba(44,30,22,0.8) 25%,
-                rgba(44,30,22,0.4) 50%,
-                rgba(44,30,22,0.8) 75%
-            );
-            background-size: 200% 100%;
-            animation: shimmer 1.8s infinite;
-        }
-        @keyframes shimmer {
-            0%   { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* ============================================================
-           § 11. BACKGROUND TEXTURE PATTERNS
-           ============================================================ */
-
-        /* Subtle leopard-spot radials for product section */
-        .leopard-section {
-            background-color: var(--midnight);
-            background-image:
-                radial-gradient(ellipse 12px 8px  at 50px  50px,  rgba(212,168,71,0.08) 60%, transparent 70%),
-                radial-gradient(ellipse 8px  12px at 120px 80px,  rgba(212,168,71,0.06) 60%, transparent 70%),
-                radial-gradient(ellipse 10px 7px  at 200px 30px,  rgba(212,168,71,0.07) 60%, transparent 70%),
-                radial-gradient(ellipse 9px  11px at 280px 100px, rgba(212,168,71,0.05) 60%, transparent 70%),
-                radial-gradient(ellipse 11px 8px  at 350px 55px,  rgba(212,168,71,0.08) 60%, transparent 70%),
-                radial-gradient(circle 3px at 55px  55px,  rgba(212,168,71,0.15) 100%, transparent),
-                radial-gradient(circle 3px at 125px 85px,  rgba(212,168,71,0.12) 100%, transparent),
-                radial-gradient(circle 2px at 205px 35px,  rgba(212,168,71,0.14) 100%, transparent),
-                radial-gradient(circle 3px at 285px 105px, rgba(212,168,71,0.11) 100%, transparent),
-                radial-gradient(circle 2px at 355px 60px,  rgba(212,168,71,0.13) 100%, transparent);
-            background-size: 400px 140px;
-        }
-
-        /* Diagonal zebra stripe for stats section */
-        .zebra-accent {
-            background: repeating-linear-gradient(
-                120deg,
-                transparent,
-                transparent              8px,
-                rgba(212,168,71,0.04)   8px,
-                rgba(212,168,71,0.04)  16px
-            );
-        }
-
-        /* ============================================================
-           § 12. SCROLL-REVEAL ANIMATIONS
-           ============================================================ */
-        .reveal       { opacity: 0; transform: translateY(40px);  transition: opacity 0.8s ease, transform 0.8s ease; }
-        .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s ease, transform 0.8s ease; }
-        .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.8s ease, transform 0.8s ease; }
-        .reveal.visible,
-        .reveal-left.visible,
-        .reveal-right.visible { opacity: 1; transform: translate(0); }
-
-        /* ============================================================
-           § 13. BUTTONS
-           ============================================================ */
-
-        /* Ghost border button — fills on hover */
-        .btn-savannah {
-            display: inline-block;
-            padding: 14px 40px;
-            border: 1px solid var(--savannah);
-            color: var(--savannah);
-            font-family: 'Jost', sans-serif;
-            font-size: 11px; font-weight: 500;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            text-decoration: none;
-            background: transparent;
-            cursor: none;
-            position: relative;
-            overflow: hidden;
-            transition: color 0.4s;
-        }
-        .btn-savannah::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: var(--savannah);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: -1;
-        }
-        .btn-savannah:hover::before { transform: scaleX(1); }
-        .btn-savannah:hover         { color: var(--bark); }
-
-        /* Solid ember button — empties on hover */
-        .btn-ember {
-            display: inline-block;
-            padding: 14px 40px;
-            background: var(--ember);
-            color: var(--bone);
-            font-family: 'Jost', sans-serif;
-            font-size: 11px; font-weight: 500;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            text-decoration: none;
-            border: 1px solid var(--ember);
-            cursor: none;
-            transition: all 0.4s;
-        }
-        .btn-ember:hover { background: transparent; color: var(--ember); }
-
-        /* ============================================================
-           § 14. TOAST NOTIFICATION
-           ============================================================ */
-        .toast {
-            position: fixed;
-            bottom: 32px; right: 32px;
-            background: var(--bark);
-            border-left: 3px solid var(--savannah);
-            color: var(--bone);
-            padding: 16px 24px;
-            font-size: 14px; font-weight: 400;
-            letter-spacing: 0.05em;
-            z-index: 9999;
-            transform: translateY(120px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .toast.show { transform: translateY(0); opacity: 1; }
-
-        /* ============================================================
-           § 15. TYPOGRAPHY UTILITY
-           ============================================================ */
-        .display  { font-family: 'Cormorant Garamond', serif; }
-        .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 300; color: var(--savannah); line-height: 1; }
-
-        /* ============================================================
-           § 16. FOOTER — SOCIAL ICON BUTTONS
-           ============================================================ */
-        .social-icon {
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(212, 168, 71, 0.2);
-            color: rgba(245, 237, 216, 0.35);
-            text-decoration: none;
-            transition: border-color 0.3s, color 0.3s, transform 0.3s;
-        }
-        .social-icon:hover {
-            border-color: rgba(212, 168, 71, 0.65);
-            color: var(--savannah);
-            transform: translateY(-3px);
-        }
+        :root { --dust:#E8C99A;--ember:#C15C3D;--bark:#2C1E16;--savannah:#D4A847;--dusk:#8B5E3C;--midnight:#1A0F08;--bone:#F5EDD8;--smoke:rgba(26,15,8,0.7); }
+        *{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+        body{font-family:'Jost',sans-serif;background:var(--midnight);color:var(--bone);overflow-x:hidden;cursor:none;}
+        .cursor{width:12px;height:12px;background:var(--savannah);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;}
+        .cursor-ring{width:40px;height:40px;border:1px solid rgba(212,168,71,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:transform .15s ease-out,width .3s,height .3s;}
+        .cursor.expand{width:20px;height:20px;background:var(--ember);}.cursor-ring.expand{width:60px;height:60px;border-color:var(--ember);}
+        .grain::after{content:'';position:fixed;inset:-200%;width:400%;height:400%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:.035;pointer-events:none;z-index:9997;animation:grain .5s steps(2) infinite;}
+        @keyframes grain{0%,100%{transform:translate(0,0);}25%{transform:translate(-2%,-3%);}50%{transform:translate(3%,2%);}75%{transform:translate(-1%,4%);}}
+        .kente-border{height:8px;background:repeating-linear-gradient(90deg,var(--ember) 0px,var(--ember) 20px,var(--savannah) 20px,var(--savannah) 40px,var(--bark) 40px,var(--bark) 60px,var(--savannah) 60px,var(--savannah) 80px,var(--ember) 80px,var(--ember) 100px,var(--dusk) 100px,var(--dusk) 120px);}
+        nav{position:fixed;top:0;left:0;right:0;z-index:1000;transition:all .5s;}
+        nav.scrolled{background:rgba(26,15,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,168,71,0.2);}
+        .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--savannah);color:var(--bark);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+        .hero{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+        .hero-bg{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,15,8,0.3) 0%,rgba(26,15,8,0.1) 40%,rgba(26,15,8,0.6) 100%),url('/static/gallery/landing_page.webp') center/cover no-repeat;transform:scale(1.05);transition:transform 8s ease-out;}
+        .hero-bg.loaded{transform:scale(1);}
+        .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,9rem);font-weight:300;letter-spacing:.15em;line-height:.9;}
+        .hero-title span{color:var(--savannah);font-style:italic;}
+        @media(max-width:768px){.hero-title{font-size:clamp(2.5rem,14vw,5rem);}}
+        .scroll-track{display:flex;gap:2px;animation:scroll-left 30s linear infinite;width:max-content;}
+        .scroll-track:hover{animation-play-state:paused;}
+        @keyframes scroll-left{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+        .product-card{position:relative;overflow:hidden;background:rgba(44,30,22,0.6);border:1px solid rgba(212,168,71,0.1);transition:all .5s;display:block;text-decoration:none;cursor:none;}
+        .product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,15,8,0.9) 0%,transparent 60%);z-index:1;}
+        .product-card:hover{border-color:rgba(212,168,71,0.4);transform:translateY(-8px);box-shadow:0 30px 60px -10px rgba(193,92,61,0.3);}
+        .product-card img{width:100%;height:380px;object-fit:cover;transition:transform .7s ease;display:block;}
+        .product-card:hover img{transform:scale(1.08);}
+        .product-card-content{position:absolute;bottom:0;left:0;right:0;padding:24px;z-index:2;}
+        .skeleton{background:linear-gradient(90deg,rgba(44,30,22,0.8) 25%,rgba(44,30,22,0.4) 50%,rgba(44,30,22,0.8) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;}
+        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+        .leopard-section{background-color:var(--midnight);background-image:radial-gradient(ellipse 12px 8px at 50px 50px,rgba(212,168,71,0.08) 60%,transparent 70%),radial-gradient(ellipse 8px 12px at 120px 80px,rgba(212,168,71,0.06) 60%,transparent 70%),radial-gradient(ellipse 10px 7px at 200px 30px,rgba(212,168,71,0.07) 60%,transparent 70%);background-size:400px 140px;}
+        .zebra-accent{background:repeating-linear-gradient(120deg,transparent,transparent 8px,rgba(212,168,71,0.04) 8px,rgba(212,168,71,0.04) 16px);}
+        .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease;}
+        .reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .8s ease,transform .8s ease;}
+        .reveal-right{opacity:0;transform:translateX(40px);transition:opacity .8s ease,transform .8s ease;}
+        .reveal.visible,.reveal-left.visible,.reveal-right.visible{opacity:1;transform:translate(0);}
+        .btn-savannah{display:inline-block;padding:14px 40px;border:1px solid var(--savannah);color:var(--savannah);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;background:transparent;cursor:none;position:relative;overflow:hidden;transition:color .4s;}
+        .btn-savannah::before{content:'';position:absolute;inset:0;background:var(--savannah);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:-1;}
+        .btn-savannah:hover::before{transform:scaleX(1);}.btn-savannah:hover{color:var(--bark);}
+        .btn-ember{display:inline-block;padding:14px 40px;background:var(--ember);color:var(--bone);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;border:1px solid var(--ember);cursor:none;transition:all .4s;}
+        .btn-ember:hover{background:transparent;color:var(--ember);}
+        .toast{position:fixed;bottom:32px;right:32px;background:var(--bark);border-left:3px solid var(--savannah);color:var(--bone);padding:16px 24px;font-size:14px;letter-spacing:.05em;z-index:9999;transform:translateY(120px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+        .toast.show{transform:translateY(0);opacity:1;}
+        .display{font-family:'Cormorant Garamond',serif;}
+        .stat-num{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--savannah);line-height:1;}
+        .social-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(212,168,71,0.2);color:rgba(245,237,216,0.35);text-decoration:none;transition:border-color .3s,color .3s,transform .3s;}
+        .social-icon:hover{border-color:rgba(212,168,71,0.65);color:var(--savannah);transform:translateY(-3px);}
     </style>
 </head>
-
-<!-- ================================================================
-     BODY  — all sections follow in reading order, top → bottom
-     ================================================================ -->
 <body class="grain">
-
-    <!-- ============================================================
-         CURSOR  — custom dot + ring that follows the mouse
-         ============================================================ -->
-    <div class="cursor"      id="cursor"></div>
+    <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
-
-    <!-- ============================================================
-         TOAST  — add-to-bag confirmation popup
-         ============================================================ -->
     <div class="toast" id="toast"></div>
-
-    <!-- ============================================================
-         KENTE STRIPE  — decorative top-of-page strip (fixed)
-         ============================================================ -->
     <div class="kente-border fixed top-0 left-0 right-0 z-[1001]"></div>
 
-
-    <!-- ============================================================
-         NAVIGATION  — sticky header, transparent → solid on scroll
-         ============================================================ -->
     <nav id="navbar" class="pt-2">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-
-                <!-- Brand mark -->
                 <a href="/" class="flex items-center gap-4 group">
-                    <img src="/static/images/logo.jpeg" alt="Sero"
-                         class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition"
-                         onerror="this.style.display='none'">
+                    <img src="/static/images/logo.webp" alt="Sero" class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition" onerror="this.style.display='none'">
                     <div>
                         <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
-                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color: var(--savannah);">Leather Africa</div>
+                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color:var(--savannah);">Leather Africa</div>
                     </div>
                 </a>
-
-                <!-- Desktop links -->
-                <div class="hidden md:flex items-center gap-10">
-                    <a href="/"         class="text-xs tracking-[0.25em] uppercase font-medium" style="color: var(--savannah);">Home</a>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="/" class="text-xs tracking-[0.25em] uppercase font-medium" style="color:var(--savannah);">Home</a>
                     <a href="/products" class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Collections</a>
-                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Our Story</a>
-                    <a href="/cart" class="relative text-bone/70 hover:text-bone transition ml-4">
+                    <a href="/about" class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Our Story</a>
+                    <a href="/cart" class="relative text-bone/70 hover:text-bone transition">
                         <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                         <span id="cart-count" class="cart-badge hidden">0</span>
                     </a>
+                    <!-- CURRENCY SWITCHER -->
+                    <div id="sero-currency-mount"></div>
                 </div>
-
-                <!-- Mobile hamburger -->
                 <button onclick="toggleMobileMenu()" class="md:hidden text-bone/70 hover:text-bone transition">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
@@ -416,198 +93,111 @@
         </div>
     </nav>
 
-
-    <!-- ============================================================
-         MOBILE MENU  — full-screen overlay, hidden by default
-         ============================================================ -->
-    <div id="mobile-menu"
-         class="hidden fixed inset-0 z-[999] pt-24 px-8"
-         style="background: rgba(26,15,8,0.98); backdrop-filter: blur(20px);">
-        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
+    <div id="mobile-menu" class="hidden fixed inset-0 z-[999] pt-24 px-8" style="background:rgba(26,15,8,0.98);backdrop-filter:blur(20px);">
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-bone/50 hover:text-bone"><i data-lucide="x" class="w-6 h-6"></i></button>
         <div class="space-y-8">
-            <a href="/"         onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color: var(--savannah);">Home</a>
-            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80 hover:text-bone transition">Collections</a>
-            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80 hover:text-bone transition">Our Story</a>
-            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80 hover:text-bone transition">Your Bag</a>
+            <a href="/" onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color:var(--savannah);">Home</a>
+            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Collections</a>
+            <a href="/about" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Our Story</a>
+            <a href="/cart" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Your Bag</a>
+            <div class="pt-4" id="sero-currency-mount-mobile"></div>
         </div>
     </div>
 
-
-    <!-- ============================================================
-         HERO  — full-viewport cinematic opener with parallax zoom
-         ============================================================ -->
     <section class="hero">
-
-        <!-- Parallax background image -->
         <div class="hero-bg" id="hero-bg"></div>
-
-        <!-- Hero copy -->
         <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
-            <div class="reveal" style="transition-delay: 0.3s;">
-                <p class="text-xs tracking-[0.5em] uppercase mb-8 font-light" style="color: var(--savannah);">Est. Nairobi, Kenya</p>
-            </div>
-            <h1 class="hero-title mb-8 reveal" style="transition-delay: 0.5s;">
-                Carry The<br><span>Spirit</span><br>Of Africa
-            </h1>
-            <p class="text-lg font-light tracking-widest text-bone/70 max-w-xl mx-auto mb-12 reveal" style="transition-delay: 0.7s;">
-                Handcrafted leather goods born from the savannah.<br>Worn by the world.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay: 0.9s;">
+            <div class="reveal" style="transition-delay:.3s;"><p class="text-xs tracking-[0.5em] uppercase mb-8 font-light" style="color:var(--savannah);">Est. Nairobi, Kenya</p></div>
+            <h1 class="hero-title mb-8 reveal" style="transition-delay:.5s;">Carry The<br><span>Spirit</span><br>Of Africa</h1>
+            <p class="text-lg font-light tracking-widest text-bone/70 max-w-xl mx-auto mb-12 reveal" style="transition-delay:.7s;">Handcrafted leather goods born from the savannah.<br>Worn by the world.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay:.9s;">
                 <a href="/products" class="btn-savannah">Explore Collections</a>
-                <a href="/about"    class="btn-ember">Our Story</a>
+                <a href="/about" class="btn-ember">Our Story</a>
             </div>
         </div>
-
-        <!-- Scroll cue -->
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-bone/40 animate-bounce">
             <span class="text-[9px] tracking-[0.4em] uppercase">Scroll</span>
             <i data-lucide="chevron-down" class="w-4 h-4"></i>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         KENTE DIVIDER  — decorative stripe between hero and marquee
-         ============================================================ -->
     <div class="kente-border"></div>
 
-
-    <!-- ============================================================
-         MARQUEE  — auto-scrolling brand promise ticker
-         ============================================================ -->
-    <div class="py-4 overflow-hidden" style="background: var(--bark);">
+    <div class="py-4 overflow-hidden" style="background:var(--bark);">
         <div class="scroll-track">
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Premium Full-Grain Leather</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Premium Full-Grain Leather</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Handcrafted in Nairobi</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Handcrafted in Nairobi</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Ethically Sourced</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Ethically Sourced</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Ships Across Kenya &amp; Beyond</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Ships Across Kenya &amp; Beyond</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <!-- Duplicate set for seamless loop -->
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Premium Full-Grain Leather</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Premium Full-Grain Leather</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Handcrafted in Nairobi</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Handcrafted in Nairobi</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Ethically Sourced</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Ethically Sourced</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
-            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color: var(--savannah);">Ships Across Kenya &amp; Beyond</span>
+            <span class="text-xs tracking-[0.4em] uppercase font-light px-8" style="color:var(--savannah);">Ships Across Kenya &amp; Beyond</span>
             <span class="text-xs tracking-[0.4em] uppercase font-light px-8 text-bone/30">✦</span>
         </div>
     </div>
 
-
-    <!-- ============================================================
-         FEATURED PRODUCTS  — 4-up grid, dynamically loaded from API
-         ============================================================ -->
     <section class="leopard-section py-28 px-6 lg:px-8 relative">
         <div class="max-w-7xl mx-auto">
-
-            <!-- Section header -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                 <div class="reveal">
-                    <p class="text-xs tracking-[0.4em] uppercase mb-3 font-light" style="color: var(--savannah);">New Season</p>
+                    <p class="text-xs tracking-[0.4em] uppercase mb-3 font-light" style="color:var(--savannah);">New Season</p>
                     <h2 class="display text-5xl md:text-6xl font-light text-bone leading-none">The Collection</h2>
                 </div>
-                <a href="/products" class="btn-savannah self-start md:self-auto reveal" style="transition-delay: 0.2s;">View All Pieces</a>
+                <a href="/products" class="btn-savannah self-start md:self-auto reveal" style="transition-delay:.2s;">View All Pieces</a>
             </div>
-
-            <!-- Product grid — populated by JS; skeletons shown while loading -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" id="products-grid">
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
-                <div class="skeleton" style="height: 380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
+                <div class="skeleton" style="height:380px;"></div>
             </div>
-
-            <!-- Empty state (shown if no products returned) -->
-            <div id="no-products" class="hidden text-center py-20">
-                <p class="text-bone/40 tracking-widest text-sm uppercase">No products available right now</p>
-            </div>
+            <div id="no-products" class="hidden text-center py-20"><p class="text-bone/40 tracking-widest text-sm uppercase">No products available right now</p></div>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         STATS BAR  — social proof numbers with zebra stripe texture
-         ============================================================ -->
-    <section class="zebra-accent py-20 px-6 lg:px-8 border-y" style="border-color: rgba(212,168,71,0.1);">
+    <section class="zebra-accent py-20 px-6 lg:px-8 border-y" style="border-color:rgba(212,168,71,0.1);">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-            <div class="reveal">
-                <div class="stat-num">500+</div>
-                <p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Happy Customers</p>
-            </div>
-            <div class="reveal" style="transition-delay: 0.1s;">
-                <div class="stat-num">100%</div>
-                <p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Handcrafted</p>
-            </div>
-            <div class="reveal" style="transition-delay: 0.2s;">
-                <div class="stat-num display font-light" style="font-size: 3rem;">🇰🇪</div>
-                <p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Made in Kenya</p>
-            </div>
-            <div class="reveal" style="transition-delay: 0.3s;">
-                <div class="stat-num">∞</div>
-                <p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Lifetime Quality</p>
-            </div>
+            <div class="reveal"><div class="stat-num">500+</div><p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Happy Customers</p></div>
+            <div class="reveal" style="transition-delay:.1s;"><div class="stat-num">100%</div><p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Handcrafted</p></div>
+            <div class="reveal" style="transition-delay:.2s;"><div class="stat-num display font-light" style="font-size:3rem;">🇰🇪</div><p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Made in Kenya</p></div>
+            <div class="reveal" style="transition-delay:.3s;"><div class="stat-num">∞</div><p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Lifetime Quality</p></div>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         BRAND STORY  — image + copy two-column editorial layout
-         ============================================================ -->
     <section class="py-28 px-6 lg:px-8 relative overflow-hidden">
-
-        <!-- Radial glow accent -->
-        <div class="absolute inset-0" style="background: radial-gradient(ellipse at 70% 50%, rgba(193,92,61,0.08) 0%, transparent 60%);"></div>
-
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse at 70% 50%,rgba(193,92,61,0.08) 0%,transparent 60%);"></div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
-
-            <!-- Image with decorative border corners and kente base -->
             <div class="reveal-left">
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80"
-                         alt="Leather craftsmanship"
-                         class="w-full aspect-square object-cover"
-                         style="filter: sepia(20%) contrast(1.05);">
-                    <div class="absolute -bottom-4 -right-4 w-32 h-32 border" style="border-color: rgba(212,168,71,0.3);"></div>
-                    <div class="absolute -top-4 -left-4 w-32 h-32 border"    style="border-color: rgba(193,92,61,0.3);"></div>
-                    <div class="absolute bottom-0 left-0 right-0 kente-border" style="height: 4px;"></div>
+                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80" alt="Leather craftsmanship" class="w-full aspect-square object-cover" style="filter:sepia(20%) contrast(1.05);">
+                    <div class="absolute -bottom-4 -right-4 w-32 h-32 border" style="border-color:rgba(212,168,71,0.3);"></div>
+                    <div class="absolute -top-4 -left-4 w-32 h-32 border" style="border-color:rgba(193,92,61,0.3);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 kente-border" style="height:4px;"></div>
                 </div>
             </div>
-
-            <!-- Story copy -->
             <div class="reveal-right">
-                <p class="text-xs tracking-[0.5em] uppercase mb-6 font-light" style="color: var(--savannah);">Born From The Earth</p>
-                <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-8">
-                    Where the<br><em style="color: var(--savannah);">Savannah</em><br>Meets<br>Craft
-                </h2>
-                <div class="w-16 h-px mb-8" style="background: var(--ember);"></div>
-                <p class="text-bone/60 leading-relaxed text-lg font-light mb-6">
-                    Every bag we make begins with a story — the acacia trees at dusk, the deep reds of Kenyan soil, the golden light that sweeps across the Mara at sunrise. We pour that spirit into every stitch.
-                </p>
-                <p class="text-bone/50 leading-relaxed font-light mb-10">
-                    Our artisans in Nairobi have spent years perfecting their craft, blending traditional African techniques with modern precision to create leather goods that are both beautiful and built to last a lifetime.
-                </p>
+                <p class="text-xs tracking-[0.5em] uppercase mb-6 font-light" style="color:var(--savannah);">Born From The Earth</p>
+                <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-8">Where the<br><em style="color:var(--savannah);">Savannah</em><br>Meets<br>Craft</h2>
+                <div class="w-16 h-px mb-8" style="background:var(--ember);"></div>
+                <p class="text-bone/60 leading-relaxed text-lg font-light mb-6">Every bag we make begins with a story — the acacia trees at dusk, the deep reds of Kenyan soil, the golden light that sweeps across the Mara at sunrise. We pour that spirit into every stitch.</p>
+                <p class="text-bone/50 leading-relaxed font-light mb-10">Our artisans in Nairobi have spent years perfecting their craft, blending traditional African techniques with modern precision to create leather goods that are both beautiful and built to last a lifetime.</p>
                 <a href="/about" class="btn-savannah">Discover Our Story</a>
             </div>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         SAVANNAH SILHOUETTE DIVIDER  — illustrated SVG landscape
-         ============================================================ -->
-    <div style="height: 120px; background: linear-gradient(to bottom, var(--midnight), var(--bark)); position: relative; overflow: hidden;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none"
-             style="position: absolute; bottom: 0; width: 100%; height: 100%;">
-            <path fill="#1A0F08" d="M0,120 L0,80 C20,78 35,60 45,40 C48,32 52,25 58,30 C64,35 66,55 72,65 C76,72 80,68 84,55 C88,42 90,28 96,32 C102,36 104,58 108,70 C130,90 L140,80 C160,65 175,40 185,20 C188,12 193,5 200,10 C207,15 209,38 215,52 C220,62 225,58 230,45 C235,32 237,15 244,20 C251,25 253,50 258,65 C280,88 L290,78 C320,55 340,30 355,15 C360,8 366,2 374,8 C382,14 384,40 390,55 C396,67 402,62 408,48 C414,34 416,18 424,22 C432,26 434,54 440,70 M500,120 L500,70 C525,45 545,20 560,8 C566,2 572,-3 580,4 C588,11 590,38 596,55 C602,68 608,62 614,48 C620,34 622,18 630,22 C638,26 640,55 646,72 C670,95 L680,85 C700,65 718,38 730,22 C736,14 742,8 750,14 C758,20 760,48 766,65 C772,78 778,72 784,58 C790,44 792,28 800,32 C808,36 810,62 816,78 M900,120 L900,65 C930,40 955,15 968,5 C974,-2 980,-6 988,1 C996,8 998,38 1004,56 C1010,70 1016,64 1022,50 C1028,36 1030,20 1038,24 C1046,28 1048,56 1054,74 M1100,120 L1100,75 C1130,50 1155,22 1170,10 C1176,3 1182,-2 1190,5 C1198,12 1200,42 1206,60 C1212,74 1218,68 1224,54 C1230,40 1232,24 1240,28 C1248,32 1250,60 1256,78 C1280,100 L1290,90 C1320,68 1345,38 1360,22 C1366,14 1372,8 1380,14 C1388,20 1390,50 1396,68 C1402,82 1410,76 1416,62 C1422,48 1424,32 1432,36 C1440,40 1440,120 1440,120 Z"/>
-            <circle cx="720" cy="35" r="28" fill="rgba(212,168,71,0.15)"/>
-            <circle cx="720" cy="35" r="18" fill="rgba(212,168,71,0.2)"/>
-            <!-- Acacia tree silhouettes -->
+    <div style="height:120px;background:linear-gradient(to bottom,var(--midnight),var(--bark));position:relative;overflow:hidden;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none" style="position:absolute;bottom:0;width:100%;height:100%;">
+            <path fill="#1A0F08" d="M0,120 L0,60 C180,120 360,0 540,60 C720,120 900,0 1080,60 C1260,120 1380,40 1440,60 L1440,120 Z"/>
+            <circle cx="720" cy="35" r="28" fill="rgba(212,168,71,0.15)"/><circle cx="720" cy="35" r="18" fill="rgba(212,168,71,0.2)"/>
             <g fill="#1A0F08" opacity="0.8">
                 <ellipse cx="350" cy="95" rx="15" ry="8"/><rect x="342" y="95" width="4" height="12"/><rect x="358" y="95" width="4" height="12"/><ellipse cx="355" cy="87" rx="8" ry="6"/>
                 <ellipse cx="420" cy="98" rx="12" ry="7"/><rect x="414" y="98" width="3" height="10"/><rect x="428" y="98" width="3" height="10"/><ellipse cx="424" cy="91" rx="7" ry="5"/>
@@ -616,312 +206,134 @@
         </svg>
     </div>
 
-
-    <!-- ============================================================
-         TRUST FEATURES  — three-column promise strip (bark bg)
-         ============================================================ -->
-    <section style="background: var(--bark);" class="py-20 px-6 lg:px-8">
+    <section style="background:var(--bark);" class="py-20 px-6 lg:px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-1">
-            <div class="p-8 border-r reveal" style="border-color: rgba(212,168,71,0.1);">
-                <i data-lucide="truck" class="w-6 h-6 mb-6" style="color: var(--savannah);"></i>
-                <h3 class="display text-xl font-semibold text-bone mb-3">Nairobi Delivery</h3>
-                <p class="text-bone/50 font-light leading-relaxed text-sm">Same-day delivery within Nairobi. Nationwide shipping available.</p>
-            </div>
-            <div class="p-8 border-r reveal" style="border-color: rgba(212,168,71,0.1); transition-delay: 0.15s;">
-                <i data-lucide="award" class="w-6 h-6 mb-6" style="color: var(--savannah);"></i>
-                <h3 class="display text-xl font-semibold text-bone mb-3">Lifetime Guarantee</h3>
-                <p class="text-bone/50 font-light leading-relaxed text-sm">Every piece is built to outlast trends. We stand behind our craft.</p>
-            </div>
-            <div class="p-8 reveal" style="transition-delay: 0.3s;">
-                <i data-lucide="heart" class="w-6 h-6 mb-6" style="color: var(--savannah);"></i>
-                <h3 class="display text-xl font-semibold text-bone mb-3">Artisan Made</h3>
-                <p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Every hide selected with care.</p>
-            </div>
+            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);"><i data-lucide="truck" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Nairobi Delivery</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Same-day delivery within Nairobi. Nationwide shipping available.</p></div>
+            <div class="p-8 border-r reveal" style="border-color:rgba(212,168,71,0.1);transition-delay:.15s;"><i data-lucide="award" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Lifetime Guarantee</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Every piece is built to outlast trends. We stand behind our craft.</p></div>
+            <div class="p-8 reveal" style="transition-delay:.3s;"><i data-lucide="heart" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i><h3 class="display text-xl font-semibold text-bone mb-3">Artisan Made</h3><p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Every hide selected with care.</p></div>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         NEWSLETTER  — email capture with radial glow accent
-         ============================================================ -->
     <section class="py-28 px-6 lg:px-8 relative overflow-hidden">
-        <div class="absolute inset-0" style="background: radial-gradient(ellipse at 30% 50%, rgba(193,92,61,0.06) 0%, transparent 60%);"></div>
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse at 30% 50%,rgba(193,92,61,0.06) 0%,transparent 60%);"></div>
         <div class="max-w-2xl mx-auto text-center relative z-10">
             <div class="reveal">
-                <p class="text-xs tracking-[0.5em] uppercase mb-4 font-light" style="color: var(--savannah);">Join The Herd</p>
-                <h2 class="display text-4xl md:text-5xl font-light text-bone mb-4">Stay Connected<br><em style="color: var(--savannah);">to the Wild</em></h2>
+                <p class="text-xs tracking-[0.5em] uppercase mb-4 font-light" style="color:var(--savannah);">Join The Herd</p>
+                <h2 class="display text-4xl md:text-5xl font-light text-bone mb-4">Stay Connected<br><em style="color:var(--savannah);">to the Wild</em></h2>
                 <p class="text-bone/50 font-light mb-10">New arrivals, exclusive drops and stories from the savannah.</p>
                 <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-0 max-w-md mx-auto">
-                    <input type="email" placeholder="your@email.com" required
-                           class="flex-1 px-5 py-4 bg-transparent border text-bone font-light text-sm focus:outline-none placeholder:text-bone/30 tracking-widest"
-                           style="border-color: rgba(212,168,71,0.3); border-right: none;">
-                    <button type="submit" class="btn-ember px-8 py-4 text-xs" style="border-left: none;">Subscribe</button>
+                    <input type="email" placeholder="your@email.com" required class="flex-1 px-5 py-4 bg-transparent border text-bone font-light text-sm focus:outline-none placeholder:text-bone/30 tracking-widest" style="border-color:rgba(212,168,71,0.3);border-right:none;">
+                    <button type="submit" class="btn-ember px-8 py-4 text-xs" style="border-left:none;">Subscribe</button>
                 </form>
             </div>
         </div>
     </section>
 
-
-    <!-- ============================================================
-         FOOTER  — links · contact · payments · social · copyright
-         ============================================================ -->
-    <footer style="background: var(--midnight); border-top: 1px solid rgba(212,168,71,0.1);">
-
-        <!-- Kente stripe at footer top -->
+    <footer style="background:var(--midnight);border-top:1px solid rgba(212,168,71,0.1);">
         <div class="kente-border"></div>
-
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-
-            <!-- ── Footer top grid: brand | nav | contact ── -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-
-                <!-- Brand blurb -->
                 <div class="md:col-span-2">
                     <div class="display text-3xl font-light text-bone tracking-[0.2em] uppercase mb-2">Sero Leather</div>
-                    <div class="text-xs tracking-[0.4em] uppercase mb-6 font-light" style="color: var(--savannah);">Africa</div>
+                    <div class="text-xs tracking-[0.4em] uppercase mb-6 font-light" style="color:var(--savannah);">Africa</div>
                     <p class="text-bone/40 font-light leading-relaxed max-w-xs text-sm">Born from the red soils of Kenya. Built for those who carry their roots with pride.</p>
                 </div>
-
-                <!-- Navigation links -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/50 mb-6 font-medium">Navigate</h4>
                     <ul class="space-y-3">
-                        <li><a href="/"         class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Home</a></li>
+                        <li><a href="/" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Home</a></li>
                         <li><a href="/products" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Collections</a></li>
-                        <li><a href="/about"    class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Our Story</a></li>
-                        <li><a href="/cart"     class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Your Bag</a></li>
+                        <li><a href="/about" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Our Story</a></li>
+                        <li><a href="/cart" class="text-sm text-bone/60 hover:text-bone transition font-light tracking-wide">Your Bag</a></li>
                     </ul>
                 </div>
-
-                <!-- Contact details -->
                 <div>
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/50 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
-                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            support@seroleather.co.ke
-                        </li>
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
-                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            +254 701 234 567
-                        </li>
-                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
-                            <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color: var(--savannah);"></i>
-                            Nairobi, Kenya
-                        </li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="mail" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke</li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="phone" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567</li>
+                        <li class="flex items-center gap-3 text-bone/50 text-sm font-light"><i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya</li>
                     </ul>
                 </div>
             </div>
-
-            <!-- ── Footer bottom: payments · social · copyright ── -->
-            <div class="border-t pt-10" style="border-color: rgba(212,168,71,0.1);">
-
-                <!-- Payment Methods -->
+            <div class="border-t pt-10" style="border-color:rgba(212,168,71,0.1);">
                 <p class="text-[9px] tracking-[0.4em] uppercase text-bone/25 mb-5 text-center">Secure Payments Accepted</p>
                 <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
-
-                    <!-- Visa -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;">
-                        <span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span>
-                    </div>
-
-                    <!-- Mastercard -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;">
-                        <svg width="40" height="22" viewBox="0 0 40 22" fill="none">
-                            <circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/>
-                            <circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/>
-                            <path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/>
-                        </svg>
-                    </div>
-
-                    <!-- M-Pesa -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;">
-                        <span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span>
-                    </div>
-
-                    <!-- Apple Pay -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;">
-                        <svg width="13" height="15" viewBox="0 0 13 16" fill="rgba(245,237,216,0.72)">
-                            <path d="M11 8.39c-.03-2.06 1.69-3.06 1.77-3.11-.97-1.41-2.47-1.6-3-1.63C8.45 3.52 7.13 4.5 6.43 4.5c-.72 0-1.81-.98-2.99-.95C2.01 3.57.59 4.44-.19 5.79c-1.52 2.62-.27 6.93 1.19 9.31.73 1.17 1.59 2.48 2.72 2.44 1.1-.05 1.51-.7 2.84-.7 1.32 0 1.7.7 2.84.67 1.18-.02 1.92-1.19 2.63-2.37.83-1.35 1.17-2.67 1.18-2.74C13.25 12 11 11.12 11 8.39zm-2-6.14C9.67 1.47 10.1.39 9.97-.68c-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.8-.99 2.85.95.08 2.14-.51 2.77-1.33z"/>
-                        </svg>
-                        <span style="font-family:Arial;font-size:12px;font-weight:600;color:rgba(245,237,216,0.72);margin-left:5px;">Pay</span>
-                    </div>
-
-                    <!-- Amex -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;">
-                        <span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span>
-                    </div>
-
-                    <!-- Skrill -->
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;">
-                        <span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span>
-                    </div>
-
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="40" height="22" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
                 </div>
-
-                <!-- Social Media Icons -->
                 <div class="flex justify-center items-center gap-4 mb-10">
-
-                    <!-- Facebook -->
-                    <a href="#" class="social-icon" title="Facebook">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                        </svg>
-                    </a>
-
-                    <!-- Instagram -->
-                    <a href="#" class="social-icon" title="Instagram">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </a>
-
-                    <!-- TikTok -->
-                    <a href="#" class="social-icon" title="TikTok">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.73a4.85 4.85 0 01-1.01-.04z"/>
-                        </svg>
-                    </a>
-
-                    <!-- YouTube -->
-                    <a href="#" class="social-icon" title="YouTube">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                    </a>
-
-                    <!-- WhatsApp -->
-                    <a href="#" class="social-icon" title="WhatsApp">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                    </a>
-
+                    <a href="#" class="social-icon" title="Facebook"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="#" class="social-icon" title="Instagram"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                    <a href="#" class="social-icon" title="WhatsApp"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
                 </div>
-
-                <!-- Copyright row -->
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t" style="border-color: rgba(212,168,71,0.08);">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-6 border-t" style="border-color:rgba(212,168,71,0.08);">
                     <p class="text-bone/30 text-xs tracking-widest font-light">&copy; 2026 Sero Leather Africa. All rights reserved.</p>
                     <p class="text-bone/20 text-xs tracking-widest font-light">Crafted with ♦ in Nairobi</p>
                 </div>
-
-            </div><!-- end footer bottom -->
-        </div><!-- end footer inner -->
+            </div>
+        </div>
     </footer>
 
-
-    <!-- ================================================================
-         JAVASCRIPT  — all logic in clearly labelled function blocks
-         ================================================================ -->
     <script>
-
-        /* ============================================================
-           JS § 1. STATE
-           ============================================================ */
         const API  = '/api';
         let   cart = JSON.parse(localStorage.getItem('sero-cart')) || [];
+        let   lastProducts = [];
 
-
-        /* ============================================================
-           JS § 2. CUSTOM CURSOR
-           — tracks mouse position; expands over interactive elements
-           ============================================================ */
         (function initCursor() {
             const cursor = document.getElementById('cursor');
             const ring   = document.getElementById('cursor-ring');
-
             document.addEventListener('mousemove', e => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top  = e.clientY + 'px';
-                setTimeout(() => {
-                    ring.style.left = e.clientX + 'px';
-                    ring.style.top  = e.clientY + 'px';
-                }, 80);
+                cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+                setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
             });
-
             document.querySelectorAll('a, button').forEach(el => {
                 el.addEventListener('mouseenter', () => { cursor.classList.add('expand'); ring.classList.add('expand'); });
                 el.addEventListener('mouseleave', () => { cursor.classList.remove('expand'); ring.classList.remove('expand'); });
             });
         })();
 
-
-        /* ============================================================
-           JS § 3. NAVBAR — transparent → solid on scroll
-           ============================================================ */
         (function initNavbar() {
-            window.addEventListener('scroll', () => {
-                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-            });
+            window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60); });
         })();
 
+        window.addEventListener('load', () => { document.getElementById('hero-bg').classList.add('loaded'); });
 
-        /* ============================================================
-           JS § 4. HERO BACKGROUND — zoom-out on load
-           ============================================================ */
-        (function initHero() {
-            window.addEventListener('load', () => {
-                document.getElementById('hero-bg').classList.add('loaded');
-            });
-        })();
-
-
-        /* ============================================================
-           JS § 5. SCROLL-REVEAL OBSERVER
-           — watches .reveal / .reveal-left / .reveal-right elements
-           ============================================================ */
         const revealObserver = new IntersectionObserver(entries => {
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
         }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
 
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right')
-                .forEach(el => revealObserver.observe(el));
-
-
-        /* ============================================================
-           JS § 6. PRODUCT GRID — fetch from API, render cards
-           ============================================================ */
         async function fetchProducts() {
             try {
                 const res      = await fetch(`${API}/products`);
                 const data     = await res.json();
-                const products = (data.products || []).filter(p => p[6] === true).slice(0, 4);
-
-                if (!products.length) {
-                    document.getElementById('no-products').classList.remove('hidden');
-                    document.getElementById('products-grid').innerHTML = '';
-                    return;
-                }
-                renderProducts(products);
+                lastProducts   = (data.products || []).filter(p => p[6] === true).slice(0, 4);
+                if (!lastProducts.length) { document.getElementById('no-products').classList.remove('hidden'); document.getElementById('products-grid').innerHTML = ''; return; }
+                renderProducts(lastProducts);
             } catch {
-                document.getElementById('products-grid').innerHTML =
-                    `<div class="col-span-4 py-20 text-center text-bone/30 text-sm tracking-widest uppercase">Could not load products</div>`;
+                document.getElementById('products-grid').innerHTML = '<div class="col-span-4 py-20 text-center text-bone/30 text-sm tracking-widest uppercase">Could not load products</div>';
             }
         }
 
         function renderProducts(products) {
             document.getElementById('products-grid').innerHTML = products.map(p => {
-                const id    = p[0];
-                const name  = p[1];
-                const desc  = p[2] || '';
-                const price = parseFloat(p[3]);
+                const id    = p[0], name = p[1], desc = p[2] || '', price = parseFloat(p[3]);
                 const image = p[4] || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop';
                 const qty   = p[5];
-
                 return `
                 <a href="/product?id=${id}" class="product-card reveal" style="text-decoration:none;display:block;cursor:none;">
-                    <img src="${image}" alt="${name}"
-                         onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
-                    ${qty === 0
-                        ? `<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1"
-                                style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>`
-                        : ''}
+                    <img src="${image}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
+                    ${qty === 0 ? '<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>' : ''}
                     <div class="product-card-content">
                         <p class="text-[9px] tracking-[0.4em] uppercase font-light mb-2" style="color:var(--savannah);">Leather Goods</p>
                         <h3 class="display text-xl font-semibold text-bone mb-1 line-clamp-1">${name}</h3>
                         <p class="text-xs text-bone/50 font-light mb-4 line-clamp-1">${desc}</p>
                         <div class="flex items-center justify-between">
-                            <span class="display text-lg font-light" style="color:var(--savannah);">KES ${price.toLocaleString()}</span>
+                            <span class="display text-lg font-light" style="color:var(--savannah);">${convertPrice(price)}</span>
                             <button onclick="event.stopPropagation(); addToCart(${id}, '${name.replace(/'/g,"\\'")}', ${price}, '${image}')"
                                     ${qty === 0 ? 'disabled' : ''}
                                     class="text-[9px] tracking-[0.3em] uppercase px-4 py-2 border transition disabled:opacity-30"
@@ -932,22 +344,15 @@
                     </div>
                 </a>`;
             }).join('');
-
             document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             lucide.createIcons();
         }
 
+        window.seroRefreshPrices = () => { if (lastProducts.length) renderProducts(lastProducts); };
 
-        /* ============================================================
-           JS § 7. CART — add items, persist to localStorage
-           ============================================================ */
         function addToCart(id, name, price, image) {
             const existing = cart.find(i => i.id === id);
-            if (existing) {
-                existing.quantity++;
-            } else {
-                cart.push({ id, name, price, image, quantity: 1 });
-            }
+            if (existing) { existing.quantity++; } else { cart.push({ id, name, price, image, quantity: 1 }); }
             localStorage.setItem('sero-cart', JSON.stringify(cart));
             updateCartCount();
             showToast(`${name} — added to your bag`);
@@ -956,61 +361,31 @@
         function updateCartCount() {
             const count = cart.reduce((s, i) => s + i.quantity, 0);
             const badge = document.getElementById('cart-count');
-            if (badge) {
-                badge.textContent = count;
-                badge.classList.toggle('hidden', count === 0);
-            }
+            if (badge) { badge.textContent = count; badge.classList.toggle('hidden', count === 0); }
         }
 
-
-        /* ============================================================
-           JS § 8. TOAST NOTIFICATION
-           ============================================================ */
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
+            t.textContent = msg; t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+        function handleNewsletter(e) { e.preventDefault(); showToast('Welcome to the herd ✦'); e.target.reset(); }
 
-        /* ============================================================
-           JS § 9. MOBILE MENU TOGGLE
-           ============================================================ */
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-
-
-        /* ============================================================
-           JS § 10. NEWSLETTER FORM SUBMIT
-           ============================================================ */
-        function handleNewsletter(e) {
-            e.preventDefault();
-            showToast('Welcome to the herd ✦');
-            e.target.reset();
-        }
-
-
-        /* ============================================================
-           JS § 11. INIT — run once DOM is ready
-           ============================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateCartCount();
             fetchProducts();
-
-            // Immediately reveal elements already in viewport on load
+            mountCurrencySwitcher('sero-currency-mount');
+            mountCurrencySwitcher('sero-currency-mount-mobile');
             setTimeout(() => {
                 document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
-                    if (el.getBoundingClientRect().top < window.innerHeight) {
-                        el.classList.add('visible');
-                    }
+                    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
                 });
             }, 100);
         });
-
     </script>
-
 </body>
 </html>
+

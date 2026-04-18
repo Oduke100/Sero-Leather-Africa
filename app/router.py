@@ -4,9 +4,10 @@
 #  Mounted at /api by main.py.
 # ─────────────────────────────────────────────
 
+import io
 import json
 import uuid
-import shutil
+from PIL import Image
 
 from fastapi          import APIRouter, HTTPException, UploadFile, File
 from app.database     import get_connection
