@@ -29,12 +29,12 @@ function setActiveCurrency(code) {
 function convertPrice(kes) {
   const code = getActiveCurrency();
   const cur  = SERO_CURRENCIES[code];
-  if (!cur) return 'KES ' + Math.round(kes).toLocaleString();
+  if (!cur) return 'KES ' + (Math.floor(kes) + 0.99).toLocaleString();
   const converted = kes * cur.rate;
   if (['KES','NGN','INR','ZAR'].includes(code)) {
-    return cur.symbol + ' ' + Math.round(converted).toLocaleString();
+    return cur.symbol + ' ' + (Math.floor(converted) + 0.99).toLocaleString();
   }
-  return cur.symbol + converted.toFixed(2);
+  return cur.symbol + (Math.floor(converted) + 0.99).toFixed(2);
 }
 
 function mountCurrencySwitcher(mountId) {

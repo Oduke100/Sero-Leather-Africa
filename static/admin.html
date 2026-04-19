@@ -1,12 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- ============================================================
-         HEAD — META, TITLE, FONTS, LIBRARIES
+         HEAD � META, TITLE, FONTS, LIBRARIES
     ============================================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sero Leather Africa — Admin</title>
+    <title>Sero Leather Africa � Admin</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ============================================================
-           § 1 — DESIGN TOKENS
+           � 1 � DESIGN TOKENS
         ============================================================ */
         :root {
             --primary:    #C68E5A;
@@ -29,14 +29,15 @@
 
 
         /* ============================================================
-           § 2 — RESET & BASE
+           � 2 � RESET & BASE
         ============================================================ */
-        * { box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--background); }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; }
+         @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
+body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 3 — AUTH OVERLAY
+           � 3 � AUTH OVERLAY
                Full-screen lock screen shown before the dashboard.
                Hidden once correct password is entered.
         ============================================================ */
@@ -114,7 +115,7 @@
 
 
         /* ============================================================
-           § 4 — DASHBOARD SHELL
+           � 4 � DASHBOARD SHELL
                Hidden until auth passes; shown by showDashboard().
         ============================================================ */
         #dashboard         { display: none; }
@@ -128,7 +129,7 @@
 
 
         /* ============================================================
-           § 5 — FORM INPUTS (Inventory Form)
+           � 5 � FORM INPUTS (Inventory Form)
         ============================================================ */
         .input-field {
             width: 100%; padding: 10px 14px;
@@ -141,7 +142,7 @@
 
 
         /* ============================================================
-           § 6 — BUTTON STYLES
+           � 6 � BUTTON STYLES
         ============================================================ */
         .btn-primary { background: var(--primary); color: white; border: none; padding: 11px 24px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
         .btn-primary:hover { background: var(--brown); transform: translateY(-1px); }
@@ -154,9 +155,9 @@
 
 
         /* ============================================================
-           § 7 — TABLE ROW LAYOUTS
-               .product-row → 7-column inventory grid
-               .order-row   → 6-column orders grid
+           � 7 � TABLE ROW LAYOUTS
+               .product-row ? 7-column inventory grid
+               .order-row   ? 6-column orders grid
         ============================================================ */
         .product-row {
             display: grid;
@@ -178,7 +179,7 @@
 
 
         /* ============================================================
-           § 8 — STATUS BADGES & SELECT
+           � 8 � STATUS BADGES & SELECT
         ============================================================ */
         .status-badge       { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-available   { background: #dcfce7; color: #16a34a; }
@@ -195,7 +196,7 @@
 
 
         /* ============================================================
-           § 9 — TOAST NOTIFICATION
+           � 9 � TOAST NOTIFICATION
         ============================================================ */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
@@ -212,14 +213,14 @@
 
 
         /* ============================================================
-           § 10 — MODAL OVERLAY
+           � 10 � MODAL OVERLAY
         ============================================================ */
         .modal-overlay        { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
 
 
         /* ============================================================
-           § 11 — MISC UI UTILITIES
+           � 11 � MISC UI UTILITIES
         ============================================================ */
         .stat-card   { background: white; border-radius: 12px; padding: 20px; border: 1px solid #f0e8df; }
         .empty-state { text-align: center; padding: 60px 20px; color: #a8896e; }
@@ -250,7 +251,7 @@
 
 
     <!-- ============================================================
-         ██████  AUTH OVERLAY (§ 3)
+         ������  AUTH OVERLAY (� 3)
          Shown on load. Dismissed by showDashboard() on success.
     ============================================================ -->
     <div id="auth-overlay">
@@ -262,29 +263,29 @@
             </div>
             <p class="auth-title">Enter Password</p>
             <p class="auth-sub">Restricted Area</p>
-            <input type="password" id="auth-password" class="auth-input" placeholder="••••••••" maxlength="50" autocomplete="current-password">
+            <input type="password" id="auth-password" class="auth-input" placeholder="��������" maxlength="50" autocomplete="current-password">
             <div class="auth-error" id="auth-error">Incorrect password. Please try again.</div>
             <button class="auth-btn" id="auth-btn" onclick="attemptLogin()" style="margin-top:16px;">
                 <span id="auth-btn-label">Unlock Dashboard</span>
             </button>
             <div class="auth-attempts" id="auth-attempts"></div>
-            <div class="auth-lock hidden" id="auth-lock">🔒 Too many attempts. Wait <span id="lock-countdown">60</span>s</div>
+            <div class="auth-lock hidden" id="auth-lock">?? Too many attempts. Wait <span id="lock-countdown">60</span>s</div>
         </div>
     </div>
-    <!-- ── END: AUTH OVERLAY ─────────────────────────────────────── -->
+    <!-- -- END: AUTH OVERLAY --------------------------------------- -->
 
 
     <!-- ============================================================
-         ██████  DASHBOARD (§ 4)
+         ������  DASHBOARD (� 4)
          Revealed by showDashboard() after successful auth.
     ============================================================ -->
     <div id="dashboard">
 
-        <!-- Toast Notification (§ 9) -->
+        <!-- Toast Notification (� 9) -->
         <div id="toast" class="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
 
 
-        <!-- ── DELETE CONFIRMATION MODAL ─────────────────────────── -->
+        <!-- -- DELETE CONFIRMATION MODAL --------------------------- -->
         <div class="modal-overlay" id="delete-modal">
             <div class="glass rounded-2xl p-6 w-full max-w-sm mx-4">
                 <h3 class="font-bold text-lg mb-2" style="font-family:'Playfair Display',serif;">Remove Product?</h3>
@@ -297,7 +298,7 @@
         </div>
 
 
-        <!-- ── ORDER ITEMS MODAL ──────────────────────────────────── -->
+        <!-- -- ORDER ITEMS MODAL ------------------------------------ -->
         <div class="modal-overlay" id="items-modal">
             <div class="glass rounded-2xl p-6 w-full max-w-md mx-4">
                 <div class="flex justify-between items-center mb-4">
@@ -313,7 +314,7 @@
         </div>
 
 
-        <!-- ── NAVIGATION BAR ─────────────────────────────────────── -->
+        <!-- -- NAVIGATION BAR --------------------------------------- -->
         <nav style="background:var(--secondary);" class="sticky top-0 z-50 shadow-lg">
             <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -322,7 +323,7 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <span class="text-xs font-medium px-3 py-1 rounded-full" style="background:rgba(198,142,90,0.15);color:var(--primary);">
-                        <span id="connection-status">● Connecting...</span>
+                        <span id="connection-status">? Connecting...</span>
                     </span>
                     <button onclick="logout()" class="text-gray-300 hover:text-white text-sm flex items-center gap-1 transition">
                         <i data-lucide="log-out" class="w-4 h-4"></i> Logout
@@ -335,7 +336,7 @@
         </nav>
 
 
-        <!-- ── MAIN CONTENT AREA ──────────────────────────────────── -->
+        <!-- -- MAIN CONTENT AREA ------------------------------------ -->
         <div class="max-w-7xl mx-auto px-6 py-8">
 
             <!-- Page heading -->
@@ -344,27 +345,27 @@
                 <p class="text-sm text-gray-500">Manage your inventory and orders</p>
             </div>
 
-            <!-- ── STAT CARDS ────────────────────────────────────── -->
+            <!-- -- STAT CARDS -------------------------------------- -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Total Products</p>
-                    <p class="text-2xl font-bold" style="color:var(--secondary);" id="stat-total">—</p>
+                    <p class="text-2xl font-bold" style="color:var(--secondary);" id="stat-total">�</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Available</p>
-                    <p class="text-2xl font-bold text-green-600" id="stat-available">—</p>
+                    <p class="text-2xl font-bold text-green-600" id="stat-available">�</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Total Orders</p>
-                    <p class="text-2xl font-bold" style="color:var(--primary);" id="stat-orders">—</p>
+                    <p class="text-2xl font-bold" style="color:var(--primary);" id="stat-orders">�</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Pending Orders</p>
-                    <p class="text-2xl font-bold text-amber-500" id="stat-pending">—</p>
+                    <p class="text-2xl font-bold text-amber-500" id="stat-pending">�</p>
                 </div>
             </div>
 
-            <!-- ── TAB BUTTONS ───────────────────────────────────── -->
+            <!-- -- TAB BUTTONS ------------------------------------- -->
             <div class="flex gap-3 mb-6">
                 <button class="tab-btn active" id="tab-inventory-btn" onclick="switchTab('inventory')">
                     <i data-lucide="package" class="w-4 h-4 inline mr-1"></i> Inventory
@@ -376,7 +377,7 @@
             </div>
 
 
-            <!-- ── INVENTORY TAB ─────────────────────────────────── -->
+            <!-- -- INVENTORY TAB ----------------------------------- -->
             <div id="tab-inventory" class="tab-panel active">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -463,10 +464,10 @@
 
                 </div>
             </div>
-            <!-- ── END: INVENTORY TAB ────────────────────────────── -->
+            <!-- -- END: INVENTORY TAB ------------------------------ -->
 
 
-            <!-- ── ORDERS TAB ────────────────────────────────────── -->
+            <!-- -- ORDERS TAB -------------------------------------- -->
             <div id="tab-orders" class="tab-panel">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -493,26 +494,26 @@
                     </div>
                 </div>
             </div>
-            <!-- ── END: ORDERS TAB ───────────────────────────────── -->
+            <!-- -- END: ORDERS TAB --------------------------------- -->
 
         </div>
-        <!-- ── END: MAIN CONTENT AREA ────────────────────────────── -->
+        <!-- -- END: MAIN CONTENT AREA ------------------------------ -->
 
     </div>
-    <!-- ████████ END DASHBOARD ████████ -->
+    <!-- �������� END DASHBOARD �������� -->
 
 
     <!-- ============================================================
-         ██████  JAVASCRIPT
+         ������  JAVASCRIPT
     ============================================================ -->
     <script>
         /* ============================================================
-           § A — AUTH SYSTEM
+           � A � AUTH SYSTEM
                Password checked client-side; token stored in sessionStorage.
                Lockout after MAX_ATTEMPTS failures.
         ============================================================ */
 
-        // ⚠️ CHANGE THIS PASSWORD before deploying
+        // ?? CHANGE THIS PASSWORD before deploying
         const ADMIN_PASSWORD = 'SeroLeather2026!';
 
         const SESSION_KEY  = 'sero_admin_auth';
@@ -612,26 +613,26 @@
 
 
         /* ============================================================
-           § B — GLOBALS
+           � B � GLOBALS
         ============================================================ */
         const API = '/api';
         let deleteTargetId = null;
 
 
         /* ============================================================
-           § C — TOAST NOTIFICATION
+           � C � TOAST NOTIFICATION
         ============================================================ */
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').textContent  = msg;
-            document.getElementById('toast-icon').textContent = type === 'success' ? '✓' : '✕';
+            document.getElementById('toast-icon').textContent = type === 'success' ? '?' : '?';
             toast.className = `toast show ${type}`;
             setTimeout(() => toast.className = `toast ${type}`, 3000);
         }
 
 
         /* ============================================================
-           § D — TAB SWITCHING
+           � D � TAB SWITCHING
         ============================================================ */
         function switchTab(tab) {
             ['inventory', 'orders'].forEach(t => {
@@ -645,22 +646,22 @@
 
 
         /* ============================================================
-           § E — CONNECTION CHECK
+           � E � CONNECTION CHECK
         ============================================================ */
         async function checkConnection() {
             try {
                 const res = await fetch(`${API}/products`);
                 const el  = document.getElementById('connection-status');
-                if (res.ok) { el.textContent = '● Connected'; el.style.color = '#4ade80'; }
+                if (res.ok) { el.textContent = '? Connected'; el.style.color = '#4ade80'; }
             } catch {
                 const el = document.getElementById('connection-status');
-                el.textContent = '● Offline'; el.style.color = '#f87171';
+                el.textContent = '? Offline'; el.style.color = '#f87171';
             }
         }
 
 
         /* ============================================================
-           § F — PRODUCTS — Load & Render
+           � F � PRODUCTS � Load & Render
         ============================================================ */
         async function loadProducts() {
             try {
@@ -688,12 +689,12 @@
                         ${p[4] ? `<img src="${p[4]}" class="w-8 h-8 rounded object-cover flex-shrink-0" onerror="this.style.display='none'">` : ''}
                         <div>
                             <p class="text-sm font-semibold text-gray-800 truncate">${p[1]}</p>
-                            <p class="text-xs text-gray-400 truncate max-w-[180px]">${p[2] || '—'}</p>
+                            <p class="text-xs text-gray-400 truncate max-w-[180px]">${p[2] || '�'}</p>
                         </div>
                     </div>
                     <span class="text-sm font-semibold" style="color:var(--primary);">KES ${parseFloat(p[3]).toLocaleString()}</span>
                     <span class="text-sm text-gray-600">${p[5]}</span>
-                    <span class="status-badge ${p[6] ? 'status-available' : 'status-unavailable'}">${p[6] ? '● On' : '● Off'}</span>
+                    <span class="status-badge ${p[6] ? 'status-available' : 'status-unavailable'}">${p[6] ? '? On' : '? Off'}</span>
                     <button onclick="toggleAvailability(${p[0]}, ${p[6]})" class="text-xs px-2 py-1 rounded-md font-medium transition"
                         style="background:${p[6] ? '#fee2e2' : '#dcfce7'};color:${p[6] ? '#dc2626' : '#16a34a'};">
                         ${p[6] ? 'Disable' : 'Enable'}
@@ -713,7 +714,7 @@
 
 
         /* ============================================================
-           § G — ORDERS — Load & Render
+           � G � ORDERS � Load & Render
         ============================================================ */
         async function loadOrders() {
             try {
@@ -751,7 +752,7 @@
                         <p class="text-sm font-semibold text-gray-800">${o[1]}</p>
                         <button onclick="openItemsModal(${o[0]}, ${JSON.stringify(items).replace(/"/g, '&quot;')}, ${o[5]})"
                             class="text-xs mt-0.5" style="color:var(--primary);">
-                            View ${items.length} item${items.length > 1 ? 's' : ''} →
+                            View ${items.length} item${items.length > 1 ? 's' : ''} ?
                         </button>
                     </div>
                     <span class="text-sm text-gray-600">${o[2]}</span>
@@ -775,7 +776,7 @@
                     body:    JSON.stringify({ status })
                 });
                 if (!res.ok) throw new Error();
-                showToast(`Order #${id} → ${status}`);
+                showToast(`Order #${id} ? ${status}`);
                 loadOrders();
                 if (status === 'Delivered') loadProducts();
             } catch {
@@ -785,7 +786,7 @@
 
 
         /* ============================================================
-           § H — ORDER ITEMS MODAL
+           � H � ORDER ITEMS MODAL
         ============================================================ */
         function openItemsModal(orderId, items, total) {
             document.getElementById('items-modal-content').innerHTML = items.map(item => `
@@ -804,7 +805,7 @@
 
 
         /* ============================================================
-           § I — PRODUCT FORM — Submit, Edit, Cancel, Reset
+           � I � PRODUCT FORM � Submit, Edit, Cancel, Reset
         ============================================================ */
         async function submitProduct() {
             const name      = document.getElementById('f-name').value.trim();
@@ -885,7 +886,7 @@
 
 
         /* ============================================================
-           § J — PRODUCT AVAILABILITY TOGGLE
+           � J � PRODUCT AVAILABILITY TOGGLE
         ============================================================ */
         async function toggleAvailability(id, current) {
             try {
@@ -900,7 +901,7 @@
 
 
         /* ============================================================
-           § K — DELETE MODAL
+           � K � DELETE MODAL
         ============================================================ */
         function openDeleteModal(id)  { deleteTargetId = id; document.getElementById('delete-modal').classList.add('active'); }
         function closeDeleteModal()   { deleteTargetId = null; document.getElementById('delete-modal').classList.remove('active'); }
@@ -920,7 +921,7 @@
 
 
         /* ============================================================
-           § L — INIT on DOMContentLoaded
+           � L � INIT on DOMContentLoaded
         ============================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
@@ -940,19 +941,21 @@
                     const res  = await fetch(`${API}/upload`, { method: 'POST', body: formData });
                     const data = await res.json();
                     document.getElementById('f-img').value = data.url;
-                    label.textContent     = '✓ ' + file.name;
+                    label.textContent     = '? ' + file.name;
                     label.style.color     = '#16a34a';
                     preview.src           = data.url;
                     preview.style.display = 'block';
                 } catch {
-                    label.textContent = '✕ Upload failed';
+                    label.textContent = '? Upload failed';
                     label.style.color = '#dc2626';
                 }
             });
         });
     </script>
-    <!-- ████████ END JAVASCRIPT ████████ -->
+    <!-- �������� END JAVASCRIPT �������� -->
 
 
 </body>
 </html>
+
+

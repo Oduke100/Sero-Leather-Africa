@@ -34,8 +34,9 @@
         /* ============================================================
            § 2 — RESET & BASE
         ============================================================ */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; margin: 0; padding: 0; }
+         @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
+body {
             font-family: 'Jost', sans-serif;
             background: var(--midnight);
             color: var(--bone);
@@ -266,10 +267,7 @@
                     <img src="/static/images/logo1.webp" alt="Sero"
                          class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition"
                          onerror="this.style.display='none'">
-                    <div>
-                        <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
-                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color:var(--savannah);">Leather Africa</div>
-                    </div>
+                   
                 </a>
 
                 <!-- Desktop Navigation Links — "Our Story" is active -->
@@ -375,7 +373,7 @@
             <!-- Photo with decorative corner borders -->
             <div class="reveal-left">
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80"
+                    <img src="/static/images/sero_about_page.webp"
                          alt="Craftsmanship"
                          class="w-full aspect-square object-cover"
                          style="filter:sepia(15%) contrast(1.05);">
@@ -390,18 +388,14 @@
             <div class="reveal-right">
                 <p class="text-[9px] tracking-[0.5em] uppercase mb-6 font-light" style="color:var(--savannah);">Rooted in Tradition</p>
                 <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-6">
-                    Where the<br><em style="color:var(--savannah);">Savannah</em><br>Meets Craft
+                    Where <br><em style="color:var(--savannah);">Lisero</em><br>becomes heritage
                 </h2>
                 <div class="w-12 h-px mb-8" style="background:var(--ember);"></div>
                 <p class="text-bone/60 leading-relaxed font-light mb-6">
-                    Sero Leather Africa began with a simple vision — to elevate the extraordinary leatherworking tradition
-                    of Kenya onto the global stage. We started in a small Nairobi workshop with three artisans and a conviction
-                    that African craft deserves to be celebrated, not overlooked.
+                  SERO comes from Lisero, the Idakho (Luhya) word for animal hide. Rooted in this heritage, we create premium leather goods from ethically sourced cow hides, blending tradition with thoughtful, modern craftsmanship. Each piece begins with raw material and is transformed by skilled artisans who understand the value of patience, precision, and detail.
                 </p>
                 <p class="text-bone/45 leading-relaxed font-light mb-10">
-                    Every bag we make begins with a story rooted in the land — the deep reds of Kenyan soil, the golden
-                    savannah light at dusk, the enduring spirit of the people who shaped this place. We pour all of that
-                    into every stitch.
+                   Our work is guided by a simple philosophy: to create leather goods that last. We focus on timeless design, honest materials, and quiet elegance—pieces that age beautifully and carry meaning over time. At SERO, we do not chase trends; we craft enduring objects that reflect heritage, durability, and understated luxury.
                 </p>
                 <a href="/products" class="btn-savannah">See The Collection</a>
             </div>
@@ -416,7 +410,7 @@
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-0">
 
             <div class="stat-card reveal">
-                <div class="display text-5xl font-light mb-2" style="color:var(--savannah);">500+</div>
+                <div class="display text-5xl font-light mb-2" style="color:var(--savannah);">50+</div>
                 <p class="text-[9px] tracking-[0.3em] uppercase text-bone/40 font-light">Happy Customers</p>
             </div>
             <div class="stat-card reveal" style="transition-delay:.1s;">
@@ -474,69 +468,6 @@
     <!-- ── END: OUR VALUES ───────────────────────────────────────── -->
 
 
-    <!-- ── SECTION 6: TEAM — Four Portrait Cards ─────────────────── -->
-    <section class="py-20 px-6 lg:px-8" style="background:rgba(44,30,22,0.2);">
-        <div class="max-w-7xl mx-auto">
-
-            <!-- Section Heading -->
-            <div class="mb-16 reveal">
-                <p class="text-[9px] tracking-[0.5em] uppercase mb-4 font-light" style="color:var(--savannah);">The People</p>
-                <h2 class="display text-5xl font-light text-bone">Meet The Crafters</h2>
-            </div>
-
-            <!-- Portrait Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-
-                <div class="group overflow-hidden reveal" style="transition-delay:0s;">
-                    <div class="h-72 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover transition duration-700 group-hover:scale-105" style="filter:sepia(10%);">
-                    </div>
-                    <div class="p-6 border border-t-0" style="border-color:rgba(212,168,71,0.1);">
-                        <h3 class="display text-xl font-semibold text-bone mb-1">Amina Diallo</h3>
-                        <p class="text-[9px] tracking-[0.3em] uppercase font-light" style="color:var(--savannah);">Founder &amp; Lead Designer</p>
-                    </div>
-                </div>
-
-                <div class="group overflow-hidden reveal" style="transition-delay:.1s;">
-                    <div class="h-72 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover transition duration-700 group-hover:scale-105" style="filter:sepia(10%);">
-                    </div>
-                    <div class="p-6 border border-t-0" style="border-color:rgba(212,168,71,0.1);">
-                        <h3 class="display text-xl font-semibold text-bone mb-1">Kwame Osei</h3>
-                        <p class="text-[9px] tracking-[0.3em] uppercase font-light" style="color:var(--savannah);">Master Tanner</p>
-                    </div>
-                </div>
-
-                <div class="group overflow-hidden reveal" style="transition-delay:.2s;">
-                    <div class="h-72 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover transition duration-700 group-hover:scale-105" style="filter:sepia(10%);">
-                    </div>
-                    <div class="p-6 border border-t-0" style="border-color:rgba(212,168,71,0.1);">
-                        <h3 class="display text-xl font-semibold text-bone mb-1">Zola Mbeki</h3>
-                        <p class="text-[9px] tracking-[0.3em] uppercase font-light" style="color:var(--savannah);">Lead Artisan</p>
-                    </div>
-                </div>
-
-                <div class="group overflow-hidden reveal" style="transition-delay:.3s;">
-                    <div class="h-72 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop"
-                             class="w-full h-full object-cover transition duration-700 group-hover:scale-105" style="filter:sepia(10%);">
-                    </div>
-                    <div class="p-6 border border-t-0" style="border-color:rgba(212,168,71,0.1);">
-                        <h3 class="display text-xl font-semibold text-bone mb-1">David Ndlovu</h3>
-                        <p class="text-[9px] tracking-[0.3em] uppercase font-light" style="color:var(--savannah);">Operations</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-    <!-- ── END: TEAM ─────────────────────────────────────────────── -->
-
-
     <!-- ── SECTION 7: CLOSING CTA ────────────────────────────────── -->
     <section class="py-28 px-6 lg:px-8 text-center relative overflow-hidden">
         <!-- Radial glow background -->
@@ -574,7 +505,7 @@
                     <div class="display text-2xl font-light text-bone tracking-[0.2em] uppercase mb-2">Sero Leather</div>
                     <div class="text-[9px] tracking-[0.4em] uppercase mb-6 font-light" style="color:var(--savannah);">Africa</div>
                     <p class="text-bone/40 font-light text-sm leading-relaxed">
-                        Born from the red soils of Kenya. Built for those who carry their roots with pride.
+                        Where material meets meaning ,crafted for a lifetime
                     </p>
                 </div>
 
@@ -594,10 +525,10 @@
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/40 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke
+                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>seroleatherafrica@gmail.com
                         </li>
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567
+                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 729 319 983
                         </li>
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
                             <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya
@@ -656,14 +587,6 @@
                     <!-- Instagram -->
                     <a href="https://www.instagram.com/seroleatherafrica" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
                         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    </a>
-                    <!-- TikTok -->
-                    <a href="#" class="social-icon" title="TikTok">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.73a4.85 4.85 0 01-1.01-.04z"/></svg>
-                    </a>
-                    <!-- YouTube -->
-                    <a href="#" class="social-icon" title="YouTube">
-                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     </a>
                     <!-- WhatsApp -->
                     <a href="#" class="social-icon" title="WhatsApp">
@@ -761,3 +684,5 @@
 
 </body>
 </html>
+
+

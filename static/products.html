@@ -36,8 +36,9 @@
         /* ============================================================
            § 2 — RESET & BASE
         ============================================================ */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; margin: 0; padding: 0; }
+         @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
+body {
             font-family: 'Jost', sans-serif;
             background: var(--midnight);
             color: var(--bone);
@@ -330,10 +331,7 @@
                     <img src="/static/images/logo1.webp" alt="Sero"
                          class="h-10 w-auto object-contain opacity-90 group-hover:opacity-100 transition"
                          onerror="this.style.display='none'">
-                    <div>
-                        <div class="display text-xl font-semibold text-bone tracking-[0.2em] uppercase leading-none">Sero</div>
-                        <div class="text-[9px] font-light tracking-[0.4em] uppercase" style="color:var(--savannah);">Leather Africa</div>
-                    </div>
+                
                 </a>
 
                 <!-- Desktop Navigation Links — "Collections" is active -->
@@ -489,10 +487,10 @@
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/40 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke
+                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>seroleatherafrica@gmail.com
                         </li>
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
-                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567
+                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 729 319 983
                         </li>
                         <li class="flex items-center gap-3 text-bone/40 text-sm font-light">
                             <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya
@@ -720,3 +718,5 @@
 
 </body>
 </html>
+
+

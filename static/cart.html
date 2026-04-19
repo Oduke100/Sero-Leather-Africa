@@ -37,8 +37,9 @@
         /* ============================================================
            § 2 — RESET & BASE
         ============================================================ */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; margin: 0; padding: 0; }
+         @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
+body {
             font-family: 'Jost', sans-serif;
             background: var(--midnight);
             color: var(--bone);
@@ -767,3 +768,5 @@
 
 </body>
 </html>
+
+

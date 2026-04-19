@@ -39,9 +39,10 @@
         /* ============================================================
            § 2 — RESET & BASE
         ============================================================ */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body {
+         @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
+body {
             font-family: 'Jost', sans-serif;
             background: var(--midnight);
             color: var(--bone);
@@ -134,7 +135,7 @@
 
         /* Logo sizing — change height here to resize */
         .nav-logo {
-            height: 70px;
+            height: 40px;
             width: auto;
             object-fit: contain;
             opacity: 0.9;
@@ -165,9 +166,9 @@
             position: absolute; inset: 0;
             background:
                 linear-gradient(to bottom,
-                    rgba(26,15,8,0.3) 0%,
-                    rgba(26,15,8,0.1) 40%,
-                    rgba(26,15,8,0.6) 100%),
+                    rgba(26,15,8,0.1) 0%,
+                    rgba(26,15,8,0.5) 40%,
+                    rgba(26,15,8,0.8) 100%),
                 url('/static/gallery/landing_page.webp') center/cover no-repeat;
             transform: scale(1.05);
             transition: transform 8s ease-out;
@@ -422,11 +423,11 @@
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center gap-8">
                     <a href="/"         class="text-xs tracking-[0.25em] uppercase font-medium"                     style="color:var(--savannah);">Home</a>
-                    <a href="/products" class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Collections</a>
-                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/70 hover:text-bone transition">Our Story</a>
+                    <a href="/products" class="text-xs tracking-[0.25em] uppercase font-light text-bone/40 hover:text-bone transition">Collections</a>
+                    <a href="/about"    class="text-xs tracking-[0.25em] uppercase font-light text-bone/40 hover:text-bone transition">Our Story</a>
 
                     <!-- Cart Icon + Badge -->
-                    <a href="/cart" class="relative text-bone/70 hover:text-bone transition">
+                    <a href="/cart" class="relative text-bone/40 hover:text-bone transition">
                         <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                         <span id="cart-count" class="cart-badge hidden">0</span>
                     </a>
@@ -436,7 +437,7 @@
                 </div>
 
                 <!-- Mobile Hamburger Button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden text-bone/70 hover:text-bone transition">
+                <button onclick="toggleMobileMenu()" class="md:hidden text-bone/40 hover:text-bone transition">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
@@ -458,9 +459,9 @@
 
         <div class="space-y-8">
             <a href="/"         onclick="toggleMobileMenu()" class="block display text-4xl font-light" style="color:var(--savannah);">Home</a>
-            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Collections</a>
-            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Our Story</a>
-            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/80">Your Bag</a>
+            <a href="/products" onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/50">Collections</a>
+            <a href="/about"    onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/50">Our Story</a>
+            <a href="/cart"     onclick="toggleMobileMenu()" class="block display text-4xl font-light text-bone/50">Your Bag</a>
             <!-- Currency switcher (mobile) -->
             <div class="pt-4" id="sero-currency-mount-mobile"></div>
         </div>
@@ -481,15 +482,15 @@
         <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
 
             <div class="reveal" style="transition-delay:.3s;">
-                <p class="text-xs tracking-[0.5em] uppercase mb-8 font-light" style="color:var(--savannah);">Est. Nairobi, Kenya</p>
+
             </div>
 
             <h1 class="hero-title mb-8 reveal" style="transition-delay:.5s;">
                 Carry The<br><span>Spirit</span><br>Of Africa
             </h1>
 
-            <p class="text-lg font-light tracking-widest text-bone/70 max-w-xl mx-auto mb-12 reveal" style="transition-delay:.7s;">
-                Handcrafted leather goods born from the savannah.<br>Worn by the world.
+            <p class="text-lg font-light tracking-widest text-bone/40 max-w-xl mx-auto mb-12 reveal" style="transition-delay:.7s;">
+                Handcrafted leather goods born from lisero.<br>Worn by the world.
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay:.9s;">
@@ -572,7 +573,7 @@
     <section class="zebra-accent py-20 px-6 lg:px-8 border-y" style="border-color:rgba(212,168,71,0.1);">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             <div class="reveal">
-                <div class="stat-num">500+</div>
+                <div class="stat-num">50+</div>
                 <p class="text-xs tracking-[0.3em] uppercase text-bone/50 mt-2">Happy Customers</p>
             </div>
             <div class="reveal" style="transition-delay:.1s;">
@@ -603,7 +604,7 @@
             <!-- Editorial Photo with decorative corner borders -->
             <div class="reveal-left">
                 <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80"
+                    <img src="/static/images/sero_index_page.webp"
                          alt="Leather craftsmanship"
                          class="w-full aspect-square object-cover"
                          style="filter:sepia(20%) contrast(1.05);">
@@ -617,12 +618,12 @@
             <div class="reveal-right">
                 <p class="text-xs tracking-[0.5em] uppercase mb-6 font-light" style="color:var(--savannah);">Born From The Earth</p>
                 <h2 class="display text-5xl md:text-6xl font-light text-bone leading-tight mb-8">
-                    Where the<br><em style="color:var(--savannah);">Savannah</em><br>Meets<br>Craft
+                    Where <br><em style="color:var(--savannah);">Lisero</em><br>is redefined<br>through Craft
                 </h2>
                 <div class="w-16 h-px mb-8" style="background:var(--ember);"></div>
                 <p class="text-bone/60 leading-relaxed text-lg font-light mb-6">
-                    Every bag we make begins with a story — the acacia trees at dusk, the deep reds of Kenyan soil,
-                    the golden light that sweeps across the Mara at sunrise. We pour that spirit into every stitch.
+                   Each SERO product is made from ethically sourced cow hides (Lisero) and handcrafted by skilled artisans. A celebration of heritage, craft, and durability.
+
                 </p>
                 <p class="text-bone/50 leading-relaxed font-light mb-10">
                     Our artisans in Nairobi have spent years perfecting their craft, blending traditional African
@@ -671,7 +672,7 @@
             <div class="p-8 reveal" style="transition-delay:.3s;">
                 <i data-lucide="heart" class="w-6 h-6 mb-6" style="color:var(--savannah);"></i>
                 <h3 class="display text-xl font-semibold text-bone mb-3">Artisan Made</h3>
-                <p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Every hide selected with care.</p>
+                <p class="text-bone/50 font-light leading-relaxed text-sm">Every stitch placed by hand. Crafted from Lisero.</p>
             </div>
 
         </div>
@@ -744,10 +745,10 @@
                     <h4 class="text-xs tracking-[0.3em] uppercase text-bone/50 mb-6 font-medium">Reach Us</h4>
                     <ul class="space-y-3">
                         <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
-                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>support@seroleather.co.ke
+                            <i data-lucide="mail"    class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>seroleatherafrica@gmail.com
                         </li>
                         <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
-                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 701 234 567
+                            <i data-lucide="phone"   class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>+254 729 319 983
                         </li>
                         <li class="flex items-center gap-3 text-bone/50 text-sm font-light">
                             <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0" style="color:var(--savannah);"></i>Nairobi, Kenya
@@ -922,13 +923,13 @@
                 const name  = p[1];
                 const desc  = p[2] || '';
                 const price = parseFloat(p[3]);
-                const image = p[4] || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop';
+                const image = p[4] || '/static/images/sero_index_page.webp'
                 const qty   = p[5];
 
                 return `
                 <a href="/product?id=${id}" class="product-card reveal" style="text-decoration:none; display:block; cursor:none;">
                     <img src="${image}" alt="${name}"
-                         onerror="this.src='https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'">
+                         onerror="this.src='/static/images/sero_index_page.webp">
                     ${qty === 0
                         ? '<div class="absolute top-4 right-4 z-10 text-[9px] tracking-[0.3em] uppercase px-3 py-1" style="background:rgba(26,15,8,0.9);border:1px solid rgba(212,168,71,0.3);color:rgba(212,168,71,0.7);">Sold Out</div>'
                         : ''}
@@ -1036,3 +1037,6 @@
 
 </body>
 </html>
+
+
+
