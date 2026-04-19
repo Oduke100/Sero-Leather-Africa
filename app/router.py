@@ -9,7 +9,7 @@ import json
 import uuid
 from PIL import Image
 
-from fastapi          import APIRouter, HTTPException, UploadFile, File
+from fastapi          import APIRouter, HTTPException, UploadFile, File, Request
 from app.database     import get_connection
 from app.models       import Products, Order, OrderStatusUpdate
 
@@ -62,7 +62,12 @@ def upload_image(file: UploadFile = File(...)):
             )
 
         contents = file.file.read()
-        image = Image.open(io.BytesIO(contents)).convert("RGB")
+        try:
+            image = Image.open(io.BytesIO(contents))
+            image.verify()
+            image = Image.open(io.BytesIO(contents)).convert("RGB")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid image file. Please upload a real JPEG, PNG or WebP.")
 
         max_width = 1200
         if image.width > max_width:
@@ -266,7 +271,7 @@ def toggle_availability(id: int):
 # ═════════════════════════════════════════════
 
 @router.post("/orders")
-def place_order(order: Order):
+def place_order(request: Request, order: Order):
     try:
         conn   = get_connection()
         cursor = conn.cursor()
