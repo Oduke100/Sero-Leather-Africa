@@ -17,6 +17,7 @@
     <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
 
     <!-- Internal Scripts -->
+    <script src="/static/js/config.js"></script>
     <script src="/static/js/currency.js"></script>
 
     <style>
@@ -149,7 +150,7 @@ body {
         .modal-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(26, 15, 8, 0.85);
-            z-index: 1000;
+            z-index: 2000;
             align-items: center; justify-content: center;
             backdrop-filter: blur(8px);
         }
@@ -238,6 +239,20 @@ body {
             transform: translateY(-3px);
         }
     </style>
+<script>
+    (async () => {
+        try {
+            const { v } = await (await fetch('/api/static-version')).json();
+            document.querySelectorAll('img[src^="/static"]').forEach(img => {
+                img.src = img.src.split('?')[0] + '?v=' + v;
+            });
+            const hero = document.getElementById('hero-bg');
+            if (hero) {
+                hero.style.background = hero.style.background.replace(/\.webp(['\"]\)?)/, '.webp?v=' + v + '');
+            }
+        } catch(e) {}
+    })();
+</script>
 </head>
 
 
@@ -273,7 +288,7 @@ body {
          Order is submitted by placeOrder().
     ============================================================ -->
     <div class="modal-overlay" id="checkout-modal">
-        <div class="glass p-8 w-full max-w-md mx-4" style="border:1px solid rgba(212,168,71,0.2);">
+        <div class="glass p-6 w-full max-w-2xl mx-4 overflow-y-auto" style="border:1px solid rgba(212,168,71,0.2);max-height:90vh;">
 
             <!-- Modal Header -->
             <div class="flex justify-between items-start mb-6">
@@ -286,8 +301,8 @@ body {
                 </button>
             </div>
 
-            <!-- Order Form Fields -->
-            <div class="space-y-4">
+            <!-- Order Form Fields — two column layout -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[9px] tracking-[0.3em] uppercase text-bone/40 mb-2">Full Name *</label>
                     <input type="text" id="o-name" class="input-dark" placeholder="Jane Wanjiru">
@@ -296,18 +311,18 @@ body {
                     <label class="block text-[9px] tracking-[0.3em] uppercase text-bone/40 mb-2">Phone Number *</label>
                     <input type="text" id="o-phone" class="input-dark" placeholder="0712 345 678">
                 </div>
-                <div>
+                <div class="sm:col-span-2">
                     <label class="block text-[9px] tracking-[0.3em] uppercase text-bone/40 mb-2">Delivery Address *</label>
-                    <textarea id="o-address" class="input-dark" rows="3" placeholder="Kilimani, Nairobi — Near Junction Mall"></textarea>
+                    <textarea id="o-address" class="input-dark" rows="2" placeholder="Kilimani, Nairobi — Near Junction Mall"></textarea>
                 </div>
 
                 <!-- Order Total Summary -->
-                <div class="border p-4" style="border-color:rgba(212,168,71,0.2); background:rgba(212,168,71,0.05);">
+                <div class="sm:col-span-2 border p-4" style="border-color:rgba(212,168,71,0.2); background:rgba(212,168,71,0.05);">
                     <div class="flex justify-between items-center">
                         <span class="text-[9px] tracking-[0.3em] uppercase text-bone/50">Order Total</span>
                         <span id="modal-total" class="display text-2xl font-light" style="color:var(--savannah);"></span>
                     </div>
-                    <p class="text-[10px] text-bone/30 mt-2 tracking-wider">Payment on delivery · We'll contact you to confirm</p>
+                    <p class="text-[10px] text-bone/30 mt-1 tracking-wider">Pay securely on checkout · We'll confirm your order</p>
                 </div>
             </div>
 
@@ -318,12 +333,28 @@ body {
                         style="border-color:rgba(212,168,71,0.15);">
                     Cancel
                 </button>
-                <button onclick="placeOrder()" id="place-order-btn"
-                        class="flex-1 py-3 text-[9px] tracking-[0.2em] uppercase text-bark font-semibold transition flex items-center justify-center gap-2"
-                        style="background:var(--savannah);">
-                    <i data-lucide="package" class="w-4 h-4"></i>
-                    <span id="place-order-label">Place Order</span>
-                </button>
+            </div>
+
+            <!-- Payment Method Buttons — horizontal -->
+            <div class="mt-4">
+                <p class="text-[9px] tracking-[0.3em] uppercase text-bone/30 text-center mb-3">Choose Payment Method</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="placeOrder('mpesa')" id="btn-mpesa"
+                            class="py-3 text-[9px] tracking-[0.15em] uppercase font-semibold transition flex flex-col items-center justify-center gap-1"
+                            style="background:rgba(0,166,81,0.15);border:1px solid rgba(0,166,81,0.4);color:#4ade80;">
+                        <span>M-Pesa</span>
+                    </button>
+                    <button onclick="placeOrder('paypal')" id="btn-paypal"
+                            class="py-3 text-[9px] tracking-[0.15em] uppercase font-semibold transition flex flex-col items-center justify-center gap-1"
+                            style="background:rgba(24,160,251,0.15);border:1px solid rgba(24,160,251,0.4);color:#60cfff;">
+                        <span>PayPal</span>
+                    </button>
+                    <button onclick="placeOrder('pesapal')" id="btn-pesapal"
+                            class="py-3 text-[9px] tracking-[0.15em] uppercase font-semibold transition flex flex-col items-center justify-center gap-1"
+                            style="background:rgba(212,168,71,0.15);border:1px solid rgba(212,168,71,0.4);color:var(--savannah);">
+                        <span>Pesapal</span>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -459,18 +490,16 @@ body {
 
                     <!-- Trust Badge -->
                     <div class="flex items-center justify-center gap-2 text-bone/25 text-xs tracking-widest font-light mb-6">
-                        <i data-lucide="shield-check" class="w-4 h-4" style="color:rgba(212,168,71,0.3);"></i> Payment on delivery
+                        <i data-lucide="shield-check" class="w-4 h-4" style="color:rgba(212,168,71,0.3);"></i> Secure checkout
                     </div>
 
                     <!-- Payment Method Badges (mini) -->
                     <div class="border-t pt-5" style="border-color:rgba(212,168,71,0.08);">
                         <p class="text-[9px] tracking-[0.3em] uppercase text-bone/25 text-center mb-3">We Accept</p>
                         <div class="flex justify-center gap-3 items-center flex-wrap">
-                            <div style="padding:4px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:13px;color:#FFD700;letter-spacing:1px;">VISA</span></div>
-                            <div style="padding:4px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:3px;"><svg width="30" height="18" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.85"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.85"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11 23.2 14.6 22 16.9 20 18.5 18 16.9 16.8 14.6 16.8 11 16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
                             <div style="padding:4px 10px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.35);border-radius:3px;"><span style="font-size:10px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
-                            <div style="padding:4px 10px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.3);border-radius:3px;"><span style="font-size:10px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
-                            <div style="padding:4px 10px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.3);border-radius:3px;"><span style="font-size:10px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
+                            <div style="padding:4px 10px;background:rgba(24,160,251,0.12);border:1px solid rgba(24,160,251,0.35);border-radius:3px;"><span style="font-size:10px;font-weight:800;color:#60cfff;letter-spacing:1px;">PAYPAL</span></div>
+                            <div style="padding:4px 10px;background:rgba(212,168,71,0.12);border:1px solid rgba(212,168,71,0.3);border-radius:3px;"><span style="font-size:10px;font-weight:800;color:var(--savannah);letter-spacing:1px;">PESAPAL</span></div>
                         </div>
                     </div>
 
@@ -501,22 +530,19 @@ body {
 
                 <!-- Payment Method Badges -->
                 <p class="text-[9px] tracking-[0.4em] uppercase text-bone/25 mb-5 text-center">Secure Payments Accepted</p>
-                <div class="flex flex-wrap justify-center items-center gap-3 mb-6">
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><span style="font-family:Arial;font-weight:900;font-size:17px;color:#FFD700;letter-spacing:2px;">VISA</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:3px;"><svg width="40" height="22" viewBox="0 0 40 22" fill="none"><circle cx="15" cy="11" r="9.5" fill="#EB001B" opacity="0.88"/><circle cx="25" cy="11" r="9.5" fill="#F79E1B" opacity="0.88"/><path d="M20 3.5C22 5.1 23.2 7.4 23.2 11C23.2 14.6 22 16.9 20 18.5C18 16.9 16.8 14.6 16.8 11C16.8 7.4 18 5.1 20 3.5Z" fill="#FF5F00"/></svg></div>
+                <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
                     <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.38);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#4ade80;letter-spacing:1px;">M-PESA</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,114,206,0.12);border:1px solid rgba(0,114,206,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60a5fa;letter-spacing:1px;">AMEX</span></div>
-                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(134,65,232,0.12);border:1px solid rgba(134,65,232,0.32);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#a78bfa;letter-spacing:1px;">SKRILL</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(24,160,251,0.12);border:1px solid rgba(24,160,251,0.35);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#60cfff;letter-spacing:1px;">PAYPAL</span></div>
+                    <div style="display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(212,168,71,0.12);border:1px solid rgba(212,168,71,0.35);border-radius:3px;"><span style="font-size:11px;font-weight:800;color:#D4A847;letter-spacing:1px;">PESAPAL</span></div>
                 </div>
+
 
                 <!-- Social Media Icons -->
                 <div class="flex justify-center items-center gap-4 mb-8">
-                    <!-- Facebook -->
-                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-                    <!-- Instagram -->
-                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-                    <!-- WhatsApp -->
-                    <a href="#" class="social-icon"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                    <a href="#" id="social-facebook"  class="social-icon" title="Facebook"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    <a href="#" id="social-instagram" class="social-icon" title="Instagram"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                    <a href="#" id="social-whatsapp"  class="social-icon" title="WhatsApp"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                    <a href="#" id="social-tiktok"    class="social-icon" title="TikTok"><svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.02-.07z"/></svg></a>
                 </div>
 
                 <!-- Copyright -->
@@ -655,21 +681,23 @@ body {
         function openCheckout() {
             if (!cart.length) { showToast('Your bag is empty', 'error'); return; }
             const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            /* Always show modal total in KES — that's what the order is priced in */
             document.getElementById('modal-total').textContent = `KES ${Math.round(total).toLocaleString()}`;
             document.getElementById('checkout-modal').classList.add('active');
+            document.querySelector('nav').style.zIndex = '1';
             lucide.createIcons();
         }
 
         function closeCheckout() {
             document.getElementById('checkout-modal').classList.remove('active');
+            document.querySelector('nav').style.zIndex = '';
         }
 
 
         /* ============================================================
            § H — PLACE ORDER (API call)
+               method: 'mpesa' | 'paypal' | 'pesapal'
         ============================================================ */
-        async function placeOrder() {
+        async function placeOrder(method) {
             const name    = document.getElementById('o-name').value.trim();
             const phone   = document.getElementById('o-phone').value.trim();
             const address = document.getElementById('o-address').value.trim();
@@ -684,12 +712,15 @@ body {
                 phone,
                 delivery_address: address,
                 items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
-                total_price: total
+                total_price: total,
+                payment_method: method
             };
 
-            const btn   = document.getElementById('place-order-btn');
-            const label = document.getElementById('place-order-label');
-            btn.disabled = true; btn.style.opacity = '0.7'; label.textContent = 'Placing...';
+            /* Disable all payment buttons */
+            ['btn-mpesa', 'btn-paypal', 'btn-pesapal'].forEach(id => {
+                const b = document.getElementById(id);
+                if (b) { b.disabled = true; b.style.opacity = '0.5'; }
+            });
 
             try {
                 const res = await fetch(`${API}/orders`, {
@@ -699,18 +730,37 @@ body {
                 });
                 if (!res.ok) throw new Error(await res.text());
 
+                const data = await res.json();
+
+                /* If backend returns a redirect URL (Pesapal/PayPal), go there */
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                    return;
+                }
+
+                /* M-Pesa STK push — order recorded, await payment confirmation */
                 cart = [];
                 localStorage.setItem('sero-cart', JSON.stringify(cart));
                 closeCheckout();
                 renderCart();
                 updateCartCount();
                 ['o-name', 'o-phone', 'o-address'].forEach(id => document.getElementById(id).value = '');
-                showToast('Order placed — we will contact you soon ✦');
+
+                if (method === 'mpesa') {
+                    showToast('STK push sent — check your phone to complete payment ✦');
+                } else {
+                    showToast('Order placed — redirecting to payment ✦');
+                }
+
             } catch {
                 showToast('Could not place order. Please try again.', 'error');
             }
 
-            btn.disabled = false; btn.style.opacity = '1'; label.textContent = 'Place Order';
+            /* Re-enable buttons */
+            ['btn-mpesa', 'btn-paypal', 'btn-pesapal'].forEach(id => {
+                const b = document.getElementById(id);
+                if (b) { b.disabled = false; b.style.opacity = '1'; }
+            });
         }
 
 
@@ -766,7 +816,21 @@ body {
     <!-- ████████ END JAVASCRIPT ████████ -->
 
 
+    <script>
+        (function() {
+            function patchSocial() {
+                var c = window.SERO_CONFIG || {};
+                var map = {facebook:'facebook',instagram:'instagram',whatsapp:'whatsapp',tiktok:'tiktok'};
+                Object.keys(map).forEach(function(k) {
+                    var el = document.getElementById('social-' + k);
+                    if (el && c[map[k]]) { el.href = c[map[k]]; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+                });
+            }
+            if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', patchSocial); } else { patchSocial(); }
+        })();
+    </script>
 </body>
 </html>
+
 
 

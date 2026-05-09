@@ -1,14 +1,6 @@
 # main.py
-# ─────────────────────────────────────────────
-#  Entry point.  Run with:
-#      python main.py
-#  Then open:
-#      http://localhost:8000
-# ─────────────────────────────────────────────
-
 import os
 import uvicorn
-import os
 import time
 from collections             import defaultdict
 from fastapi                 import FastAPI, Request
@@ -20,15 +12,12 @@ from dotenv                  import load_dotenv
 load_dotenv()
 
 from app.router   import router as api_router
-from app.frontend import router as frontend_router
+from app.frontend import router as frontend_router, serve_config
 
-
-# ── Rate limiting ────────────────────────────
+app = FastAPI(title="Storefront", docs_url="/docs", redoc_url=None)
+STATIC_VERSION = str(int(time.time()))
 _request_counts: dict = defaultdict(list)
 RATE_LIMIT_ROUTES = {"/api/orders": (5, 60), "/api/upload": (20, 60)}
-
-# ── App ───────────────────────────────────────
-app = FastAPI(title="Storefront", docs_url="/docs", redoc_url=None)
 
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
@@ -54,7 +43,6 @@ async def rate_limit_middleware(request: Request, call_next):
         _request_counts[key].append(now)
     return await call_next(request)
 
-# ── CORS ──────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv("ALLOWED_ORIGIN", "http://localhost:8000")],
@@ -62,23 +50,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Directories (auto-create) ─────────────────
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("static",  exist_ok=True)
 
 # ── Static mounts ─────────────────────────────
-#   /uploads  →  uploaded product images
-#   /static   →  logo, images, any local assets
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# Config route BEFORE /static mount so it isn't shadowed
+app.add_api_route("/static/js/config.js", serve_config, methods=["GET"])
+
 app.mount("/static",  StaticFiles(directory="static"),  name="static")
 
 # ── Routers ───────────────────────────────────
-#   /api/*  →  all API endpoints  (must be first)
-#   /*      →  frontend HTML pages
 app.include_router(api_router,      prefix="/api")
 app.include_router(frontend_router)
 
+@app.get("/api/static-version")
+async def static_version_endpoint():
+    return {"v": STATIC_VERSION}
 
-# ── Boot ──────────────────────────────────────
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <!-- ============================================================
-         HEAD — META, TITLE, FONTS, LIBRARIES
+         HEAD â€” META, TITLE, FONTS, LIBRARIES
     ============================================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sero Leather Africa — Admin</title>
+    <title>Sero Leather Africa â€” Admin</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 
     <style>
         /* ============================================================
-           § 1 — DESIGN TOKENS
+           Â§ 1 â€” DESIGN TOKENS
         ============================================================ */
         :root {
             --primary:    #C68E5A;
@@ -29,7 +29,7 @@
 
 
         /* ============================================================
-           § 2 — RESET & BASE
+           Â§ 2 â€” RESET & BASE
         ============================================================ */
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--midnight); } ::-webkit-scrollbar-thumb { background: var(--savannah); border-radius: 0; } ::-webkit-scrollbar-thumb:hover { background: var(--ember); } * { scrollbar-width: thin; scrollbar-color: var(--savannah) var(--midnight); } * { box-sizing: border-box; }
          @media (max-width: 768px) { .grain::after { display: none !important; } .cursor, .cursor-ring { display: none !important; } body { cursor: auto !important; } }
@@ -37,7 +37,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 3 — AUTH OVERLAY
+           Â§ 3 â€” AUTH OVERLAY
                Full-screen lock screen shown before the dashboard.
                Hidden once correct password is entered.
         ============================================================ */
@@ -115,7 +115,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 4 — DASHBOARD SHELL
+           Â§ 4 â€” DASHBOARD SHELL
                Hidden until auth passes; shown by showDashboard().
         ============================================================ */
         #dashboard         { display: none; }
@@ -129,7 +129,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 5 — FORM INPUTS (Inventory Form)
+           Â§ 5 â€” FORM INPUTS (Inventory Form)
         ============================================================ */
         .input-field {
             width: 100%; padding: 10px 14px;
@@ -142,7 +142,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 6 — BUTTON STYLES
+           Â§ 6 â€” BUTTON STYLES
         ============================================================ */
         .btn-primary { background: var(--primary); color: white; border: none; padding: 11px 24px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
         .btn-primary:hover { background: var(--brown); transform: translateY(-1px); }
@@ -155,7 +155,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 7 — TABLE ROW LAYOUTS
+           Â§ 7 â€” TABLE ROW LAYOUTS
                .product-row ? 7-column inventory grid
                .order-row   ? 6-column orders grid
         ============================================================ */
@@ -179,7 +179,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 8 — STATUS BADGES & SELECT
+           Â§ 8 â€” STATUS BADGES & SELECT
         ============================================================ */
         .status-badge       { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-available   { background: #dcfce7; color: #16a34a; }
@@ -196,7 +196,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 9 — TOAST NOTIFICATION
+           Â§ 9 â€” TOAST NOTIFICATION
         ============================================================ */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
@@ -213,14 +213,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § 10 — MODAL OVERLAY
+           Â§ 10 â€” MODAL OVERLAY
         ============================================================ */
         .modal-overlay        { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
 
 
         /* ============================================================
-           § 11 — MISC UI UTILITIES
+           Â§ 11 â€” MISC UI UTILITIES
         ============================================================ */
         .stat-card   { background: white; border-radius: 12px; padding: 20px; border: 1px solid #f0e8df; }
         .empty-state { text-align: center; padding: 60px 20px; color: #a8896e; }
@@ -241,6 +241,20 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
         @keyframes spin { to { transform: rotate(360deg); } }
         .spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     </style>
+<script>
+    (async () => {
+        try {
+            const { v } = await (await fetch('/api/static-version')).json();
+            document.querySelectorAll('img[src^="/static"]').forEach(img => {
+                img.src = img.src.split('?')[0] + '?v=' + v;
+            });
+            const hero = document.getElementById('hero-bg');
+            if (hero) {
+                hero.style.background = hero.style.background.replace(/\.webp(['\"]\)?)/, '.webp?v=' + v + '');
+            }
+        } catch(e) {}
+    })();
+</script>
 </head>
 
 
@@ -251,7 +265,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
     <!-- ============================================================
-         ¦¦¦¦¦¦  AUTH OVERLAY (§ 3)
+         Â¦Â¦Â¦Â¦Â¦Â¦  AUTH OVERLAY (Â§ 3)
          Shown on load. Dismissed by showDashboard() on success.
     ============================================================ -->
     <div id="auth-overlay">
@@ -263,7 +277,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
             </div>
             <p class="auth-title">Enter Password</p>
             <p class="auth-sub">Restricted Area</p>
-            <input type="password" id="auth-password" class="auth-input" placeholder="••••••••" maxlength="50" autocomplete="current-password">
+            <input type="password" id="auth-password" class="auth-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" maxlength="50" autocomplete="current-password">
             <div class="auth-error" id="auth-error">Incorrect password. Please try again.</div>
             <button class="auth-btn" id="auth-btn" onclick="attemptLogin()" style="margin-top:16px;">
                 <span id="auth-btn-label">Unlock Dashboard</span>
@@ -276,12 +290,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
     <!-- ============================================================
-         ¦¦¦¦¦¦  DASHBOARD (§ 4)
+         Â¦Â¦Â¦Â¦Â¦Â¦  DASHBOARD (Â§ 4)
          Revealed by showDashboard() after successful auth.
     ============================================================ -->
     <div id="dashboard">
 
-        <!-- Toast Notification (§ 9) -->
+        <!-- Toast Notification (Â§ 9) -->
         <div id="toast" class="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
 
 
@@ -349,19 +363,19 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Total Products</p>
-                    <p class="text-2xl font-bold" style="color:var(--secondary);" id="stat-total">—</p>
+                    <p class="text-2xl font-bold" style="color:var(--secondary);" id="stat-total">â€”</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Available</p>
-                    <p class="text-2xl font-bold text-green-600" id="stat-available">—</p>
+                    <p class="text-2xl font-bold text-green-600" id="stat-available">â€”</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Total Orders</p>
-                    <p class="text-2xl font-bold" style="color:var(--primary);" id="stat-orders">—</p>
+                    <p class="text-2xl font-bold" style="color:var(--primary);" id="stat-orders">â€”</p>
                 </div>
                 <div class="stat-card">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Pending Orders</p>
-                    <p class="text-2xl font-bold text-amber-500" id="stat-pending">—</p>
+                    <p class="text-2xl font-bold text-amber-500" id="stat-pending">â€”</p>
                 </div>
             </div>
 
@@ -500,21 +514,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
         <!-- -- END: MAIN CONTENT AREA ------------------------------ -->
 
     </div>
-    <!-- ¦¦¦¦¦¦¦¦ END DASHBOARD ¦¦¦¦¦¦¦¦ -->
+    <!-- Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦ END DASHBOARD Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦ -->
 
 
     <!-- ============================================================
-         ¦¦¦¦¦¦  JAVASCRIPT
+         Â¦Â¦Â¦Â¦Â¦Â¦  JAVASCRIPT
     ============================================================ -->
     <script>
         /* ============================================================
-           § A — AUTH SYSTEM
+           Â§ A â€” AUTH SYSTEM
                Password checked client-side; token stored in sessionStorage.
                Lockout after MAX_ATTEMPTS failures.
         ============================================================ */
 
         // ?? CHANGE THIS PASSWORD before deploying
-        const ADMIN_PASSWORD = 'SeroLeather2026!';
+        const ADMIN_PASSWORD = window.SERO_CONFIG?.adminPassword || 'change-me';
 
         const SESSION_KEY  = 'sero_admin_auth';
         const MAX_ATTEMPTS = 5;
@@ -613,14 +627,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § B — GLOBALS
+           Â§ B â€” GLOBALS
         ============================================================ */
         const API = '/api';
         let deleteTargetId = null;
 
 
         /* ============================================================
-           § C — TOAST NOTIFICATION
+           Â§ C â€” TOAST NOTIFICATION
         ============================================================ */
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
@@ -632,7 +646,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § D — TAB SWITCHING
+           Â§ D â€” TAB SWITCHING
         ============================================================ */
         function switchTab(tab) {
             ['inventory', 'orders'].forEach(t => {
@@ -646,7 +660,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § E — CONNECTION CHECK
+           Â§ E â€” CONNECTION CHECK
         ============================================================ */
         async function checkConnection() {
             try {
@@ -661,7 +675,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § F — PRODUCTS — Load & Render
+           Â§ F â€” PRODUCTS â€” Load & Render
         ============================================================ */
         async function loadProducts() {
             try {
@@ -689,7 +703,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
                         ${p[4] ? `<img src="${p[4]}" class="w-8 h-8 rounded object-cover flex-shrink-0" onerror="this.style.display='none'">` : ''}
                         <div>
                             <p class="text-sm font-semibold text-gray-800 truncate">${p[1]}</p>
-                            <p class="text-xs text-gray-400 truncate max-w-[180px]">${p[2] || '—'}</p>
+                            <p class="text-xs text-gray-400 truncate max-w-[180px]">${p[2] || 'â€”'}</p>
                         </div>
                     </div>
                     <span class="text-sm font-semibold" style="color:var(--primary);">KES ${parseFloat(p[3]).toLocaleString()}</span>
@@ -714,7 +728,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § G — ORDERS — Load & Render
+           Â§ G â€” ORDERS â€” Load & Render
         ============================================================ */
         async function loadOrders() {
             try {
@@ -786,7 +800,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § H — ORDER ITEMS MODAL
+           Â§ H â€” ORDER ITEMS MODAL
         ============================================================ */
         function openItemsModal(orderId, items, total) {
             document.getElementById('items-modal-content').innerHTML = items.map(item => `
@@ -805,7 +819,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § I — PRODUCT FORM — Submit, Edit, Cancel, Reset
+           Â§ I â€” PRODUCT FORM â€” Submit, Edit, Cancel, Reset
         ============================================================ */
         async function submitProduct() {
             const name      = document.getElementById('f-name').value.trim();
@@ -886,7 +900,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § J — PRODUCT AVAILABILITY TOGGLE
+           Â§ J â€” PRODUCT AVAILABILITY TOGGLE
         ============================================================ */
         async function toggleAvailability(id, current) {
             try {
@@ -901,7 +915,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § K — DELETE MODAL
+           Â§ K â€” DELETE MODAL
         ============================================================ */
         function openDeleteModal(id)  { deleteTargetId = id; document.getElementById('delete-modal').classList.add('active'); }
         function closeDeleteModal()   { deleteTargetId = null; document.getElementById('delete-modal').classList.remove('active'); }
@@ -921,7 +935,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
 
 
         /* ============================================================
-           § L — INIT on DOMContentLoaded
+           Â§ L â€” INIT on DOMContentLoaded
         ============================================================ */
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
@@ -952,10 +966,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--background); }
             });
         });
     </script>
-    <!-- ¦¦¦¦¦¦¦¦ END JAVASCRIPT ¦¦¦¦¦¦¦¦ -->
+    <!-- Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦ END JAVASCRIPT Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦ -->
 
 
 </body>
 </html>
+
 
 
