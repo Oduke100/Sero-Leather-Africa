@@ -33,3 +33,11 @@ class Order(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
+
+class Order(BaseModel):
+    customer_name:    str
+    phone:            str
+    delivery_address: str
+    items:            List[OrderItem]
+    total_price:      float
+    payment_method:   str = "mpesa"  # default to mpesa

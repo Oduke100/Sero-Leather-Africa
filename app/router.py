@@ -183,7 +183,27 @@ def place_order(request: Request, order: Order):
         )
         order_id = cursor.fetchone()[0]
         conn.commit()
+
+        # ── Trigger payment ──────────────────────────
+        if order.payment_method == "mpesa":
+            from app.payments.mpesa import stk_push
+            from app.payments.router import record_transaction
+            result = stk_push(order.phone, order.total_price, order_id)
+            checkout_request_id = result.get("CheckoutRequestID", f"pending-{order_id}")
+            record_transaction(
+                order_id      = order_id,
+                txn_id        = checkout_request_id,
+                method        = "mpesa",
+                payer_name    = order.customer_name,
+                payer_contact = order.phone,
+                amount        = order.total_price,
+                currency      = "KES",
+                status        = "pending",
+            )
+            return {"message": "STK push sent.", "id": order_id}
+
         return {"message": "Order placed successfully.", "id": order_id}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
