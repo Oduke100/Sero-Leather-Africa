@@ -26,6 +26,7 @@ class AdminCategoryInfo(CategoryInfo):
     updated_at:datetime
 
 class CreateProduct(BaseModel):
+    category_id:int
     name:str
     slug:str
     description:str
@@ -38,6 +39,7 @@ class CreateProduct(BaseModel):
     is_active:bool = True
 
 class UpdateProduct(BaseModel):
+    category_id:Optional[int]
     name:Optional[str]
     slug:Optional[str]
     description:Optional[str]

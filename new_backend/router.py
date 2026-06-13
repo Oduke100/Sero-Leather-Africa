@@ -15,6 +15,36 @@ from models import (
 
 router = APIRouter()
 
+
+import io, uuid
+from PIL import Image
+from fastapi import UploadFile, File
+
+@router.post("/upload")
+def upload_image(file: UploadFile = File(...)):
+    try:
+        allowed = {"image/jpeg", "image/png", "image/webp"}
+        if file.content_type not in allowed:
+            raise HTTPException(status_code=400, detail="Only JPEG, PNG and WebP images are allowed.")
+        contents = file.file.read()
+        try:
+            image = Image.open(io.BytesIO(contents))
+            image.verify()
+            image = Image.open(io.BytesIO(contents)).convert("RGB")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid image file.")
+        max_width = 1200
+        if image.width > max_width:
+            ratio = max_width / image.width
+            image = image.resize((max_width, int(image.height * ratio)), Image.LANCZOS)
+        filename = f"{uuid.uuid4()}.webp"
+        image.save(f"uploads/{filename}", "WEBP", quality=82, method=6)
+        return {"url": f"/uploads/{filename}"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/")
 def root():
     return {"Message":"The BE is livee!!!"}
@@ -64,7 +94,8 @@ def create_new_product(prod: CreateProduct, db: Session = Depends(get_db), curre
         discount_percentage =prod.discount_percentage,
         is_on_discount      =prod.is_on_discount,
         stock               =prod.stock,
-        is_active           =prod.is_active
+        is_active           =prod.is_active,
+        category_id         =prod.category_id
     )
     db.add(new_prod)
     db.commit()
