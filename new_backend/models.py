@@ -27,6 +27,7 @@ class Product(Base):
     price               = Column(Numeric(10, 2), nullable=False)
     is_on_discount      = Column(Boolean, nullable=False, default=False)
     discount_percentage = Column(Numeric, nullable=True)
+    initial_stock       = Column(Integer, nullable=True)
     stock               = Column(Integer, nullable=False)
     is_active           = Column(Boolean, nullable=False, default=True)
     category_id         = Column(Integer, ForeignKey(Category.id), nullable=False)
@@ -41,6 +42,7 @@ class Variant(Base):
     product_id          = Column(Integer, ForeignKey(Product.id), nullable=False)
     size                = Column(Text, nullable=False)
     colour              = Column(Text, nullable=False)
+    initial_stock       = Column(Integer, nullable=True)
     stock               = Column(Integer, nullable=False)
 
     created_at          = Column(TIMESTAMP, server_default=func.now(), nullable=False)
@@ -66,7 +68,13 @@ class Order(Base):
     customer_phone      = Column(Text, nullable=False)
     delivery_address    = Column(Text, nullable=False)
     total_price         = Column(Numeric(10, 2), nullable=False)
-    status              = Column(Text, nullable=False, default="pending")  # pending, confirmed, shipped, delivered, cancelled
+    status                      = Column(Text, nullable=False, default="pending")   # pending | confirmed | shipped | delivered | cancelled
+    payment_method              = Column(Text, nullable=True)                          # mpesa | paypal | pesapal
+    payment_status              = Column(Text, nullable=False, default="unpaid")       # unpaid | paid | failed | refunded
+    merchant_reference          = Column(Text, unique=True, nullable=True)             # UUID we generate; sent to provider; matched on webhook
+    mpesa_checkout_request_id   = Column(Text, nullable=True)                          # CheckoutRequestID from Daraja STK push
+    paypal_order_id             = Column(Text, nullable=True)                          # PayPal order ID
+    currency                    = Column(Text, nullable=False, default="KES")
     
     created_at          = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at          = Column(TIMESTAMP, server_default=func.now(), server_onupdate=FetchedValue(), nullable=False)
@@ -83,3 +91,27 @@ class OrderItem(Base):
 
     created_at          = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at          = Column(TIMESTAMP, server_default=func.now(), server_onupdate=FetchedValue(), nullable=False)
+
+class PaymentLog(Base):
+    __tablename__ = "payment_log"
+
+    id                  = Column(Integer, primary_key=True, index=True)
+    order_id            = Column(Integer, ForeignKey("order.id"), nullable=False)
+    provider            = Column(Text, nullable=False)       # mpesa | paypal
+    event_type          = Column(Text, nullable=False)       # initiate | callback | success | failure
+    raw_payload         = Column(Text, nullable=True)        # full provider JSON stored as string — audit trail
+    provider_reference  = Column(Text, nullable=True)        # MpesaReceiptNumber | PayPal capture ID
+
+    created_at          = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+
+class Currency(Base):
+    __tablename__ = "currency"
+
+    id           = Column(Integer, primary_key=True, index=True)
+    code         = Column(Text, nullable=False, unique=True)  # e.g. "USD"
+    name         = Column(Text, nullable=False)               # e.g. "US Dollar"
+    rate_to_kes  = Column(Numeric(20, 6), nullable=False, default=1)
+    is_active    = Column(Boolean, nullable=False, default=True)
+    last_updated = Column(TIMESTAMP, nullable=True)
+
+    created_at   = Column(TIMESTAMP, server_default=func.now(), nullable=False)

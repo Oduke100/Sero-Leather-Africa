@@ -1,7 +1,8 @@
-const API = import.meta.env.VITE_API_BASE || 'http://localhost:8000/api';
+const API = import.meta.env.VITE_API_BASE || `http://${window.location.hostname}:8000/api`;
 
 export interface Product {
   id:          number;
+  slug:        string;
   name:        string;
   description: string;
   price:       number;
@@ -12,7 +13,8 @@ export interface Product {
 
 function parseProduct(p: Record<string, unknown>): Product {
   return {
-    id:          p.id as number,
+    id:          (p.id as number) || 0,
+  slug:        (p.slug as string) || '',
     name:        p.name as string,
     description: (p.description as string) || '',
     price:       parseFloat(String(p.price)),
@@ -29,16 +31,19 @@ export async function getProducts(): Promise<Product[]> {
   return list.map(parseProduct);
 }
 
-export async function getProduct(id: number): Promise<Product> {
-  const res  = await fetch(`${API}/products/${id}`);
-  const data = await res.json();
-  return parseProduct(Array.isArray(data) ? data : data);
+export async function getProduct(id: number | string): Promise<Product> {
+  const isSlug = isNaN(Number(id));
+  const url    = isSlug ? `${API}/products/by-slug/${id}` : `${API}/products/${id}`;
+  const res    = await fetch(url);
+  if (!res.ok) throw new Error('Product not found');
+  const data   = await res.json();
+  return parseProduct(Array.isArray(data) ? data[0] : data);
 }
 
 export interface Category {
   id:          number;
-  name:        string;
   slug:        string;
+  name:        string;
   description: string;
   image_url:   string;
 }
@@ -70,6 +75,7 @@ export async function subscribeNewsletter(email: string): Promise<void> {
 
 export interface AdminProduct {
   id:          number;
+  slug:        string;
   name:        string;
   description: string;
   price:       number;
@@ -91,7 +97,8 @@ export interface Order {
 
 function parseAdminProduct(p: Record<string, unknown>): AdminProduct {
   return {
-    id:          p.id as number,
+    id:          (p.id as number) || 0,
+  slug:        (p.slug as string) || '',
     name:        p.name as string,
     description: (p.description as string) || '',
     price:       parseFloat(String(p.price)),
@@ -159,16 +166,25 @@ export async function updateAdminProduct(
   id: number,
   payload: Partial<{ name: string; description: string; price: number; image: string; qty: number; available: boolean }>
 ): Promise<void> {
+  // Map frontend field names to backend field names
+  const mapped: Record<string, unknown> = {};
+  if (payload.name        !== undefined) mapped.name                = payload.name;
+  if (payload.description !== undefined) mapped.description         = payload.description;
+  if (payload.price       !== undefined) mapped.price               = payload.price;
+  if (payload.image       !== undefined) mapped.image_url           = payload.image;
+  if (payload.qty         !== undefined) mapped.stock               = payload.qty;
+  if (payload.available   !== undefined) mapped.is_active           = payload.available;
+
   const res = await fetch(`${API}/admin/products/${id}`, {
     method:  'PATCH',
     headers: authHeaders(),
-    body:    JSON.stringify(payload),
+    body:    JSON.stringify(mapped),
   });
   if (!res.ok) throw new Error('Update failed');
 }
 
 export async function getOrders(): Promise<Order[]> {
-  const res  = await fetch(`${API}/orders`, { headers: authHeaders() });
+  const res  = await fetch(`${API}/admin/orders`, { headers: authHeaders() });
   if (!res.ok) throw new Error('Unauthorised');
   const data = await res.json();
   return (data.orders || []).map(parseOrder);
@@ -204,4 +220,180 @@ export async function createProduct(payload: {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Create failed');
   }
+}
+export async function getProductsByCategory(slug: string): Promise<Product[]> {
+  const res  = await fetch(`${API}/products?category=${slug}`);
+  if (!res.ok) throw new Error('Failed to fetch products');
+  const data = await res.json();
+  const list = Array.isArray(data) ? data : (data.products || []);
+  return list.map((p: Record<string, unknown>) => ({
+    id:          p.id          as number,
+    name:        p.name        as string,
+    description: (p.description as string) || '',
+    price:       parseFloat(p.price as string),
+    image:       p.image_url   as string,
+    qty:         (p.stock      as number) ?? 0,
+    available:   (p.is_active  as boolean) ?? true,
+  }));
+}
+
+/* ── ORDERS ─────────────────────────────────────────────────── */
+
+export interface CheckoutItem {
+  product_id: number;
+  variant_id?: number;
+  quantity:   number;
+}
+
+export interface OrderRequest {
+  customer_name:    string;
+  customer_email:   string;
+  customer_phone:   string;
+  delivery_address: string;
+  payment_method:   string;
+  currency:         string;
+  items:            CheckoutItem[];
+}
+
+export interface OrderResponse {
+  id:                 number;
+  merchant_reference: string;
+  status:             string;
+  payment_status:     string;
+  total_price:        number;
+}
+
+export interface OrderStatusResponse {
+  order_id:           number;
+  status:             string;
+  payment_status:     string;
+  total_price:        number;
+  merchant_reference: string;
+}
+
+export async function createOrder(payload: OrderRequest): Promise<OrderResponse> {
+  const res = await fetch(`${API}/orders`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.detail || 'Order creation failed');
+  }
+  return res.json();
+}
+
+export async function getOrderStatus(orderId: number): Promise<OrderStatusResponse> {
+  const res = await fetch(`${API}/orders/${orderId}/status`);
+  if (!res.ok) throw new Error('Failed to fetch order status');
+  return res.json();
+}
+
+/* ── CURRENCIES ─────────────────────────────────────────────── */
+
+export interface Currency {
+  id:           number;
+  code:         string;
+  name:         string;
+  rate_to_kes:  number;
+  is_active:    boolean;
+  last_updated: string | null;
+}
+
+export async function getCurrencies(): Promise<Currency[]> {
+  const res = await fetch(`${API}/currencies`);
+  if (!res.ok) throw new Error('Failed to fetch currencies');
+  return res.json();
+}
+
+export async function addCurrency(code: string, name: string): Promise<Currency> {
+  const res = await fetch(`${API}/admin/currencies`, {
+    method:  'POST',
+    headers: authHeaders(),
+    body:    JSON.stringify({ code, name }),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || 'Failed'); }
+  return res.json();
+}
+
+export async function removeCurrency(code: string): Promise<void> {
+  const res = await fetch(`${API}/admin/currencies/${code}`, {
+    method: 'DELETE', headers: authHeaders(),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || 'Failed'); }
+}
+
+/* ── CATEGORY DETAIL ─────────────────────────────────────────── */
+
+export interface CategoryProduct {
+  id:            number;
+  name:          string;
+  initial_stock: number;
+  stock:         number;
+  is_active:     boolean;
+  price:         number;
+}
+
+export interface CategoryDetail {
+  id:          number;
+  slug:        string;
+  name:        string;
+  description: string;
+  image_url:   string;
+  created_at:  string;
+  updated_at:  string;
+  products:    CategoryProduct[];
+}
+
+export async function getCategoryDetail(id: number): Promise<CategoryDetail> {
+  const res = await fetch(`${API}/admin/categories/${id}/detail`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to fetch category detail');
+  return res.json();
+}
+
+/* ── PRODUCT DETAIL (ADMIN) ──────────────────────────────────── */
+
+export interface AdminProductDetail {
+  id:                  number;
+  name:                string;
+  slug:                string;
+  description:         string;
+  image_url:           string;
+  price:               number;
+  final_price:         number;
+  discount_percentage: number;
+  is_on_discount:      boolean;
+  is_customisable:     boolean;
+  is_active:           boolean;
+  stock:               number;
+  initial_stock:       number | null;
+  currency:            string;
+  created_at:          string;
+  updated_at:          string;
+}
+
+export async function getAdminProductDetail(id: number): Promise<AdminProductDetail> {
+  const res = await fetch(`${API}/admin/products/${id}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to fetch product detail');
+  return res.json();
+}
+
+/* ── CATEGORY CRUD ───────────────────────────────────────────── */
+
+export async function updateCategory(id: number, payload: Partial<Omit<Category, 'id'>>): Promise<Category> {
+  const res = await fetch(`${API}/admin/categories/${id}`, {
+    method:  'PATCH',
+    headers: authHeaders(),
+    body:    JSON.stringify(payload),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || 'Update failed'); }
+  return res.json();
+}
+
+export async function deleteCategory(id: number): Promise<void> {
+  const res = await fetch(`${API}/admin/categories/${id}`, {
+    method: 'DELETE', headers: authHeaders(),
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || 'Delete failed'); }
 }

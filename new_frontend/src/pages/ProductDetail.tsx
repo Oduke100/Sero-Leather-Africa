@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProduct, type Product } from '../api/index';
 import { useCurrency } from '../context/CurrencyContext';
+import { useCart } from '../context/CartContext';
 
 function useReveal() {
   useEffect(() => {
@@ -22,14 +23,7 @@ function showToast(msg: string) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function addToCartStorage(product: Product, qty: number) {
-  const cart = JSON.parse(localStorage.getItem('sero-cart') || '[]');
-  const existing = cart.find((i: { id: number }) => i.id === product.id);
-  if (existing) existing.quantity += qty;
-  else cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, quantity: qty });
-  localStorage.setItem('sero-cart', JSON.stringify(cart));
-  showToast(`${product.name} — added to your bag`);
-}
+
 
 const FALLBACK = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop';
 
@@ -43,10 +37,11 @@ export default function ProductDetail() {
   const [error,    setError]      = useState(false);
 
   useReveal();
+  const { addItem } = useCart();
 
   useEffect(() => {
     const pid = parseInt(id || '');
-    if (!pid) { setError(true); setLoading(false); return; }
+    if (!pid || isNaN(pid)) { setError(true); setLoading(false); return; }
     getProduct(pid)
       .then(p  => setProduct(p))
       .catch(() => setError(true))
@@ -149,7 +144,7 @@ export default function ProductDetail() {
               <button
                 className="pd-bag-btn"
                 disabled={soldOut}
-                onClick={() => addToCartStorage(product, qty)}
+                onClick={() => { addItem({ product_id: product.id, name: product.name, image: product.image, price: product.price }, qty); showToast(`${product.name} — added to your bag`); }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Cursor from './Cursor';
 import Footer from './Footer';
+import CurrencySelector from './CurrencySelector';
 
 interface Props { children: React.ReactNode; }
 
@@ -42,7 +43,7 @@ export default function Layout({ children }: Props) {
         <div className="nav-inner">
           <Link to="/" className="nav-logo-link">
             <img
-              src={scrolled ? '/static/images/logo1.webp' : '/static/images/logo2.webp'}
+              src={scrolled ? '/logo1.webp' : '/logo2.webp'}
               alt="Sero Leather Africa"
               className="nav-logo"
               onError={e => (e.currentTarget.style.display = 'none')}
@@ -50,14 +51,14 @@ export default function Layout({ children }: Props) {
           </Link>
 
           <div className="nav-links">
-            <Link to="/"         className="nav-link nav-link--active">Home</Link>
-            <Link to="/products" className="nav-link">Collections</Link>
-            <Link to="/about"    className="nav-link">Our Story</Link>
+            <Link to="/"         className={`nav-link${location.pathname === "/" ? " nav-link--active" : ""}`}>Home</Link>
+            <Link to="/collections" className={`nav-link${location.pathname.startsWith("/product") ? " nav-link--active" : ""}`}>Collections</Link>
+            <Link to="/about"    className={`nav-link${location.pathname === "/about" ? " nav-link--active" : ""}`}>Our Story</Link>
             <Link to="/cart"     className="nav-cart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
               {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </Link>
-            <div id="sero-currency-mount" />
+            <CurrencySelector />
           </div>
 
           <button className="nav-hamburger" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
@@ -73,10 +74,10 @@ export default function Layout({ children }: Props) {
       {/* Mobile menu */}
       <div className={`mobile-menu${menuOpen ? ' open' : ''}`}>
         <Link to="/"         className="mobile-link">Home</Link>
-        <Link to="/products" className="mobile-link">Collections</Link>
+        <Link to="/collections" className="mobile-link">Collections</Link>
         <Link to="/about"    className="mobile-link">Our Story</Link>
         <Link to="/cart"     className="mobile-link">Your Bag</Link>
-        <div className="mobile-currency" id="sero-currency-mount-mobile" />
+        <CurrencySelector />
       </div>
 
       <main>{children}</main>

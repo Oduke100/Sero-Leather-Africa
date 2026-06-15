@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useCurrency } from '../context/CurrencyContext';
-import { getProducts, type Product } from '../api/index';
+import { getCategories, type Category } from '../api/index';
 
 function useReveal(dep?: unknown) {
   useEffect(() => {
@@ -23,14 +22,6 @@ function showToast(msg: string) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function addToCart(id: number, name: string, price: number, image: string) {
-  const cart = JSON.parse(localStorage.getItem('sero-cart') || '[]');
-  const existing = cart.find((i: { id: number }) => i.id === id);
-  if (existing) existing.quantity++;
-  else cart.push({ id, name, price, image, quantity: 1 });
-  localStorage.setItem('sero-cart', JSON.stringify(cart));
-  showToast(`${name} — added to your bag`);
-}
 
 /* ── Ticker items ───────────────────────────────────────────── */
 const TICKER = [
@@ -53,7 +44,6 @@ function Hero() {
   return (
     <section className="hero">
       <div className="hero-bg" ref={bgRef} />
-
       <div className="hero-content">
         <h1 className="hero-title reveal" style={{ transitionDelay: '.5s' }}>
           Carry The<br /><em>Spirit</em><br />Of Africa
@@ -62,14 +52,73 @@ function Hero() {
           Handcrafted leather goods born from lisero.<br />Worn by the world.
         </p>
         <div className="hero-cta reveal" style={{ transitionDelay: '.9s' }}>
-          <a href="/products" className="btn-savannah">Explore Collections</a>
+          <a href="/collections" className="btn-savannah">Explore Collections</a>
           <a href="/about"    className="btn-ember">Our Story</a>
         </div>
       </div>
-
       <div className="hero-scroll" aria-hidden="true">
         <span>Scroll</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </section>
+  );
+}
+
+
+function Categories() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading]       = useState(true);
+
+  useEffect(() => {
+    getCategories()
+      .then(data => setCategories(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return (
+    <section className="categories-section">
+      <div className="section-inner">
+        <div className="reveal">
+          <p className="eyebrow">Shop By Category</p>
+          <h2 className="section-title">Browse The Range</h2>
+        </div>
+        <div className="categories-grid">
+          {[...Array(3)].map((_, i) => <div key={i} className="skeleton" style={{ aspectRatio: '4/3' }} />)}
+        </div>
+      </div>
+    </section>
+  );
+
+  if (!categories.length) return null;
+
+  return (
+    <section className="categories-section">
+      <div className="section-inner">
+        <div className="reveal">
+          <p className="eyebrow">Shop By Category</p>
+          <h2 className="section-title">Browse The Range</h2>
+        </div>
+        <div className="categories-grid">
+          {categories.map((c, i) => (
+            <div
+              key={c.id}
+              className="category-card reveal"
+              style={{ transitionDelay: `${i * 0.1}s` }}
+              onClick={() => window.location.href = `/collections/${c.slug}`}
+            >
+              <img
+                src={`${import.meta.env.VITE_API_BASE?.replace("/api","") || "`http://${window.location.hostname}:8000`"}${c.image_url}`}
+                alt={c.name}
+                onError={e => (e.currentTarget.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop')}
+              />
+              <div className="category-card-content">
+                <h3 className="category-name">{c.name}</h3>
+                <p className="category-desc">{c.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -87,83 +136,6 @@ function Ticker() {
         ))}
       </div>
     </div>
-  );
-}
-
-function ProductCard({ p }: { p: Product }) {
-  const { convertPrice } = useCurrency();
-  return (
-    <div className="product-card reveal" onClick={() => window.location.href = `/product?id=${p.id}`}>
-      <img
-        src={p.image}
-        alt={p.name}
-        onError={e => (e.currentTarget.src = '/images/sero_index_page.webp')}
-      />
-      {p.qty === 0 && <div className="sold-out-badge">Sold Out</div>}
-      <div className="product-card-content">
-        <p className="product-category">Leather Goods</p>
-        <h3 className="product-name">{p.name}</h3>
-        <p className="product-desc">{p.description}</p>
-        <div className="product-footer">
-          <span className="product-price">{convertPrice(p.price)}</span>
-          <button
-            className="product-add"
-            disabled={p.qty === 0}
-            onClick={e => { e.stopPropagation(); addToCart(p.id, p.name, p.price, p.image); }}
-          >
-            {p.qty === 0 ? 'Sold Out' : 'Add to Bag'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProductsSkeleton() {
-  return (
-    <>
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="skeleton" style={{ height: 380 }} />
-      ))}
-    </>
-  );
-}
-
-function ProductsGrid() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(false);
-  useReveal(products);
-  useEffect(() => {
-    getProducts()
-      .then(list => setProducts(list.filter(p => p.available).slice(0, 4)))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
-
-  return (
-    <section className="products-section">
-      <div className="section-inner">
-        <div className="section-header">
-          <div className="reveal">
-            <p className="eyebrow">New Season</p>
-            <h2 className="section-title">The Collection</h2>
-          </div>
-          <a href="/products" className="btn-savannah reveal" style={{ transitionDelay: '.2s' }}>
-            View All Pieces
-          </a>
-        </div>
-
-        <div className="products-grid">
-          {loading && <ProductsSkeleton />}
-          {error   && <p className="products-error">Could not load products</p>}
-          {!loading && !error && products.length === 0 && (
-            <p className="products-empty">No products available right now</p>
-          )}
-          {!loading && products.map(p => <ProductCard key={p.id} p={p} />)}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -194,7 +166,7 @@ function Story() {
 
         <div className="story-image-wrap reveal-left">
           <img
-            src="/images/sero_index_page.webp"
+            src="/sero_index_page.webp"
             alt="Leather craftsmanship"
             className="story-image"
           />
@@ -302,7 +274,7 @@ export default function Home() {
       <Hero />
       <div className="kente-border" aria-hidden="true" />
       <Ticker />
-      <ProductsGrid />
+      <Categories />
       <Stats />
       <Story />
       <WaveDivider />

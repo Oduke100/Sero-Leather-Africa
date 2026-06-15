@@ -1,24 +1,27 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+const API = import.meta.env.VITE_API_BASE || `http://${window.location.hostname}:8000/api`;
 
-const RATES: Record<string, number> = {
-  KES: 1, USD: 0.0077, EUR: 0.0071, GBP: 0.0061,
-  CAD: 0.0105, AUD: 0.0118, INR: 0.64, AED: 0.0283,
-  ZAR: 0.143, NGN: 12.1,
-};
+interface CurrencyRow {
+  code:        string;
+  name:        string;
+  rate_to_kes: number;
+}
+
+interface CurrencyContextType {
+  currency:     string;
+  setCurrency:  (c: string) => void;
+  convertPrice: (kes: number) => string;
+  currencies:   CurrencyRow[];
+}
 
 const SYMBOLS: Record<string, string> = {
   KES: 'KSh', USD: '$', EUR: '€', GBP: '£',
   CAD: 'CA$', AUD: 'AU$', INR: '₹', AED: 'AED',
-  ZAR: 'R', NGN: '₦',
+  ZAR: 'R',   NGN: '₦',
 };
 
 const HIGH_VALUE = ['KES', 'NGN', 'INR', 'ZAR'];
-
-interface CurrencyContextType {
-  currency: string;
-  setCurrency: (c: string) => void;
-  convertPrice: (kes: number) => string;
-}
 
 const CurrencyContext = createContext<CurrencyContextType | null>(null);
 
@@ -26,6 +29,19 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [currency, setCurrencyState] = useState<string>(
     () => localStorage.getItem('sero-currency') || 'KES'
   );
+  const [currencies, setCurrencies] = useState<CurrencyRow[]>([
+    { code: 'KES', name: 'Kenyan Shilling', rate_to_kes: 1 }
+  ]);
+
+  useEffect(() => {
+    fetch(`${API}/currencies`)
+      .then(r => r.json())
+      .then((data: CurrencyRow[]) => {
+        const kes = { code: 'KES', name: 'Kenyan Shilling', rate_to_kes: 1 };
+        setCurrencies([kes, ...data.filter(c => c.code !== 'KES')]);
+      })
+      .catch(() => {}); // silently keep KES as fallback
+  }, []);
 
   const setCurrency = (c: string) => {
     localStorage.setItem('sero-currency', c);
@@ -33,8 +49,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   };
 
   const convertPrice = (kes: number): string => {
-    const rate      = RATES[currency] ?? 1;
-    const symbol    = SYMBOLS[currency] ?? currency;
+    const row      = currencies.find(c => c.code === currency);
+    const rate     = row ? Number(row.rate_to_kes) : 1;
+    const symbol   = SYMBOLS[currency] ?? currency;
     const converted = Math.floor(kes * rate) + 0.99;
     const formatted = HIGH_VALUE.includes(currency)
       ? converted.toLocaleString()
@@ -43,7 +60,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, convertPrice }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, convertPrice, currencies }}>
       {children}
     </CurrencyContext.Provider>
   );
