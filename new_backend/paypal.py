@@ -18,7 +18,7 @@ def get_access_token() -> str:
     return r.json()["access_token"]
 
 # ── orders ────────────────────────────────────────────────────────────────────
-def create_order(amount_usd: str, merchant_reference: str) -> dict:
+def create_order(amount_usd: str, merchant_reference: str, return_url: str = None, cancel_url: str = None) -> dict:
     r = httpx.post(
         f"{BASE_URL}/v2/checkout/orders",
         json={
@@ -29,8 +29,8 @@ def create_order(amount_usd: str, merchant_reference: str) -> dict:
                 "description": "Sero Leather Order",
             }],
             "application_context": {
-                "return_url": RETURN_URL,
-                "cancel_url": CANCEL_URL,
+                "return_url": return_url or RETURN_URL,
+                "cancel_url": cancel_url or CANCEL_URL,
                 "brand_name": "Sero Leather Africa",
                 "user_action": "PAY_NOW",
             },

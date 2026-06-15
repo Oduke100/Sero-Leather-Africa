@@ -1,7 +1,7 @@
 import io, uuid, json
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy.orm import Session
 from PIL import Image
 
@@ -337,10 +337,12 @@ async def mpesa_webhook(request: Request, db: Session = Depends(get_db)):
 
 # ── paypal ────────────────────────────────────────────────────────────────────
 @router.post("/orders/{order_id}/paypal/create")
-def paypal_create(order_id: int, db: Session = Depends(get_db)):
+def paypal_create(order_id: int, db: Session = Depends(get_db), body: dict = Body(default={})):
     order = _get_or_404(db, Order, id=order_id)
     try:
-        result       = paypal_create_order(amount_usd=str(convert(order.total_price, "USD")), merchant_reference=order.merchant_reference)
+        return_url = (body or {}).get("return_url")
+        cancel_url = (body or {}).get("cancel_url")
+        result       = paypal_create_order(amount_usd=str(convert(order.total_price, "USD")), merchant_reference=order.merchant_reference, return_url=return_url, cancel_url=cancel_url)
         paypal_id    = result["id"]
         approval_url = next(l["href"] for l in result["links"] if l["rel"] == "approve")
         order.paypal_order_id = paypal_id

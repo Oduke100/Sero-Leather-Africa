@@ -42,7 +42,7 @@ export default function Checkout() {
       });
       if (form.payment_method === 'paypal') {
         const apiBase = import.meta.env.VITE_API_BASE || ("http://" + window.location.hostname + ":8000");
-        const res  = await fetch(apiBase + "/api/orders/" + order.id + "/paypal/create", { method: "POST" });
+        const res  = await fetch(apiBase + "/orders/" + order.id + "/paypal/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ return_url: window.location.origin + "/checkout/paypal-return", cancel_url: window.location.origin + "/checkout" }) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'PayPal error');
         sessionStorage.setItem('paypal_order_id', String(order.id));
