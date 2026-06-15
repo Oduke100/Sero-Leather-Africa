@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { getProductsByCategory, getCategories, type Product, type Category } from '../api/index';
 import { useCurrency } from '../context/CurrencyContext';
+
+const API_BASE = import.meta.env.VITE_API_BASE?.replace('/api', '') || `http://${window.location.hostname}:8000`;
 
 function showToast(msg: string) {
   const t = document.getElementById('toast');
@@ -11,27 +14,14 @@ function showToast(msg: string) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function addToCart(id: number, name: string, price: number, image: string) {
-  const cart = JSON.parse(localStorage.getItem('sero-cart') || '[]');
-  const existing = cart.find((i: { id: number }) => i.id === id);
-  if (existing) existing.quantity++;
-  else cart.push({ id, name, price, image, quantity: 1 });
-  localStorage.setItem('sero-cart', JSON.stringify(cart));
-  showToast(`${name} — added to your bag`);
-}
-
+// ─── PRODUCT CARD ─────────────────────────────────────────────────────────────
 function ProductCard({ p }: { p: Product }) {
   const { convertPrice } = useCurrency();
   const navigate = useNavigate();
-  const API_BASE = import.meta.env.VITE_API_BASE?.replace('/api', '') || '`http://${window.location.hostname}:8000`';
-
+  const { addItem } = useCart();
   return (
     <div className="product-card" onClick={() => navigate(`/product/${p.id}`)}>
-      <img
-        src={`${API_BASE}${p.image}`}
-        alt={p.name}
-        onError={e => (e.currentTarget.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop')}
-      />
+      {p.image && <img src={`${API_BASE}${p.image}`} alt={p.name} />}
       {p.qty === 0 && <div className="sold-out-badge">Sold Out</div>}
       <div className="view-hint"><div className="view-hint-label">View Details</div></div>
       <div className="product-card-content">
@@ -40,11 +30,8 @@ function ProductCard({ p }: { p: Product }) {
         <p className="product-desc">{p.description}</p>
         <div className="product-footer">
           <span className="product-price">{convertPrice(p.price)}</span>
-          <button
-            className="product-add"
-            disabled={p.qty === 0}
-            onClick={e => { e.stopPropagation(); addToCart(p.id, p.name, p.price, p.image); }}
-          >
+          <button className="product-add" disabled={p.qty === 0}
+            onClick={e => { e.stopPropagation(); addItem({ product_id: p.id, name: p.name, price: p.price, image: p.image }); showToast(`${p.name} — added to your bag`); }}>
             {p.qty === 0 ? 'Sold Out' : 'Add to Bag'}
           </button>
         </div>
@@ -53,22 +40,20 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
+// ─── COLLECTION DETAIL ────────────────────────────────────────────────────────
 export default function CollectionDetail() {
-  const { slug }                        = useParams<{ slug: string }>();
-  const navigate                        = useNavigate();
-  const [products,  setProducts]        = useState<Product[]>([]);
-  const [category,  setCategory]        = useState<Category | null>(null);
-  const [loading,   setLoading]         = useState(true);
-  const [error,     setError]           = useState(false);
-  const [query,     setQuery]           = useState('');
-  const [sort,      setSort]            = useState('default');
+  const { slug }               = useParams<{ slug: string }>();
+  const navigate               = useNavigate();
+  const [products,  setProducts] = useState<Product[]>([]);
+  const [category,  setCategory] = useState<Category | null>(null);
+  const [loading,   setLoading]  = useState(true);
+  const [error,     setError]    = useState(false);
+  const [query,     setQuery]    = useState('');
+  const [sort,      setSort]     = useState('default');
 
   useEffect(() => {
     if (!slug) return;
-    Promise.all([
-      getProductsByCategory(slug),
-      getCategories(),
-    ])
+    Promise.all([getProductsByCategory(slug), getCategories()])
       .then(([prods, cats]) => {
         setProducts(prods);
         setCategory(cats.find(c => c.slug === slug) || null);
@@ -78,53 +63,38 @@ export default function CollectionDetail() {
   }, [slug]);
 
   const filtered = (() => {
-    let result = products.filter(p =>
-      p.name.toLowerCase().includes(query.toLowerCase())
-    );
+    let result = products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
     if (sort === 'price-low')  result = [...result].sort((a, b) => a.price - b.price);
     if (sort === 'price-high') result = [...result].sort((a, b) => b.price - a.price);
     return result;
   })();
 
-  const API_BASE = import.meta.env.VITE_API_BASE?.replace('/api', '') || '`http://${window.location.hostname}:8000`';
-
   return (
     <>
-      {/* Hero */}
+      {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
       <div className="collection-hero">
         {category?.image_url && (
-          <div
-            className="collection-hero-bg"
-            style={{ backgroundImage: `url(${API_BASE}${category.image_url})` }}
-          />
+          <div className="collection-hero-bg" style={{ backgroundImage: `url(${API_BASE}${category.image_url})` }} />
         )}
         <div className="collection-hero-overlay" />
         <div className="section-inner collection-hero-content">
-          <button className="pd-back-link" onClick={() => navigate("/collections")}>← All Collections</button>
+          <button className="pd-back-link" onClick={() => navigate('/collections')}>← All Collections</button>
           <p className="eyebrow" style={{ marginTop: 16 }}>Collection</p>
           <h1 className="collection-hero-title">{category?.name || slug}</h1>
-          {category?.description && (
-            <p className="collection-hero-desc">{category.description}</p>
-          )}
+          {category?.description && <p className="collection-hero-desc">{category.description}</p>}
         </div>
       </div>
 
       <div className="kente-border" aria-hidden="true" />
 
-      {/* Filter Bar */}
+      {/* ─── FILTER BAR ───────────────────────────────────────────────────────── */}
       <div className="filter-bar">
         <div className="section-inner filter-inner">
           <div className="search-wrap">
             <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input
-              type="text"
-              placeholder="Search this collection..."
-              className="search-input"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
+            <input type="text" placeholder="Search this collection..." className="search-input" value={query} onChange={e => setQuery(e.target.value)} />
           </div>
           <select className="sort-select" value={sort} onChange={e => setSort(e.target.value)}>
             <option value="default">Sort by</option>
@@ -134,7 +104,7 @@ export default function CollectionDetail() {
         </div>
       </div>
 
-      {/* Grid */}
+      {/* ─── PRODUCT GRID ─────────────────────────────────────────────────────── */}
       <section className="products-section" style={{ minHeight: '60vh' }}>
         <div className="section-inner">
           {loading && (

@@ -28,7 +28,10 @@ const key = (product_id: number, variant_id?: number) =>
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
-    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      return parsed.filter((i: CartItem) => i.product_id && i.product_id > 0);
+    }
     catch { return []; }
   });
 

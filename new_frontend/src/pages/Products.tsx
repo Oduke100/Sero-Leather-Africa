@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { getProducts, type Product } from '../api/index';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -22,41 +23,24 @@ function showToast(msg: string) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function addToCart(id: number, name: string, price: number, image: string) {
-  const cart = JSON.parse(localStorage.getItem('sero-cart') || '[]');
-  const existing = cart.find((i: { id: number }) => i.id === id);
-  if (existing) existing.quantity++;
-  else cart.push({ id, name, price, image, quantity: 1 });
-  localStorage.setItem('sero-cart', JSON.stringify(cart));
-  showToast(`${name} — added to your bag`);
-}
-
+// ─── PRODUCT CARD ─────────────────────────────────────────────────────────────
 function ProductCard({ p }: { p: Product }) {
   const { convertPrice } = useCurrency();
   const navigate = useNavigate();
-
+  const { addItem } = useCart();
   return (
     <div className="product-card" onClick={() => navigate(`/product/${p.id}`)}>
-      <img
-        src={p.image || 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop'}
-        alt={p.name}
-        onError={e => (e.currentTarget.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop')}
-      />
+      {p.image && <img src={p.image} alt={p.name} />}
       {p.qty === 0 && <div className="sold-out-badge">Sold Out</div>}
-      <div className="view-hint">
-        <div className="view-hint-label">View Details</div>
-      </div>
+      <div className="view-hint"><div className="view-hint-label">View Details</div></div>
       <div className="product-card-content">
         <p className="product-category">Leather Goods</p>
         <h3 className="product-name">{p.name}</h3>
         <p className="product-desc">{p.description}</p>
         <div className="product-footer">
           <span className="product-price">{convertPrice(p.price)}</span>
-          <button
-            className="product-add"
-            disabled={p.qty === 0}
-            onClick={e => { e.stopPropagation(); addToCart(p.id, p.name, p.price, p.image); }}
-          >
+          <button className="product-add" disabled={p.qty === 0}
+            onClick={e => { e.stopPropagation(); addItem({ product_id: p.id, name: p.name, price: p.price, image: p.image }); showToast(`${p.name} — added to your bag`); }}>
             {p.qty === 0 ? 'Sold Out' : 'Add to Bag'}
           </button>
         </div>
@@ -65,6 +49,7 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
+// ─── PRODUCTS ─────────────────────────────────────────────────────────────────
 export default function Products() {
   const [all,      setAll]      = useState<Product[]>([]);
   const [filtered, setFiltered] = useState<Product[]>([]);
@@ -72,7 +57,6 @@ export default function Products() {
   const [sort,     setSort]     = useState('default');
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(false);
-
   useReveal();
 
   useEffect(() => {
@@ -91,35 +75,25 @@ export default function Products() {
 
   return (
     <>
-      {/* Page Hero */}
+      {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
       <div className="products-hero">
         <div className="section-inner">
           <p className="eyebrow reveal">The Full Range</p>
-          <h1 className="products-hero-title reveal" style={{ transitionDelay: '.1s' }}>
-            Our<br /><em>Collections</em>
-          </h1>
-          <p className="products-hero-sub reveal" style={{ transitionDelay: '.2s' }}>
-            Premium leather goods handcrafted in Nairobi, Kenya
-          </p>
+          <h1 className="products-hero-title reveal" style={{ transitionDelay: '.1s' }}>Our<br /><em>Collections</em></h1>
+          <p className="products-hero-sub reveal" style={{ transitionDelay: '.2s' }}>Premium leather goods handcrafted in Nairobi, Kenya</p>
         </div>
       </div>
 
       <div className="kente-border" aria-hidden="true" />
 
-      {/* Filter Bar */}
+      {/* ─── FILTER BAR ───────────────────────────────────────────────────────── */}
       <div className="filter-bar">
         <div className="section-inner filter-inner">
           <div className="search-wrap">
             <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input
-              type="text"
-              placeholder="Search the collection..."
-              className="search-input"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
+            <input type="text" placeholder="Search the collection..." className="search-input" value={query} onChange={e => setQuery(e.target.value)} />
           </div>
           <select className="sort-select" value={sort} onChange={e => setSort(e.target.value)}>
             <option value="default">Sort by</option>
@@ -129,7 +103,7 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* ─── PRODUCT GRID ─────────────────────────────────────────────────────── */}
       <section className="products-section" style={{ minHeight: '100vh' }}>
         <div className="section-inner">
           {loading && (

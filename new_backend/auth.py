@@ -7,13 +7,15 @@ from sqlalchemy.orm import Session
 from dependancies import get_db
 from models import Admin
 
-SECRET_KEY      = "changethisbeforeshipping"  # replace with a strong random string before shipping
-ALGORITHM       = "HS256"
+# ── config ────────────────────────────────────────────────────────────────────
+SECRET_KEY         = "changethisbeforeshipping"
+ALGORITHM          = "HS256"
 TOKEN_EXPIRE_HOURS = 8
 
-pwd_context     = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme   = OAuth2PasswordBearer(tokenUrl="admin/login")
+pwd_context  = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin/login")
 
+# ── helpers ───────────────────────────────────────────────────────────────────
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -25,23 +27,19 @@ def create_token(data: dict) -> str:
     payload["exp"] = datetime.utcnow() + timedelta(hours=TOKEN_EXPIRE_HOURS)
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
+# ── guard ─────────────────────────────────────────────────────────────────────
 def get_current_admin(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_error = HTTPException(status_code=401, detail="Invalid or expired session")
-    
+    err = HTTPException(status_code=401, detail="Invalid or expired session")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise credentials_error
+            raise err
     except JWTError:
-        raise credentials_error
-
+        raise err
     admin = db.query(Admin).filter(Admin.username == username).first()
     if admin is None:
-        raise credentials_error
-
-    # single session check — if token doesn't match what's stored, reject it
+        raise err
     if admin.active_token != token:
         raise HTTPException(status_code=401, detail="Session expired, logged in from another device")
-
     return admin

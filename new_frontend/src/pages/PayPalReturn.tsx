@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
+const API_BASE = import.meta.env.VITE_API_BASE || `http://${window.location.hostname}:8000/api`;
+
+// ─── PAYPAL RETURN ────────────────────────────────────────────────────────────
 export default function PayPalReturn() {
   const navigate = useNavigate();
   const { clearCart } = useCart();
-  const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
+  const [status,  setStatus]  = useState<'processing' | 'success' | 'error'>('processing');
   const [message, setMessage] = useState('Confirming your payment...');
 
   useEffect(() => {
     const orderId = sessionStorage.getItem('paypal_order_id');
     if (!orderId) { navigate('/checkout'); return; }
-
-    fetch(`${import.meta.env.VITE_API_BASE || "`http://${window.location.hostname}:8000`/api"}/orders/${orderId}/paypal/capture`, { method: 'POST' })
+    fetch(`${API_BASE}/orders/${orderId}/paypal/capture`, { method: 'POST' })
       .then(r => r.json())
       .then(data => {
         if (data.status === 'paid') {
@@ -25,14 +27,12 @@ export default function PayPalReturn() {
           setMessage('Payment was not completed. Please try again.');
         }
       })
-      .catch(() => {
-        setStatus('error');
-        setMessage('Something went wrong confirming your payment.');
-      });
+      .catch(() => { setStatus('error'); setMessage('Something went wrong confirming your payment.'); });
   }, []);
 
   return (
     <div className="section-inner" style={{ paddingTop: 120, textAlign: 'center' }}>
+      {/* ─── PROCESSING ───────────────────────────────────────────────────── */}
       {status === 'processing' && (
         <>
           <p className="eyebrow">Please wait</p>
@@ -40,6 +40,7 @@ export default function PayPalReturn() {
           <p className="cart-hero-sub">{message}</p>
         </>
       )}
+      {/* ─── SUCCESS ──────────────────────────────────────────────────────── */}
       {status === 'success' && (
         <>
           <p className="eyebrow">Success</p>
@@ -47,14 +48,13 @@ export default function PayPalReturn() {
           <p className="cart-hero-sub">Redirecting you to your order...</p>
         </>
       )}
+      {/* ─── ERROR ────────────────────────────────────────────────────────── */}
       {status === 'error' && (
         <>
           <p className="eyebrow">Error</p>
           <h1 className="cart-hero-title">Payment<br /><em>Failed</em></h1>
           <p className="cart-hero-sub">{message}</p>
-          <button className="btn-savannah" onClick={() => navigate('/checkout')} style={{ marginTop: 32 }}>
-            Try Again
-          </button>
+          <button className="btn-savannah" onClick={() => navigate('/checkout')} style={{ marginTop: 32 }}>Try Again</button>
         </>
       )}
     </div>

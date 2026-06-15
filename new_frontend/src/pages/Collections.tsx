@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCategories, type Category } from '../api/index';
 
+const API_BASE = `http://${window.location.hostname}:8000`;
+
 function useReveal() {
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -13,13 +15,12 @@ function useReveal() {
   });
 }
 
+// ─── COLLECTIONS ──────────────────────────────────────────────────────────────
 export default function Collections() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [error,      setError]      = useState(false);
   const navigate = useNavigate();
-  const API_BASE = `http://${window.location.hostname}:8000`;
-
   useReveal();
 
   useEffect(() => {
@@ -31,21 +32,18 @@ export default function Collections() {
 
   return (
     <>
-      {/* Hero */}
+      {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
       <div className="products-hero">
         <div className="section-inner">
           <p className="eyebrow reveal">Explore</p>
-          <h1 className="products-hero-title reveal" style={{ transitionDelay: '.1s' }}>
-            Our<br /><em>Collections</em>
-          </h1>
-          <p className="products-hero-sub reveal" style={{ transitionDelay: '.2s' }}>
-            Choose a collection to discover handcrafted leather goods
-          </p>
+          <h1 className="products-hero-title reveal" style={{ transitionDelay: '.1s' }}>Our<br /><em>Collections</em></h1>
+          <p className="products-hero-sub reveal" style={{ transitionDelay: '.2s' }}>Choose a collection to discover handcrafted leather goods</p>
         </div>
       </div>
 
       <div className="kente-border" aria-hidden="true" />
 
+      {/* ─── GRID ─────────────────────────────────────────────────────────────── */}
       <section className="categories-section" style={{ minHeight: '60vh' }}>
         <div className="section-inner">
           {loading && (
@@ -63,17 +61,8 @@ export default function Collections() {
           {!loading && !error && categories.length > 0 && (
             <div className="categories-grid">
               {categories.map((c, i) => (
-                <div
-                  key={c.id}
-                  className="category-card reveal"
-                  style={{ transitionDelay: `${i * 0.1}s` }}
-                  onClick={() => navigate(`/collections/${c.slug}`)}
-                >
-                  <img
-                    src={`${API_BASE}${c.image_url}`}
-                    alt={c.name}
-                    onError={e => (e.currentTarget.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop')}
-                  />
+                <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => navigate(`/collections/${c.slug}`)}>
+                  {c.image_url && <img src={`${API_BASE}${c.image_url}`} alt={c.name} />}
                   <div className="category-card-content">
                     <h3 className="category-name">{c.name}</h3>
                     <p className="category-desc">{c.description}</p>

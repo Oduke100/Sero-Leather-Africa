@@ -1,43 +1,37 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-import os, requests
+import os, asyncio, requests
 from decimal import Decimal
 from datetime import datetime, timezone
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from contextlib import asynccontextmanager
-import asyncio
 
 from router import router
 from database import SessionLocal
 from models import Currency
 
+# ── rate refresh ──────────────────────────────────────────────────────────────
 RATES_URL = "https://open.er-api.com/v6/latest/KES"
 
 def refresh_rates():
     db = SessionLocal()
     try:
-        resp = requests.get(RATES_URL, timeout=10)
-        data = resp.json()
+        data = requests.get(RATES_URL, timeout=10).json()
         if data.get("result") != "success":
             print("Rate refresh failed:", data)
             return
         rates = data["rates"]
-        currencies = db.query(Currency).filter(Currency.is_active == True).all()
-        for c in currencies:
+        for c in db.query(Currency).filter(Currency.is_active == True).all():
             code = c.code.upper()
             if code in rates:
-                # API returns how many units of foreign currency = 1 KES
-                # We store rate_to_kes = how many KES = 1 unit of foreign currency? No.
-                # open.er-api with base KES: rates["USD"] = X means 1 KES = X USD
-                # So to convert KES -> USD: amount * rates["USD"]
                 c.rate_to_kes = Decimal(str(rates[code]))
                 c.last_updated = datetime.now(timezone.utc)
         db.commit()
-        print(f"[{datetime.now()}] Exchange rates refreshed.")
+        print(f"[{datetime.now()}] Rates refreshed.")
     except Exception as e:
         print(f"Rate refresh error: {e}")
     finally:
@@ -46,8 +40,9 @@ def refresh_rates():
 async def rate_refresh_loop():
     while True:
         refresh_rates()
-        await asyncio.sleep(86400)  # 24 hours
+        await asyncio.sleep(86400)
 
+# ── app ───────────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     asyncio.create_task(rate_refresh_loop())

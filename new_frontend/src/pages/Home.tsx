@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCategories, type Category } from '../api/index';
 
+const API_BASE = import.meta.env.VITE_API_BASE?.replace('/api', '') || `http://${window.location.hostname}:8000`;
+
+const TICKER = [
+  'Premium Full-Grain Leather',
+  'Handcrafted in Nairobi',
+  'Ethically Sourced',
+  'Ships Across Kenya & Beyond',
+];
+
 function useReveal(dep?: unknown) {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -22,38 +31,22 @@ function showToast(msg: string) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-
-/* ── Ticker items ───────────────────────────────────────────── */
-const TICKER = [
-  'Premium Full-Grain Leather',
-  'Handcrafted in Nairobi',
-  'Ethically Sourced',
-  'Ships Across Kenya & Beyond',
-];
-
-/* ── Sub-components ─────────────────────────────────────────── */
-
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
   const bgRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const t = setTimeout(() => bgRef.current?.classList.add('loaded'), 100);
     return () => clearTimeout(t);
   }, []);
-
   return (
     <section className="hero">
       <div className="hero-bg" ref={bgRef} />
       <div className="hero-content">
-        <h1 className="hero-title reveal" style={{ transitionDelay: '.5s' }}>
-          Carry The<br /><em>Spirit</em><br />Of Africa
-        </h1>
-        <p className="hero-sub reveal" style={{ transitionDelay: '.7s' }}>
-          Handcrafted leather goods born from lisero.<br />Worn by the world.
-        </p>
+        <h1 className="hero-title reveal" style={{ transitionDelay: '.5s' }}>Carry The<br /><em>Spirit</em><br />Of Africa</h1>
+        <p className="hero-sub reveal" style={{ transitionDelay: '.7s' }}>Handcrafted leather goods born from lisero.<br />Worn by the world.</p>
         <div className="hero-cta reveal" style={{ transitionDelay: '.9s' }}>
           <a href="/collections" className="btn-savannah">Explore Collections</a>
-          <a href="/about"    className="btn-ember">Our Story</a>
+          <a href="/about" className="btn-ember">Our Story</a>
         </div>
       </div>
       <div className="hero-scroll" aria-hidden="true">
@@ -64,14 +57,28 @@ function Hero() {
   );
 }
 
+// ─── TICKER ───────────────────────────────────────────────────────────────────
+function Ticker() {
+  const items = [...TICKER, ...TICKER];
+  return (
+    <div className="ticker-wrap" aria-hidden="true">
+      <div className="ticker-track">
+        {items.map((t, i) => (
+          <span key={i} className="ticker-item">{t}<span className="ticker-dot">✦</span></span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+// ─── CATEGORIES ───────────────────────────────────────────────────────────────
 function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
     getCategories()
-      .then(data => setCategories(data))
+      .then(setCategories)
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -101,17 +108,8 @@ function Categories() {
         </div>
         <div className="categories-grid">
           {categories.map((c, i) => (
-            <div
-              key={c.id}
-              className="category-card reveal"
-              style={{ transitionDelay: `${i * 0.1}s` }}
-              onClick={() => window.location.href = `/collections/${c.slug}`}
-            >
-              <img
-                src={`${import.meta.env.VITE_API_BASE?.replace("/api","") || "`http://${window.location.hostname}:8000`"}${c.image_url}`}
-                alt={c.name}
-                onError={e => (e.currentTarget.src = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop')}
-              />
+            <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => window.location.href = `/collections/${c.slug}`}>
+              {c.image_url && <img src={`${API_BASE}${c.image_url}`} alt={c.name} />}
               <div className="category-card-content">
                 <h3 className="category-name">{c.name}</h3>
                 <p className="category-desc">{c.description}</p>
@@ -124,26 +122,12 @@ function Categories() {
   );
 }
 
-function Ticker() {
-  const items = [...TICKER, ...TICKER]; // duplicate for seamless loop
-  return (
-    <div className="ticker-wrap" aria-hidden="true">
-      <div className="ticker-track">
-        {items.map((t, i) => (
-          <span key={i} className="ticker-item">
-            {t}<span className="ticker-dot">✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+// ─── STATS ────────────────────────────────────────────────────────────────────
 function Stats() {
   const items = [
-    { num: '50+',  label: 'Happy Customers' },
-    { num: '100%', label: 'Handcrafted'     },
-    { num: '🇰🇪',  label: 'Made in Kenya'   },
+    { num: '50+',  label: 'Happy Customers'  },
+    { num: '100%', label: 'Handcrafted'      },
+    { num: '🇰🇪',  label: 'Made in Kenya'    },
     { num: '∞',    label: 'Lifetime Quality' },
   ];
   return (
@@ -158,38 +142,24 @@ function Stats() {
   );
 }
 
+// ─── STORY ────────────────────────────────────────────────────────────────────
 function Story() {
   return (
     <section className="story-section">
       <div className="story-glow" aria-hidden="true" />
       <div className="section-inner story-grid">
-
         <div className="story-image-wrap reveal-left">
-          <img
-            src="/sero_index_page.webp"
-            alt="Leather craftsmanship"
-            className="story-image"
-          />
+          <img src="/sero_index_page.webp" alt="Leather craftsmanship" className="story-image" />
           <div className="story-corner story-corner--br" aria-hidden="true" />
           <div className="story-corner story-corner--tl" aria-hidden="true" />
-          <div className="kente-border story-kente"      aria-hidden="true" />
+          <div className="kente-border story-kente" aria-hidden="true" />
         </div>
-
         <div className="reveal-right">
           <p className="eyebrow">Born From The Earth</p>
-          <h2 className="story-title">
-            Where <br /><em>Lisero</em><br />is redefined<br />through Craft
-          </h2>
+          <h2 className="story-title">Where <br /><em>Lisero</em><br />is redefined<br />through Craft</h2>
           <div className="story-rule" aria-hidden="true" />
-          <p className="story-body">
-            Each SERO product is made from ethically sourced cow hides (Lisero) and handcrafted
-            by skilled artisans. A celebration of heritage, craft, and durability.
-          </p>
-          <p className="story-body story-body--muted">
-            Our artisans in Nairobi have spent years perfecting their craft, blending traditional
-            African techniques with modern precision to create leather goods that are both
-            beautiful and built to last a lifetime.
-          </p>
+          <p className="story-body">Each SERO product is made from ethically sourced cow hides (Lisero) and handcrafted by skilled artisans. A celebration of heritage, craft, and durability.</p>
+          <p className="story-body story-body--muted">Our artisans in Nairobi have spent years perfecting their craft, blending traditional African techniques with modern precision to create leather goods that are both beautiful and built to last a lifetime.</p>
           <a href="/about" className="btn-savannah">Discover Our Story</a>
         </div>
       </div>
@@ -197,6 +167,7 @@ function Story() {
   );
 }
 
+// ─── WAVE DIVIDER ─────────────────────────────────────────────────────────────
 function WaveDivider() {
   return (
     <div className="wave-divider" aria-hidden="true">
@@ -214,11 +185,12 @@ function WaveDivider() {
   );
 }
 
+// ─── USP ──────────────────────────────────────────────────────────────────────
 function USP() {
   const items = [
-    { icon: '🚚', title: 'Nairobi Delivery',    body: 'Same-day delivery within Nairobi. Nationwide shipping available.'     },
-    { icon: '🏆', title: 'Lifetime Guarantee', body: 'Every piece is built to outlast trends. We stand behind our craft.'    },
-    { icon: '🤝', title: 'Artisan Made',        body: 'Every stitch placed by hand. Crafted from Lisero.'                    },
+    { icon: '🚚', title: 'Nairobi Delivery',   body: 'Same-day delivery within Nairobi. Nationwide shipping available.'  },
+    { icon: '🏆', title: 'Lifetime Guarantee', body: 'Every piece is built to outlast trends. We stand behind our craft.' },
+    { icon: '🤝', title: 'Artisan Made',        body: 'Every stitch placed by hand. Crafted from Lisero.'                 },
   ];
   return (
     <section className="usp-section">
@@ -226,31 +198,28 @@ function USP() {
         <div key={i} className={`usp-item reveal${i < 2 ? ' usp-item--border' : ''}`} style={{ transitionDelay: `${i * 0.15}s` }}>
           <span className="usp-icon" aria-hidden="true">{u.icon}</span>
           <h3 className="usp-title">{u.title}</h3>
-          <p  className="usp-body">{u.body}</p>
+          <p className="usp-body">{u.body}</p>
         </div>
       ))}
     </section>
   );
 }
 
+// ─── NEWSLETTER ───────────────────────────────────────────────────────────────
 function Newsletter() {
   const [submitted, setSubmitted] = useState(false);
-
   const handle = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
     showToast('Welcome to the herd ✦');
     (e.target as HTMLFormElement).reset();
   };
-
   return (
     <section className="newsletter-section">
       <div className="newsletter-glow" aria-hidden="true" />
       <div className="newsletter-inner reveal">
         <p className="eyebrow">Join The Herd</p>
-        <h2 className="newsletter-title">
-          Stay Connected<br /><em>to the Wild</em>
-        </h2>
+        <h2 className="newsletter-title">Stay Connected<br /><em>to the Wild</em></h2>
         <p className="newsletter-sub">New arrivals, exclusive drops and stories from the savannah.</p>
         {submitted ? (
           <p className="newsletter-thanks">You're in. Welcome to the herd ✦</p>
@@ -265,10 +234,9 @@ function Newsletter() {
   );
 }
 
-/* ── Page ───────────────────────────────────────────────────── */
+// ─── HOME ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   useReveal();
-
   return (
     <>
       <Hero />

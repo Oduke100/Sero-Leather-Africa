@@ -3,17 +3,11 @@ import { SOCIAL, CONTACT } from '../config';
 export default function Footer() {
   return (
     <footer style={{ background: 'var(--midnight)', borderTop: '1px solid rgba(212,168,71,0.1)' }}>
-
       <div className="kente-border" />
-
       <div className="ankara-band" />
-
       <div className="footer-inner">
-
-        {/* Top grid */}
+        {/* ── TOP GRID ── */}
         <div className="footer-grid">
-
-          {/* Brand */}
           <div className="footer-brand">
             <div className="footer-brand-name">Sero Leather</div>
             <div className="footer-brand-sub">Africa</div>
@@ -21,8 +15,6 @@ export default function Footer() {
               Born from the red soils of Kenya. Built for those who carry their roots with pride.
             </p>
           </div>
-
-          {/* Nav */}
           <div>
             <h4 className="footer-heading">Navigate</h4>
             <ul className="footer-links">
@@ -32,8 +24,6 @@ export default function Footer() {
               <li><a href="/cart">Your Bag</a></li>
             </ul>
           </div>
-
-          {/* Contact */}
           <div>
             <h4 className="footer-heading">Reach Us</h4>
             <ul className="footer-contact">
@@ -43,31 +33,37 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-
-        {/* Bottom */}
+        {/* ── BOTTOM ── */}
         <div className="footer-bottom">
           <p className="footer-payment-label">Secure Payments Accepted</p>
           <div className="footer-badges">
-            <div className="badge badge-mpesa">M-PESA</div>
-            <div className="badge badge-paypal">PAYPAL</div>
-            <div className="badge badge-pesapal">PESAPAL</div>
+            <svg height="28" viewBox="0 0 80 28" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.9 }}>
+              <rect width="80" height="28" rx="4" fill="#00A651"/>
+              <text x="8" y="19" fontFamily="Arial" fontWeight="bold" fontSize="13" fill="white" letterSpacing="0.5">M-PESA</text>
+            </svg>
+            <svg height="28" viewBox="0 0 101 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.85 }}>
+              <path d="M 12.237 2.8 L 4.437 2.8 C 3.937 2.8 3.437 3.2 3.337 3.7 L 0.237 23.7 C 0.137 24.1 0.437 24.4 0.837 24.4 L 4.537 24.4 C 5.037 24.4 5.537 24 5.637 23.5 L 6.437 18.1 C 6.537 17.6 6.937 17.2 7.537 17.2 L 10.037 17.2 C 15.137 17.2 18.137 14.7 18.937 9.8 C 19.237 7.7 18.937 6 17.937 4.8 C 16.837 3.5 14.837 2.8 12.237 2.8 Z M 13.137 10.1 C 12.737 12.9 10.537 12.9 8.537 12.9 L 7.337 12.9 L 8.137 7.7 C 8.137 7.4 8.437 7.2 8.737 7.2 L 9.237 7.2 C 10.637 7.2 11.937 7.2 12.637 8 C 13.137 8.4 13.237 9.1 13.137 10.1 Z" fill="#253B80"/>
+              <path d="M 35.437 10 L 31.737 10 C 31.437 10 31.137 10.2 31.137 10.5 L 30.937 11.5 L 30.637 11.1 C 29.737 9.8 27.837 9.4 25.937 9.4 C 21.737 9.4 18.137 12.6 17.437 17.1 C 17.037 19.4 17.637 21.5 18.937 23 C 20.137 24.4 21.937 25 24.037 25 C 27.437 25 29.337 22.8 29.337 22.8 L 29.137 23.8 C 29.037 24.2 29.337 24.6 29.737 24.6 L 33.137 24.6 C 33.637 24.6 34.137 24.2 34.237 23.7 L 36.237 10.8 C 36.337 10.4 36.037 10 35.437 10 Z M 30.437 17.2 C 30.037 19.4 28.337 20.9 26.037 20.9 C 24.937 20.9 24.037 20.6 23.437 19.9 C 22.837 19.2 22.637 18.3 22.837 17.2 C 23.237 15 24.937 13.5 27.237 13.5 C 28.337 13.5 29.237 13.8 29.837 14.5 C 30.337 15.2 30.537 16.1 30.437 17.2 Z" fill="#253B80"/>
+              <path d="M 55.337 10 L 51.637 10 C 51.237 10 50.937 10.2 50.737 10.5 L 45.537 18.1 L 43.337 10.8 C 43.237 10.3 42.737 10 42.337 10 L 38.637 10 C 38.237 10 37.837 10.4 38.037 10.9 L 42.137 23.1 L 38.237 28.5 C 37.937 28.9 38.237 29.5 38.737 29.5 L 42.437 29.5 C 42.837 29.5 43.137 29.3 43.337 29 L 55.837 10.9 C 56.137 10.5 55.837 10 55.337 10 Z" fill="#253B80"/>
+              <path d="M 67.737 2.8 L 59.937 2.8 C 59.437 2.8 58.937 3.2 58.837 3.7 L 55.737 23.7 C 55.637 24.1 55.937 24.4 56.337 24.4 L 60.337 24.4 C 60.737 24.4 61.037 24.1 61.037 23.7 L 61.937 18.1 C 62.037 17.6 62.437 17.2 63.037 17.2 L 65.537 17.2 C 70.637 17.2 73.637 14.7 74.437 9.8 C 74.737 7.7 74.437 6 73.437 4.8 C 72.237 3.5 70.237 2.8 67.737 2.8 Z M 68.637 10.1 C 68.237 12.9 66.037 12.9 64.037 12.9 L 62.837 12.9 L 63.637 7.7 C 63.637 7.4 63.937 7.2 64.237 7.2 L 64.737 7.2 C 66.137 7.2 67.437 7.2 68.137 8 C 68.637 8.4 68.837 9.1 68.637 10.1 Z" fill="#179BD7"/>
+              <path d="M 90.937 10 L 87.237 10 C 86.937 10 86.637 10.2 86.537 10.5 L 86.337 11.5 L 86.037 11.1 C 85.137 9.8 83.237 9.4 81.337 9.4 C 77.137 9.4 73.537 12.6 72.837 17.1 C 72.437 19.4 73.037 21.5 74.337 23 C 75.537 24.4 77.337 25 79.437 25 C 82.837 25 84.737 22.8 84.737 22.8 L 84.537 23.8 C 84.437 24.2 84.737 24.6 85.137 24.6 L 88.537 24.6 C 89.037 24.6 89.537 24.2 89.637 23.7 L 91.637 10.8 C 91.737 10.4 91.437 10 90.937 10 Z M 85.837 17.2 C 85.437 19.4 83.737 20.9 81.437 20.9 C 80.337 20.9 79.437 20.6 78.837 19.9 C 78.237 19.2 78.037 18.3 78.237 17.2 C 78.637 15 80.337 13.5 82.637 13.5 C 83.737 13.5 84.637 13.8 85.237 14.5 C 85.837 15.2 85.937 16.1 85.837 17.2 Z" fill="#179BD7"/>
+              <path d="M 95.337 3.3 L 92.137 23.7 C 92.037 24.1 92.337 24.4 92.737 24.4 L 95.937 24.4 C 96.437 24.4 96.937 24 97.037 23.5 L 100.237 3.5 C 100.337 3.1 100.037 2.8 99.637 2.8 L 96.037 2.8 C 95.637 2.8 95.337 3 95.337 3.3 Z" fill="#179BD7"/>
+            </svg>
           </div>
-
           <div className="footer-socials">
-            <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="social-icon" title="Facebook"  aria-label="Facebook">
+            <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook">
               <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
-            <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="social-icon" title="Instagram" aria-label="Instagram">
+            <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
               <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
-            <a href={SOCIAL.whatsapp} onClick={(e) => { e.preventDefault(); window.open(SOCIAL.whatsapp, "_blank", "noopener,noreferrer"); }} className="social-icon" title="WhatsApp"  aria-label="WhatsApp">
+            <a href={SOCIAL.whatsapp} onClick={e => { e.preventDefault(); window.open(SOCIAL.whatsapp, '_blank', 'noopener,noreferrer'); }} className="social-icon" aria-label="WhatsApp">
               <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             </a>
-            <a href={SOCIAL.tiktok} onClick={(e) => { e.preventDefault(); window.open(SOCIAL.tiktok, "_blank", "noopener,noreferrer"); }} className="social-icon" title="TikTok"    aria-label="TikTok">
+            <a href={SOCIAL.tiktok} onClick={e => { e.preventDefault(); window.open(SOCIAL.tiktok, '_blank', 'noopener,noreferrer'); }} className="social-icon" aria-label="TikTok">
               <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.02-.07z"/></svg>
             </a>
           </div>
-
           <p className="footer-copy">© {new Date().getFullYear()} Sero Leather Africa. All rights reserved.</p>
         </div>
       </div>
