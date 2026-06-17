@@ -13,11 +13,19 @@ const TICKER = [
 function useReveal(dep?: unknown) {
   useEffect(() => {
     const timer = setTimeout(() => {
+      const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
       const obs = new IntersectionObserver(
         entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-        { threshold: 0.1 }
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
       );
-      document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
+      els.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('visible');
+        } else {
+          obs.observe(el);
+        }
+      });
     }, 100);
     return () => clearTimeout(timer);
   }, [dep]);
