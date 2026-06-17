@@ -62,7 +62,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://seroafrica.com", "https://www.seroafrica.com", "http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["https://seroafrica.com", "https://www.seroafrica.com", "http://localhost:3000", "http://localhost:5173", "https://sero-leather-africa-fe-production.up.railway.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
