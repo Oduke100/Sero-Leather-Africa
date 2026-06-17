@@ -217,6 +217,13 @@ def create_product(prod: CreateProduct, db: Session = Depends(get_db), _: Admin 
 def update_product(product_id: int, prod: UpdateProduct, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
     return _patch(db, _get_or_404(db, Product, id=product_id), prod)
 
+@router.put("/products/{product_id}/toggle")
+def toggle_product(product_id: int, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
+    product = _get_or_404(db, Product, id=product_id)
+    product.is_active = not product.is_active
+    db.commit()
+    return {"is_active": product.is_active}
+
 @router.delete("/admin/products/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
     existing = _get_or_404(db, Product, id=product_id)
