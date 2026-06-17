@@ -91,6 +91,8 @@ function Categories() {
       .finally(() => setLoading(false));
   }, []);
 
+  useReveal(categories);
+
   if (loading) return (
     <section className="categories-section">
       <div className="section-inner">
@@ -244,7 +246,6 @@ function Newsletter() {
 
 // ─── HOME ─────────────────────────────────────────────────────────────────────
 export default function Home() {
-  useReveal();
   return (
     <>
       <Hero />
