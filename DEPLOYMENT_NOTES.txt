@@ -1,2 +1,0 @@
-1. Set final ADMIN_PASSWORD in .env before going live
-2. Build password-change UI in admin panel (post-launch)

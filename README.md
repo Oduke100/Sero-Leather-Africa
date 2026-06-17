@@ -1,1 +1,0 @@
-This is Sero Leather's Website or web store that is an advancement of their operations in the right direction, it has been created by the finest and been tuned to a state of the art feeling and experience in order to make Sero not just a house hold name but a BRAND.
