@@ -21,7 +21,7 @@ function ProductCard({ p }: { p: Product }) {
   const { addItem } = useCart();
   return (
     <div className="product-card" onClick={() => navigate(`/product/${p.id}`)}>
-      {p.image && <img src={`${API_BASE}${p.image}`} alt={p.name} />}
+      {p.image && <img src={p.image.startsWith("http") ? p.image : `${API_BASE}${p.image}`} alt={p.name} />}
       {p.qty === 0 && <div className="sold-out-badge">Sold Out</div>}
       <div className="view-hint"><div className="view-hint-label">View Details</div></div>
       <div className="product-card-content">
