@@ -17,7 +17,7 @@ export default function AdminLogin() {
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
-    if (sessionStorage.getItem('sero_admin_token')) navigate('/admin', { replace: true });
+    if (sessionStorage.getItem('sero_admin_token')) navigate('/sero-internal', { replace: true });
   }, []);
   useEffect(() => {
     if (Date.now() >= lockEnd) return;
@@ -45,7 +45,7 @@ export default function AdminLogin() {
       sessionStorage.setItem('sero_admin_token', token);
       sessionStorage.removeItem('sero_attempts');
       sessionStorage.removeItem('sero_locked');
-      navigate('/admin', { replace: true });
+      navigate('/sero-internal', { replace: true });
     } catch {
       const next = attempts + 1;
       setAttempts(next);
