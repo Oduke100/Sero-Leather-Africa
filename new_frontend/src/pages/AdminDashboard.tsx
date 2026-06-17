@@ -236,7 +236,7 @@ export default function AdminDashboard() {
     mode === 'add' ? setUploadLoading(true) : setEditUploadLoading(true);
     try {
       const form = new FormData(); form.append('file', file);
-      const res  = await fetch('/api/upload', { method: 'POST', body: form });
+      const res  = await fetch('https://sero-leather-africa-2-production.up.railway.app/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Upload failed');
       mode === 'add' ? setNewProduct(p => ({ ...p, image_url: data.url })) : setEditData(d => ({ ...d, image: data.url }));
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
     setCatImgLoading(true);
     try {
       const form = new FormData(); form.append('file', file);
-      const res  = await fetch('/api/upload', { method: 'POST', body: form });
+      const res  = await fetch('https://sero-leather-africa-2-production.up.railway.app/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Upload failed');
       setNewCat(c => ({ ...c, image_url: data.url })); notify('Image uploaded ✓');
@@ -291,7 +291,7 @@ export default function AdminDashboard() {
     setCatImgEditLoad(true);
     try {
       const form = new FormData(); form.append('file', file);
-      const res  = await fetch('/api/upload', { method: 'POST', body: form });
+      const res  = await fetch('https://sero-leather-africa-2-production.up.railway.app/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Upload failed');
       setEditCatData(d => ({ ...d, image_url: data.url })); notify('Image uploaded ✓');
