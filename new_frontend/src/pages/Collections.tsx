@@ -62,7 +62,7 @@ export default function Collections() {
             <div className="categories-grid">
               {categories.map((c, i) => (
                 <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => navigate(`/collections/${c.slug}`)}>
-                  {c.image_url && <img src={`${API_BASE}${c.image_url}`} alt={c.name} />}
+                  {c.image_url && <img src={c.image_url.startsWith("http") ? c.image_url : `${API_BASE}${c.image_url}`} alt={c.name} />}
                   <div className="category-card-content">
                     <h3 className="category-name">{c.name}</h3>
                     <p className="category-desc">{c.description}</p>

@@ -42,7 +42,7 @@ function Hero() {
     <section className="hero">
       <div className="hero-bg" ref={bgRef} />
       <div className="hero-content">
-        <h1 className="hero-title reveal" style={{ transitionDelay: '.5s' }}>Carry The<br /><em>Spirit</em><br />Of Africa</h1>
+        <h1 className="hero-title reveal" style={{ transitionDelay: '.5s' }}>Crafted With<br /><em>Intention</em><br />Worn With Pride!</h1>
         <p className="hero-sub reveal" style={{ transitionDelay: '.7s' }}>Handcrafted leather goods born from lisero.<br />Worn by the world.</p>
         <div className="hero-cta reveal" style={{ transitionDelay: '.9s' }}>
           <a href="/collections" className="btn-savannah">Explore Collections</a>
@@ -109,7 +109,7 @@ function Categories() {
         <div className="categories-grid">
           {categories.map((c, i) => (
             <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => window.location.href = `/collections/${c.slug}`}>
-              {c.image_url && <img src={`${API_BASE}${c.image_url}`} alt={c.name} />}
+              {c.image_url && <img src={c.image_url.startsWith("http") ? c.image_url : `${API_BASE}${c.image_url}`} alt={c.name} />}
               <div className="category-card-content">
                 <h3 className="category-name">{c.name}</h3>
                 <p className="category-desc">{c.description}</p>

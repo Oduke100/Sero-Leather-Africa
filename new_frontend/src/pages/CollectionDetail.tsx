@@ -74,7 +74,7 @@ export default function CollectionDetail() {
       {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
       <div className="collection-hero">
         {category?.image_url && (
-          <div className="collection-hero-bg" style={{ backgroundImage: `url(${API_BASE}${category.image_url})` }} />
+          <div className="collection-hero-bg" style={{ backgroundImage: `url(${category.image_url.startsWith("http") ? category.image_url : `${API_BASE}${category.image_url}`})` }} />
         )}
         <div className="collection-hero-overlay" />
         <div className="section-inner collection-hero-content">

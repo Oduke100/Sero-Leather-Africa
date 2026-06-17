@@ -44,8 +44,8 @@ export default function App() {
           <Route path="/checkout/paypal-return"    element={<Layout><PayPalReturn /></Layout>} />
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
           <Route path="/coming-soon"               element={<ComingSoon />} />
-          <Route path="/admin/login"               element={<AdminLogin />} />
-          <Route path="/admin"                     element={<AdminDashboard />} />
+          <Route path="/sero-internal/login"               element={<AdminLogin />} />
+          <Route path="/sero-internal"                     element={<AdminDashboard />} />
           <Route path="*"                          element={<ComingSoon />} />
         </Routes>
       </Suspense>

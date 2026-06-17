@@ -21,6 +21,11 @@ from schemas import (
     CreateCurrency, CurrencyInfo,
 )
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
+
 router = APIRouter()
 
 
@@ -96,8 +101,9 @@ def upload_image(file: UploadFile = File(...)):
 
 
 # ── auth ──────────────────────────────────────────────────────────────────────
-@router.post("/admin/login", response_model=AdminTokenResponse)
-def admin_login(credentials: AdminLogin, db: Session = Depends(get_db)):
+@router.post("/sero-internal/login", response_model=AdminTokenResponse)
+@limiter.limit("5/minute")
+def admin_login(request: Request, credentials: AdminLogin, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.username == credentials.username).first()
     if not admin or not verify_password(credentials.password, admin.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -115,6 +121,10 @@ def get_all_categories(db: Session = Depends(get_db)):
 @router.get("/categories/{category_id}")
 def get_category(category_id: int, db: Session = Depends(get_db)):
     return _get_or_404(db, Category, id=category_id)
+
+@router.post("/admin/login")
+async def admin_login_decoy(request: Request):
+    raise HTTPException(status_code=404, detail="Not found")
 
 @router.get("/admin/categories")
 def admin_get_all_categories(db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
@@ -261,7 +271,8 @@ def get_all_orders(db: Session = Depends(get_db), _: Admin = Depends(get_current
     return {"orders": result}
 
 @router.post("/orders", response_model=OrderOut)
-def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def create_order(request: Request, payload: OrderCreate, db: Session = Depends(get_db)):
     items_data = []
     total      = Decimal("0.00")
     for item in payload.items:
@@ -313,8 +324,19 @@ def update_order_status(order_id: int, payload: dict, db: Session = Depends(get_
 
 
 # ── webhooks ──────────────────────────────────────────────────────────────────
+# Safaricom callback IP whitelist
+MPESA_ALLOWED_IPS = {
+    "196.201.214.200", "196.201.214.206", "196.201.213.100",
+    "196.201.214.207", "196.201.214.208", "196.201.213.101",
+    "196.201.212.127", "196.201.212.138", "196.201.212.129",
+    "196.201.212.136", "196.201.212.74",  "196.201.212.69",
+}
+
 @router.post("/webhooks/mpesa")
 async def mpesa_webhook(request: Request, db: Session = Depends(get_db)):
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host).split(",")[0].strip()
+    if client_ip not in MPESA_ALLOWED_IPS:
+        raise HTTPException(status_code=403, detail="Forbidden")
     body     = await request.json()
     callback = body.get("Body", {}).get("stkCallback", {})
     checkout_request_id = callback.get("CheckoutRequestID")

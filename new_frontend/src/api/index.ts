@@ -133,7 +133,7 @@ function authHeaders(): Record<string, string> {
   };
 }
 export async function adminLogin(username: string, password: string): Promise<string> {
-  const res = await fetch(`${API}/admin/login`, {
+  const res = await fetch(`${API}/sero-internal/login`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ username, password }),

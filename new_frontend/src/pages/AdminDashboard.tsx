@@ -196,7 +196,7 @@ export default function AdminDashboard() {
   }
   function logout() {
     sessionStorage.removeItem('sero_admin_token');
-    navigate('/admin/login', { replace: true });
+    navigate('/sero-internal/login', { replace: true });
   }
   function slugify(n: string) { return n.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
   const loadCurrencies = useCallback(async () => { setCurrLoading(true); try { setCurrencies(await getCurrencies());     } catch { notify('Could not load currencies', 'err'); } finally { setCurrLoading(false); } }, []);
 
   useEffect(() => {
-    if (!sessionStorage.getItem('sero_admin_token')) navigate('/admin/login', { replace: true });
+    if (!sessionStorage.getItem('sero_admin_token')) navigate('/sero-internal/login', { replace: true });
   }, []);
   useEffect(() => { loadProducts(); loadCategories(); }, []);
   useEffect(() => { if (tab === 'orders')     loadOrders();     }, [tab]);

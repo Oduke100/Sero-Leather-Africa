@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -8,7 +9,7 @@ from dependancies import get_db
 from models import Admin
 
 # ── config ────────────────────────────────────────────────────────────────────
-SECRET_KEY         = "changethisbeforeshipping"
+SECRET_KEY         = os.getenv("SECRET_KEY")
 ALGORITHM          = "HS256"
 TOKEN_EXPIRE_HOURS = 8
 
