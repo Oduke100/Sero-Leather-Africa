@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict, computed_field
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional, Annotated
+from enum import Enum
 
 Dec2 = Annotated[Decimal, Field(max_digits=10, decimal_places=2)]
 
@@ -111,10 +112,10 @@ class OrderItemIn(BaseModel):
     quantity:   int = Field(ge=1)
 
 class OrderCreate(BaseModel):
-    customer_name:    str
-    customer_email:   str
-    customer_phone:   str
-    delivery_address: str
+    customer_name:    str = Field(max_length=100)
+    customer_email:   str = Field(max_length=255)
+    customer_phone:   str = Field(max_length=20)
+    delivery_address: str = Field(max_length=500)
     payment_method:   str = "mpesa"
     currency:         str = "KES"
     items:            list[OrderItemIn] = Field(min_length=1)
@@ -154,6 +155,16 @@ class OrderStatusOut(BaseModel):
     payment_status:     str
     total_price:        Dec2
     merchant_reference: Optional[str]
+
+class OrderStatusEnum(str, Enum):
+    pending = "pending"
+    confirmed = "confirmed"
+    shipped = "shipped"
+    delivered = "delivered"
+    cancelled = "cancelled"
+
+class OrderStatusUpdate(BaseModel):
+    status: OrderStatusEnum
 
 # ── currency ──────────────────────────────────────────────────────────────────
 class CreateCurrency(BaseModel):

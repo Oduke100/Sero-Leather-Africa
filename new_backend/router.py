@@ -17,7 +17,7 @@ from schemas import (
     CreateProduct, UpdateProduct,
     CreateProductVariant, UpdateProductVariant,
     ProductInfo, AdminProductInfo,
-    OrderCreate, OrderOut, OrderStatusOut,
+    OrderCreate, OrderOut, OrderStatusOut, OrderStatusUpdate,
     CreateCurrency, CurrencyInfo,
 )
 
@@ -78,11 +78,13 @@ def root():
     return {"message": "BE is live"}
 
 @router.post("/upload")
-def upload_image(file: UploadFile = File(...)):
+def upload_image(file: UploadFile = File(...), _: Admin = Depends(get_current_admin)):
     try:
         if file.content_type not in {"image/jpeg", "image/png", "image/webp"}:
             raise HTTPException(status_code=400, detail="Only JPEG, PNG and WebP images are allowed.")
         contents = file.file.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Image too large. Max size is 5MB.")
         try:
             Image.open(io.BytesIO(contents)).verify()
             image = Image.open(io.BytesIO(contents)).convert("RGB")
@@ -96,8 +98,8 @@ def upload_image(file: UploadFile = File(...)):
         return {"url": f"/uploads/{filename}"}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Upload failed.")
 
 
 # ── auth ──────────────────────────────────────────────────────────────────────
@@ -280,6 +282,7 @@ def get_all_orders(db: Session = Depends(get_db), _: Admin = Depends(get_current
 @router.post("/orders", response_model=OrderOut)
 @limiter.limit("10/minute")
 def create_order(request: Request, payload: OrderCreate, db: Session = Depends(get_db)):
+    payload.currency = _validate_currency(payload.currency, db)
     items_data = []
     total      = Decimal("0.00")
     for item in payload.items:
@@ -323,9 +326,9 @@ def create_order(request: Request, payload: OrderCreate, db: Session = Depends(g
     return order
 
 @router.put("/admin/orders/{order_id}")
-def update_order_status(order_id: int, payload: dict, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
+def update_order_status(order_id: int, payload: OrderStatusUpdate, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
     order = _get_or_404(db, Order, id=order_id)
-    order.status = payload.get("status", order.status)
+    order.status = payload.status.value
     db.commit()
     return {"message": "Status updated"}
 
@@ -350,7 +353,7 @@ async def mpesa_webhook(request: Request, db: Session = Depends(get_db)):
     order = db.query(Order).filter(Order.mpesa_checkout_request_id == checkout_request_id).first()
     if not order:
         return {"ResultCode": 0, "ResultDesc": "Accepted"}
-    if callback.get("ResultCode") == 0:
+    if callback.get("ResultCode") == 0 and order.payment_status != "paid":
         meta    = callback.get("CallbackMetadata", {}).get("Item", [])
         receipt = next((i["Value"] for i in meta if i["Name"] == "MpesaReceiptNumber"), None)
         order.payment_status = "paid"
@@ -366,12 +369,10 @@ async def mpesa_webhook(request: Request, db: Session = Depends(get_db)):
 
 # ── paypal ────────────────────────────────────────────────────────────────────
 @router.post("/orders/{order_id}/paypal/create")
-def paypal_create(order_id: int, db: Session = Depends(get_db), body: dict = Body(default={})):
+def paypal_create(order_id: int, db: Session = Depends(get_db)):
     order = _get_or_404(db, Order, id=order_id)
     try:
-        return_url = (body or {}).get("return_url")
-        cancel_url = (body or {}).get("cancel_url")
-        result       = paypal_create_order(amount_usd=str(convert(order.total_price, "USD")), merchant_reference=order.merchant_reference, return_url=return_url, cancel_url=cancel_url)
+        result       = paypal_create_order(amount_usd=str(convert(order.total_price, "USD")), merchant_reference=order.merchant_reference)
         paypal_id    = result["id"]
         approval_url = next(l["href"] for l in result["links"] if l["rel"] == "approve")
         order.paypal_order_id = paypal_id

@@ -10,6 +10,8 @@ from models import Admin
 
 # ── config ────────────────────────────────────────────────────────────────────
 SECRET_KEY         = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not set in the environment. Set it before starting the app.")
 ALGORITHM          = "HS256"
 TOKEN_EXPIRE_HOURS = 8
 

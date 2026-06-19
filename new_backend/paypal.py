@@ -12,7 +12,7 @@ def get_access_token() -> str:
     r = httpx.post(
         f"{BASE_URL}/v1/oauth2/token",
         data={"grant_type": "client_credentials"},
-        auth=(CLIENT_ID, CLIENT_SECRET),
+        auth=(CLIENT_ID, CLIENT_SECRET), timeout=10,
     )
     r.raise_for_status()
     return r.json()["access_token"]
@@ -35,7 +35,7 @@ def create_order(amount_usd: str, merchant_reference: str, return_url: str = Non
                 "user_action": "PAY_NOW",
             },
         },
-        headers={"Authorization": f"Bearer {get_access_token()}"},
+        headers={"Authorization": f"Bearer {get_access_token()}"}, timeout=10,
     )
     r.raise_for_status()
     return r.json()
@@ -43,6 +43,7 @@ def create_order(amount_usd: str, merchant_reference: str, return_url: str = Non
 def capture_order(paypal_order_id: str) -> dict:
     r = httpx.post(
         f"{BASE_URL}/v2/checkout/orders/{paypal_order_id}/capture",
+        timeout=10,
         headers={
             "Authorization": f"Bearer {get_access_token()}",
             "Content-Type":  "application/json",
