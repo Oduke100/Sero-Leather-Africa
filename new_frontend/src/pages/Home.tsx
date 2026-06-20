@@ -83,6 +83,7 @@ function Ticker() {
 function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading,    setLoading]    = useState(true);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getCategories()
@@ -92,6 +93,14 @@ function Categories() {
   }, []);
 
   useReveal(categories);
+
+  function scrollByCard(dir: 1 | -1) {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector('.category-card') as HTMLElement | null;
+    const amount = card ? card.offsetWidth + 8 : 320;
+    el.scrollBy({ left: amount * dir, behavior: 'smooth' });
+  }
 
   if (loading) return (
     <section className="categories-section">
@@ -116,16 +125,20 @@ function Categories() {
           <p className="eyebrow">Shop By Category</p>
           <h2 className="section-title">Browse The Range</h2>
         </div>
-        <div className="categories-grid">
-          {categories.map((c, i) => (
-            <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => window.location.href = `/collections/${c.slug}`}>
-              {c.image_url && <img src={c.image_url.startsWith("http") ? c.image_url : `${API_BASE}${c.image_url}`} alt={c.name} />}
-              <div className="category-card-content">
-                <h3 className="category-name">{c.name}</h3>
-                <p className="category-desc">{c.description}</p>
+        <div className="categories-carousel-wrap">
+          <button className="categories-arrow categories-arrow--left" aria-label="Previous" onClick={() => scrollByCard(-1)}>‹</button>
+          <div className="categories-grid" ref={trackRef}>
+            {categories.map((c, i) => (
+              <div key={c.id} className="category-card reveal" style={{ transitionDelay: `${i * 0.1}s` }} onClick={() => window.location.href = `/collections/${c.slug}`}>
+                {c.image_url && <img src={c.image_url.startsWith("http") ? c.image_url : `${API_BASE}${c.image_url}`} alt={c.name} />}
+                <div className="category-card-content">
+                  <h3 className="category-name">{c.name}</h3>
+                  <p className="category-desc">{c.description}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <button className="categories-arrow categories-arrow--right" aria-label="Next" onClick={() => scrollByCard(1)}>›</button>
         </div>
       </div>
     </section>
