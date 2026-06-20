@@ -90,6 +90,8 @@ def upload_image(file: UploadFile = File(...), _: Admin = Depends(get_current_ad
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Image too large. Max size is 5MB.")
         try:
+            from PIL import Image as PILImage
+            PILImage.MAX_IMAGE_PIXELS = 50_000_000
             Image.open(io.BytesIO(contents)).verify()
             image = Image.open(io.BytesIO(contents)).convert("RGB")
         except Exception:
