@@ -237,6 +237,24 @@ export async function deleteAdminProduct(id: number): Promise<void> {
   });
   if (!res.ok) throw new Error('Delete failed');
 }
+export async function getProductVariants(productId: number): Promise<{id: number; size: string; colour: string; stock: number}[]> {
+  const res = await fetch(`${API}/products/${productId}/variants`);
+  if (!res.ok) throw new Error('Failed to fetch variants');
+  return res.json();
+}
+
+export async function createVariant(productId: number, payload: { size: string; colour: string; stock: number }): Promise<void> {
+  const res = await fetch(`${API}/products/${productId}/variants`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.detail || 'Failed to create variant');
+  }
+}
+
 export async function getAdminProducts(): Promise<Product[]> {
   const res  = await fetch(`${API}/admin/products`, { headers: authHeaders() });
   if (!res.ok) throw new Error('Unauthorised');

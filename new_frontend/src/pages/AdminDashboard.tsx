@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  getAdminProducts, deleteAdminProduct, toggleProduct,
+  getAdminProducts, deleteAdminProduct, toggleProduct, createVariant,
   updateAdminProduct, getOrders, updateOrderStatus,
   type Order,
   getCategories, createCategory, type Category,
@@ -145,6 +145,8 @@ export default function AdminDashboard() {
     is_on_discount: false, discount_percentage: 0,
   });
   const [addLoading,        setAddLoading]        = useState(false);
+  const [hasVariants,       setHasVariants]       = useState(false);
+  const [newVariants,       setNewVariants]       = useState<{size: string; colour: string; stock: string}[]>([]);
   const [uploadLoading,     setUploadLoading]     = useState(false);
   const [editUploadLoading, setEditUploadLoading] = useState(false);
   const fileInputRef     = useRef<HTMLInputElement>(null);
@@ -260,8 +262,20 @@ export default function AdminDashboard() {
         is_on_discount: newProduct.is_on_discount, discount_percentage: newProduct.discount_percentage,
         category_id: parseInt(newProduct.category_id),
       });
+      const created = await (await import('../api')).getAdminProductDetail
+      // fire variant creation
+      if (hasVariants && newVariants.length > 0) {
+        const pid = (await (await import('../api')).getAdminProducts()).find(p => p.name === newProduct.name.trim())?.id;
+        if (pid) {
+          for (const v of newVariants) {
+            if (v.size && v.colour && v.stock) {
+              await createVariant(pid, { size: v.size, colour: v.colour, stock: parseInt(v.stock) });
+            }
+          }
+        }
+      }
       notify('Product added!'); setShowAddForm(false);
-      setNewProduct({ name:'',slug:'',description:'',image_url:'',price:'',stock:'',category_id:'',is_active:true,is_customisable:false,is_on_discount:false,discount_percentage:0 });
+      setNewProduct({ name:'',slug:'',description:'',image_url:'',price:'',stock:'',category_id:'',is_active:true,is_customisable:false,is_on_discount:false,discount_percentage:0 }); setHasVariants(false); setNewVariants([]);
       loadProducts();
     } catch (e: unknown) { notify(e instanceof Error ? e.message : 'Create failed', 'err'); }
     finally { setAddLoading(false); }
@@ -501,6 +515,26 @@ export default function AdminDashboard() {
                     </Field>
                   </div>
                 )}
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'rgba(245,237,216,0.5)', cursor: 'pointer', marginBottom: 12 }}>
+                    <input type="checkbox" checked={hasVariants} style={{ accentColor: '#D4A847' }}
+                      onChange={e => { setHasVariants(e.target.checked); if (!e.target.checked) setNewVariants([]); }} />
+                    Has Variants (size / colour)
+                  </label>
+                  {hasVariants && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {newVariants.map((v, i) => (
+                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 32px', gap: 8, alignItems: 'end' }}>
+                          <Field label="Size"><input value={v.size} style={inputStyle} onChange={e => setNewVariants(vs => vs.map((x, j) => j === i ? {...x, size: e.target.value} : x))} /></Field>
+                          <Field label="Colour"><input value={v.colour} style={inputStyle} onChange={e => setNewVariants(vs => vs.map((x, j) => j === i ? {...x, colour: e.target.value} : x))} /></Field>
+                          <Field label="Stock"><input type="number" value={v.stock} style={inputStyle} onChange={e => setNewVariants(vs => vs.map((x, j) => j === i ? {...x, stock: e.target.value} : x))} /></Field>
+                          <button onClick={() => setNewVariants(vs => vs.filter((_, j) => j !== i))} style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171', cursor: 'pointer', padding: '8px', fontSize: 12 }}>✕</button>
+                        </div>
+                      ))}
+                      <Btn variant="ghost" sm onClick={() => setNewVariants(vs => [...vs, { size: '', colour: '', stock: '' }])}>+ Add Variant</Btn>
+                    </div>
+                  )}
+                </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Btn onClick={handleAddProduct} disabled={addLoading}>{addLoading ? 'Saving…' : 'Save Product'}</Btn>
                 </div>
