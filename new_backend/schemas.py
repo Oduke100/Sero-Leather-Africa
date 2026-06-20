@@ -94,6 +94,7 @@ class UpdateProductVariant(BaseModel):
     stock:  Optional[int] = None
 
 class ProductVariantInfo(BaseModel):
+    model_config = {"from_attributes": True}
     id:     int
     size:   str
     colour: str
