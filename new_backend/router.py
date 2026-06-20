@@ -18,7 +18,7 @@ from schemas import (
     AdminLogin, AdminTokenResponse, ChangePassword,
     CreateCategory, UpdateCategory,
     CreateProduct, UpdateProduct,
-    CreateProductVariant, UpdateProductVariant,
+    CreateProductVariant, UpdateProductVariant, ProductVariantInfo,
     ProductInfo, AdminProductInfo,
     OrderCreate, OrderOut, OrderStatusOut, OrderStatusUpdate,
     CreateCurrency, CurrencyInfo,
@@ -206,7 +206,7 @@ def get_product(product_id: int, currency: str = "KES", db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="Product not found")
     return _build_product_info(p, currency, ProductInfo)
 
-@router.get("/products/{product_id}/variants")
+@router.get("/products/{product_id}/variants", response_model=list[ProductVariantInfo])
 def get_product_variants(product_id: int, db: Session = Depends(get_db)):
     _get_or_404(db, Product, id=product_id)
     return db.query(Variant).filter(Variant.product_id == product_id).all()

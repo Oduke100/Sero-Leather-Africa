@@ -94,6 +94,7 @@ class UpdateProductVariant(BaseModel):
     stock:  Optional[int] = None
 
 class ProductVariantInfo(BaseModel):
+    id:     int
     size:   str
     colour: str
     stock:  int
