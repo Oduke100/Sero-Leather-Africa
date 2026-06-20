@@ -216,15 +216,17 @@ export async function toggleProduct(id: number): Promise<void> {
 }
 export async function updateAdminProduct(
   id: number,
-  payload: Partial<{ name: string; description: string; price: number; image: string; qty: number; available: boolean }>
+  payload: Partial<{ name: string; description: string; price: number; image: string; qty: number; available: boolean; is_on_discount: boolean; discount_percentage: number }>
 ): Promise<void> {
   const mapped: Record<string, unknown> = {};
-  if (payload.name        !== undefined) mapped.name        = payload.name;
-  if (payload.description !== undefined) mapped.description = payload.description;
-  if (payload.price       !== undefined) mapped.price       = payload.price;
-  if (payload.image       !== undefined) mapped.image_url   = payload.image;
-  if (payload.qty         !== undefined) mapped.stock       = payload.qty;
-  if (payload.available   !== undefined) mapped.is_active   = payload.available;
+  if (payload.name                 !== undefined) mapped.name                 = payload.name;
+  if (payload.description          !== undefined) mapped.description          = payload.description;
+  if (payload.price                !== undefined) mapped.price                = payload.price;
+  if (payload.image                !== undefined) mapped.image_url            = payload.image;
+  if (payload.qty                  !== undefined) mapped.stock                = payload.qty;
+  if (payload.available            !== undefined) mapped.is_active            = payload.available;
+  if (payload.is_on_discount       !== undefined) mapped.is_on_discount       = payload.is_on_discount;
+  if (payload.discount_percentage  !== undefined) mapped.discount_percentage  = payload.discount_percentage;
   const res = await fetch(`${API}/admin/products/${id}`, {
     method:  'PATCH',
     headers: authHeaders(),
