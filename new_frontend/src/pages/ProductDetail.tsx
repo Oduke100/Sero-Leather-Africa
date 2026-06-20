@@ -34,6 +34,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(false);
   const [variants, setVariants] = useState<{id: number; size: string; colour: string; stock: number}[]>([]);
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   useReveal();
 
   useEffect(() => {
@@ -140,7 +141,16 @@ export default function ProductDetail() {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label className="pd-label" style={{ opacity: 0, userSelect: 'none' }}>Action</label>
               <button className="pd-bag-btn" disabled={soldOut}
-                onClick={() => { addItem({ product_id: product.id, name: product.name, image: product.image, price: product.price }, qty); showToast(`${product.name} — added to your bag`); }}>
+                onClick={() => {
+                  if (variants.length > 0 && selectedVariant === null) {
+                    showToast('Please select an option first');
+                    return;
+                  }
+                  const variant  = variants.find(v => v.id === selectedVariant);
+                  const itemName = variant ? `${product.name} (${variant.colour}, ${variant.size})` : product.name;
+                  addItem({ product_id: product.id, variant_id: variant?.id, name: itemName, image: product.image, price: product.price }, qty);
+                  showToast(`${itemName} — added to your bag`);
+                }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
                   <path d="M16 10a4 4 0 01-8 0"/>
@@ -153,16 +163,31 @@ export default function ProductDetail() {
           {/* ─── VARIANTS */}
           {variants.length > 0 && (
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 9, letterSpacing: '.35em', textTransform: 'uppercase', color: 'rgba(245,237,216,0.4)', marginBottom: 12, fontWeight: 500 }}>Available Variants</p>
+              <p style={{ fontSize: 9, letterSpacing: '.35em', textTransform: 'uppercase', color: 'rgba(245,237,216,0.4)', marginBottom: 12, fontWeight: 500 }}>
+                Select an Option {selectedVariant === null && <span style={{ color: '#f87171', marginLeft: 6 }}>*</span>}
+              </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {variants.map(v => (
-                  <div key={v.id} style={{ padding: '8px 14px', border: '1px solid rgba(212,168,71,0.2)', background: 'rgba(44,30,22,0.6)', fontSize: 11, color: v.stock > 0 ? '#F5EDD8' : 'rgba(245,237,216,0.25)', position: 'relative' }}>
-                    <span style={{ fontWeight: 500 }}>{v.size}</span>
-                    <span style={{ color: 'rgba(245,237,216,0.4)', margin: '0 6px' }}>·</span>
-                    <span>{v.colour}</span>
-                    {v.stock === 0 && <span style={{ fontSize: 8, letterSpacing: '.1em', color: '#f87171', marginLeft: 8 }}>sold out</span>}
-                  </div>
-                ))}
+                {variants.map(v => {
+                  const isSelected = selectedVariant === v.id;
+                  const disabled   = v.stock === 0;
+                  return (
+                    <button key={v.id} type="button" disabled={disabled}
+                      onClick={() => setSelectedVariant(v.id)}
+                      style={{
+                        padding: '8px 14px', cursor: disabled ? 'not-allowed' : 'pointer',
+                        border: isSelected ? '1px solid #D4A847' : '1px solid rgba(212,168,71,0.2)',
+                        background: isSelected ? 'rgba(212,168,71,0.15)' : 'rgba(44,30,22,0.6)',
+                        fontSize: 11, fontFamily: "'Jost',sans-serif",
+                        color: disabled ? 'rgba(245,237,216,0.25)' : isSelected ? '#D4A847' : '#F5EDD8',
+                        position: 'relative', transition: 'all .15s',
+                      }}>
+                      <span style={{ fontWeight: 500 }}>{v.size}</span>
+                      <span style={{ color: 'rgba(245,237,216,0.4)', margin: '0 6px' }}>·</span>
+                      <span>{v.colour}</span>
+                      {disabled && <span style={{ fontSize: 8, letterSpacing: '.1em', color: '#f87171', marginLeft: 8 }}>sold out</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
