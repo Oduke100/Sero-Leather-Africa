@@ -262,7 +262,6 @@ export default function AdminDashboard() {
         is_on_discount: newProduct.is_on_discount, discount_percentage: newProduct.discount_percentage,
         category_id: parseInt(newProduct.category_id),
       });
-      const created = await (await import('../api')).getAdminProductDetail
       // fire variant creation
       if (hasVariants && newVariants.length > 0) {
         const pid = (await (await import('../api')).getAdminProducts()).find(p => p.name === newProduct.name.trim())?.id;
