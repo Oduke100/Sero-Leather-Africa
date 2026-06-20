@@ -489,16 +489,18 @@ export default function AdminDashboard() {
                     <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'rgba(245,237,216,0.5)', cursor: 'pointer' }}>
                       <input type="checkbox" checked={newProduct[key] as boolean} style={{ accentColor: '#D4A847' }}
                         onChange={e => setNewProduct(p => ({ ...p, [key]: e.target.checked }))} />
-                {newProduct.is_on_discount && (
-                  <Field label="Discount %">
-                    <input type="number" min="0" max="100" value={newProduct.discount_percentage || ''} style={inputStyle}
-                      onChange={e => setNewProduct(p => ({ ...p, discount_percentage: parseFloat(e.target.value) || 0 }))} />
-                  </Field>
-                )}
                       {label}
                     </label>
                   ))}
                 </div>
+                {newProduct.is_on_discount && (
+                  <div style={{ marginBottom: 16 }}>
+                    <Field label="Discount %">
+                      <input type="number" min="0" max="100" value={newProduct.discount_percentage || ''} style={inputStyle}
+                        onChange={e => setNewProduct(p => ({ ...p, discount_percentage: parseFloat(e.target.value) || 0 }))} />
+                    </Field>
+                  </div>
+                )}
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Btn onClick={handleAddProduct} disabled={addLoading}>{addLoading ? 'Saving…' : 'Save Product'}</Btn>
                 </div>
