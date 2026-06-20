@@ -47,6 +47,12 @@ async def rate_refresh_loop():
 # ── app ───────────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from database import SessionLocal
+    from sqlalchemy import text
+    db = SessionLocal()
+    db.execute(text("UPDATE product SET slug = lower(slug)"))
+    db.commit()
+    db.close()
     asyncio.create_task(rate_refresh_loop())
     yield
 
