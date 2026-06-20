@@ -489,6 +489,12 @@ export default function AdminDashboard() {
                     <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'rgba(245,237,216,0.5)', cursor: 'pointer' }}>
                       <input type="checkbox" checked={newProduct[key] as boolean} style={{ accentColor: '#D4A847' }}
                         onChange={e => setNewProduct(p => ({ ...p, [key]: e.target.checked }))} />
+                {newProduct.is_on_discount && (
+                  <Field label="Discount %">
+                    <input type="number" min="0" max="100" value={newProduct.discount_percentage || ''} style={inputStyle}
+                      onChange={e => setNewProduct(p => ({ ...p, discount_percentage: parseFloat(e.target.value) || 0 }))} />
+                  </Field>
+                )}
                       {label}
                     </label>
                   ))}
@@ -522,7 +528,27 @@ export default function AdminDashboard() {
                         <p style={{ fontSize: 10, color: 'rgba(245,237,216,0.3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.description || '—'}</p>
                       </div>
                     </div>
-                    <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.price)}</span>
+                    <div>
+                      {p.is_on_discount && p.final_price ? (
+                        <>
+                          <span style={{ textDecoration: 'line-through', fontSize: 10, color: 'rgba(245,237,216,0.3)', display: 'block' }}>{convertPrice(p.price)}</span>
+                          <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.final_price)}</span>
+                          <span style={{ fontSize: 8, color: '#D4A847', letterSpacing: '.1em' }}>{p.discount_percentage}% off</span>
+                        </>
+                      ) : (
+                        <div>
+                      {p.is_on_discount && p.final_price ? (
+                        <>
+                          <span style={{ textDecoration: 'line-through', fontSize: 10, color: 'rgba(245,237,216,0.3)', display: 'block' }}>{convertPrice(p.price)}</span>
+                          <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.final_price)}</span>
+                          <span style={{ fontSize: 8, color: '#D4A847', letterSpacing: '.1em' }}>{p.discount_percentage}% off</span>
+                        </>
+                      ) : (
+                        <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.price)}</span>
+                      )}
+                    </div>
+                      )}
+                    </div>
                     <span style={{ fontSize: 13, fontWeight: 500, color: '#F5EDD8' }}>{p.qty}</span>
                     <span style={{ fontSize: 9, fontWeight: 600, padding: '4px 10px', letterSpacing: '.15em', textTransform: 'uppercase', background: p.available ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)', color: p.available ? '#34d399' : '#f87171' }}>
                       {p.available ? 'Live' : 'Hidden'}
@@ -814,6 +840,17 @@ export default function AdminDashboard() {
                 onChange={e => setEditData(d => ({ ...d, available: e.target.checked }))} />
               Available in store
             </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'rgba(245,237,216,0.5)', cursor: 'pointer', marginBottom: 8 }}>
+              <input type="checkbox" checked={editData.is_on_discount ?? false} style={{ accentColor: '#D4A847' }}
+                onChange={e => setEditData(d => ({ ...d, is_on_discount: e.target.checked }))} />
+              On Discount
+            </label>
+            {editData.is_on_discount && (
+              <Field label="Discount %">
+                <input type="number" min="0" max="100" value={editData.discount_percentage ?? ''} style={{...inputStyle, marginBottom: 16}}
+                  onChange={e => setEditData(d => ({ ...d, discount_percentage: parseFloat(e.target.value) || 0 }))} />
+              </Field>
+            )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <Btn variant="ghost" onClick={() => { setEditId(null); setEditData({}); }}>Cancel</Btn>
               <Btn onClick={handleEdit}>Save Changes</Btn>

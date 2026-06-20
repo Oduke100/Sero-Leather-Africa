@@ -110,7 +110,19 @@ export default function ProductDetail() {
         <div className="reveal" style={{ transitionDelay: '.15s' }}>
           <p className="pd-category">Leather Goods</p>
           <h1 className="pd-name">{product.name}</h1>
-          <p className="pd-price">{convertPrice(product.price)}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', margin: '8px 0' }}>
+            {product.is_on_discount && product.final_price ? (
+              <>
+                <span style={{ textDecoration: 'line-through', color: 'rgba(245,237,216,0.35)', fontSize: '1.1rem', fontFamily: "'Cormorant Garamond',serif" }}>{convertPrice(product.price)}</span>
+                <span className="pd-price" style={{ margin: 0 }}>{convertPrice(product.final_price)}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.15em', padding: '4px 10px', background: 'rgba(212,168,71,0.15)', color: '#D4A847', border: '1px solid rgba(212,168,71,0.3)' }}>
+                  {product.discount_percentage}% OFF
+                </span>
+              </>
+            ) : (
+              <span className="pd-price">{convertPrice(product.price)}</span>
+            )}
+          </div>
           <p className="pd-description">{product.description || 'A premium handcrafted leather piece made with care in Nairobi, Kenya.'}</p>
           <p className="pd-stock">{soldOut ? 'This item is currently out of stock' : `${product.qty} in stock`}</p>
 
