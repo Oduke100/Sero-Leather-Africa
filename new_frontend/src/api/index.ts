@@ -142,6 +142,20 @@ export async function adminLogin(username: string, password: string): Promise<st
   const data = await res.json();
   return data.access_token as string;
 }
+export async function changePassword(currentPassword: string, newPassword: string): Promise<string> {
+  const res = await fetch(`${API}/sero-internal/change-password`, {
+    method:  'PATCH',
+    headers: authHeaders(),
+    body:    JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.detail || 'Password change failed');
+  }
+  const data = await res.json();
+  return data.access_token as string;
+}
+
 /* ── PRODUCTS ───────────────────────────────────────────────── */
 export async function getProducts(): Promise<Product[]> {
   const res  = await fetch(`${API}/products`);

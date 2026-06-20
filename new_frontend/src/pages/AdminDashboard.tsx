@@ -392,6 +392,11 @@ export default function AdminDashboard() {
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,237,216,0.35)')}>
               View Store
             </a>
+            <button onClick={() => navigate('/sero-internal/change-password')} style={{ fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(245,237,216,0.35)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Jost',sans-serif", transition: 'color .2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#D4A847')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,237,216,0.35)')}>
+              Change Password
+            </button>
             <button onClick={logout} style={{ fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(245,237,216,0.35)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Jost',sans-serif", transition: 'color .2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,237,216,0.35)')}>

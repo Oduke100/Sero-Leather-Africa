@@ -5,14 +5,14 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Request, UploadFile
 from sqlalchemy.orm import Session
 from PIL import Image
 
-from auth import create_token, verify_password, get_current_admin
+from auth import create_token, verify_password, hash_password, get_current_admin
 from dependancies import get_db
 from currency import convert, get_supported
 from mpesa import initiate_stk_push
 from paypal import create_order as paypal_create_order, capture_order as paypal_capture_order
 from models import Admin, Category, Product, Variant, Order, OrderItem, PaymentLog, Currency
 from schemas import (
-    AdminLogin, AdminTokenResponse,
+    AdminLogin, AdminTokenResponse, ChangePassword,
     CreateCategory, UpdateCategory,
     CreateProduct, UpdateProduct,
     CreateProductVariant, UpdateProductVariant,
@@ -109,6 +109,17 @@ def admin_login(request: Request, credentials: AdminLogin, db: Session = Depends
     admin = db.query(Admin).filter(Admin.username == credentials.username).first()
     if not admin or not verify_password(credentials.password, admin.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
+    token = create_token({"sub": admin.username})
+    admin.active_token = token
+    db.commit()
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@router.patch("/sero-internal/change-password", response_model=AdminTokenResponse)
+def admin_change_password(payload: ChangePassword, db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin)):
+    if not verify_password(payload.current_password, admin.hashed_password):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    admin.hashed_password = hash_password(payload.new_password)
     token = create_token({"sub": admin.username})
     admin.active_token = token
     db.commit()

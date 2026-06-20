@@ -21,6 +21,7 @@ import ComingSoon from './pages/ComingSoon';
 // ─── lazy ──────────────────────────────────────────────────────────────────────
 const AdminLogin = React.lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const AdminChangePassword = React.lazy(() => import('./pages/AdminChangePassword'));
 
 // ─── app ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/coming-soon"               element={<ComingSoon />} />
           <Route path="/sero-internal/login"               element={<AdminLogin />} />
           <Route path="/sero-internal"                     element={<AdminDashboard />} />
+          <Route path="/sero-internal/change-password"     element={<AdminChangePassword />} />
           <Route path="*"                          element={<ComingSoon />} />
         </Routes>
       </Suspense>
