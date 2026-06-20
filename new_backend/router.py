@@ -4,6 +4,8 @@ from decimal import Decimal
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy.orm import Session
 from PIL import Image
+import cloudinary
+import cloudinary.uploader
 
 from auth import create_token, verify_password, hash_password, get_current_admin
 from dependancies import get_db
@@ -93,9 +95,11 @@ def upload_image(file: UploadFile = File(...), _: Admin = Depends(get_current_ad
         if image.width > 1200:
             ratio = 1200 / image.width
             image = image.resize((1200, int(image.height * ratio)), Image.LANCZOS)
-        filename = f"{uuid.uuid4()}.webp"
-        image.save(f"uploads/{filename}", "WEBP", quality=82, method=6)
-        return {"url": f"/uploads/{filename}"}
+        buffer = io.BytesIO()
+        image.save(buffer, "WEBP", quality=82, method=6)
+        buffer.seek(0)
+        result = cloudinary.uploader.upload(buffer, public_id=str(uuid.uuid4()), resource_type="image", format="webp")
+        return {"url": result["secure_url"]}
     except HTTPException:
         raise
     except Exception:
