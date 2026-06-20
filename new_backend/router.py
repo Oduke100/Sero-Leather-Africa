@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, UploadFile, File
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from PIL import Image
 import cloudinary
 import cloudinary.uploader
@@ -192,7 +193,7 @@ def get_all_products(currency: str = "KES", category: str = None, db: Session = 
 @router.get("/products/by-slug/{slug}")
 def get_product_by_slug(slug: str, currency: str = "KES", db: Session = Depends(get_db)):
     currency = _validate_currency(currency, db)
-    p = db.query(Product).filter(Product.slug == slug, Product.is_active == True).first()
+    p = db.query(Product).filter(func.lower(Product.slug) == slug.lower(), Product.is_active == True).first()
     if not p:
         raise HTTPException(status_code=404, detail="Product not found")
     return _build_product_info(p, currency, ProductInfo)
