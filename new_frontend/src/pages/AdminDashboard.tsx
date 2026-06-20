@@ -564,17 +564,7 @@ export default function AdminDashboard() {
                           <span style={{ fontSize: 8, color: '#D4A847', letterSpacing: '.1em' }}>{p.discount_percentage}% off</span>
                         </>
                       ) : (
-                        <div>
-                      {p.is_on_discount && p.final_price ? (
-                        <>
-                          <span style={{ textDecoration: 'line-through', fontSize: 10, color: 'rgba(245,237,216,0.3)', display: 'block' }}>{convertPrice(p.price)}</span>
-                          <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.final_price)}</span>
-                          <span style={{ fontSize: 8, color: '#D4A847', letterSpacing: '.1em' }}>{p.discount_percentage}% off</span>
-                        </>
-                      ) : (
                         <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.05rem', color: '#D4A847' }}>{convertPrice(p.price)}</span>
-                      )}
-                    </div>
                       )}
                     </div>
                     <span style={{ fontSize: 13, fontWeight: 500, color: '#F5EDD8' }}>{p.qty}</span>
