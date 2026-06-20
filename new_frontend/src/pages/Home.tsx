@@ -98,9 +98,19 @@ function Categories() {
     const el = trackRef.current;
     if (!el) return;
     const card = el.querySelector('.category-card') as HTMLElement | null;
-    const amount = card ? card.offsetWidth + 8 : 320;
-    el.scrollBy({ left: amount * dir, behavior: 'smooth' });
+    const width = card ? card.offsetWidth + 8 : el.clientWidth;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const next = el.scrollLeft + width * dir;
+    if (next < 0) { el.scrollTo({ left: maxScroll, behavior: 'smooth' }); }
+    else if (next > maxScroll + 4) { el.scrollTo({ left: 0, behavior: 'smooth' }); }
+    else { el.scrollBy({ left: width * dir, behavior: 'smooth' }); }
   }
+
+  useEffect(() => {
+    if (categories.length < 2) return;
+    const interval = setInterval(() => scrollByCard(1), 4500);
+    return () => clearInterval(interval);
+  }, [categories.length]);
 
   if (loading) return (
     <section className="categories-section">
