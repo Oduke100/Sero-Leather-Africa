@@ -254,6 +254,9 @@ export default function AdminDashboard() {
     setAddLoading(true);
     try {
       const { createProduct } = await import('../api');
+      const validVariants = hasVariants
+        ? newVariants.filter(v => v.size && v.colour && v.stock).map(v => ({ size: v.size, colour: v.colour, stock: parseInt(v.stock) }))
+        : [];
       await createProduct({
         name: newProduct.name.trim(), slug: newProduct.slug || slugify(newProduct.name),
         description: newProduct.description, image_url: newProduct.image_url,
@@ -261,18 +264,8 @@ export default function AdminDashboard() {
         is_active: newProduct.is_active, is_customisable: newProduct.is_customisable,
         is_on_discount: newProduct.is_on_discount, discount_percentage: newProduct.discount_percentage,
         category_id: parseInt(newProduct.category_id),
+        ...(validVariants.length > 0 ? { variants: validVariants } : {}),
       });
-      // fire variant creation
-      if (hasVariants && newVariants.length > 0) {
-        const pid = (await (await import('../api')).getAdminProducts()).find(p => p.name === newProduct.name.trim())?.id;
-        if (pid) {
-          for (const v of newVariants) {
-            if (v.size && v.colour && v.stock) {
-              await createVariant(pid, { size: v.size, colour: v.colour, stock: parseInt(v.stock) });
-            }
-          }
-        }
-      }
       notify('Product added!'); setShowAddForm(false);
       setNewProduct({ name:'',slug:'',description:'',image_url:'',price:'',stock:'',category_id:'',is_active:true,is_customisable:false,is_on_discount:false,discount_percentage:0 }); setHasVariants(false); setNewVariants([]);
       loadProducts();

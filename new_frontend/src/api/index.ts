@@ -196,6 +196,7 @@ export async function createProduct(payload: {
   is_on_discount:      boolean;
   discount_percentage: number;
   category_id:         number;
+  variants?:           { size: string; colour: string; stock: number }[];
 }): Promise<void> {
   const res = await fetch(`${API}/new-product`, {
     method:  'POST',

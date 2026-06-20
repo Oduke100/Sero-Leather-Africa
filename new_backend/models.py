@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, Text, TIMESTAMP, Boolean, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, Text, TIMESTAMP, Boolean, Numeric, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship
 from sqlalchemy.schema import FetchedValue
 from sqlalchemy.sql import func
 from database import Base
@@ -36,16 +37,22 @@ class Product(Base):
     created_at          = Column(TIMESTAMP, **_ts())
     updated_at          = Column(TIMESTAMP, **_ts_update())
 
+    variants = relationship("Variant", back_populates="product", cascade="all, delete-orphan")
+
 class Variant(Base):
     __tablename__ = "variant"
     id            = Column(Integer, primary_key=True, index=True)
-    product_id    = Column(Integer, ForeignKey(Product.id), nullable=False)
+    product_id    = Column(Integer, ForeignKey("product.id", ondelete="CASCADE"), nullable=False)
     size          = Column(Text, nullable=False)
     colour        = Column(Text, nullable=False)
     initial_stock = Column(Integer, nullable=True)
     stock         = Column(Integer, nullable=False)
     created_at    = Column(TIMESTAMP, **_ts())
     updated_at    = Column(TIMESTAMP, **_ts_update())
+
+    __table_args__ = (UniqueConstraint("product_id", "size", "colour", name="uq_variant_product_size_colour"),)
+
+    product = relationship("Product", back_populates="variants")
 
 # ── admin ─────────────────────────────────────────────────────────────────────
 class Admin(Base):

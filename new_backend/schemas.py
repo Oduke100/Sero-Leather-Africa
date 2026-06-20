@@ -30,58 +30,6 @@ class AdminCategoryInfo(CategoryInfo):
     created_at: datetime
     updated_at: datetime
 
-# ── product ───────────────────────────────────────────────────────────────────
-class CreateProduct(BaseModel):
-    category_id:         int
-    name:                str
-    slug:                str
-    description:         str
-    image_url:           str
-    is_customisable:     bool = False
-    price:               Dec2
-    discount_percentage: Optional[Dec2] = None
-    is_on_discount:      bool = False
-    stock:               int
-    is_active:           bool = True
-
-    @field_validator("slug", mode="before")
-    @classmethod
-    def lowercase_slug(cls, v):
-        return v.lower() if v else v
-
-class UpdateProduct(BaseModel):
-    category_id:         Optional[int]    = None
-    name:                Optional[str]    = None
-    slug:                Optional[str]    = None
-    description:         Optional[str]    = None
-    image_url:           Optional[str]    = None
-    is_customisable:     Optional[bool]   = None
-    price:               Optional[Dec2] = None
-    discount_percentage: Optional[Dec2] = None
-    is_on_discount:      Optional[bool]   = None
-    stock:               Optional[int]    = None
-    is_active:           Optional[bool]   = None
-
-class ProductInfo(BaseModel):
-    id:                  int
-    name:                str
-    slug:                str
-    description:         str
-    image_url:           str
-    is_customisable:     bool
-    price:               Dec2
-    final_price:         Dec2
-    discount_percentage: Optional[Dec2]
-    is_on_discount:      bool
-    stock:               int
-    is_active:           bool
-    currency:            str = "KES"
-
-class AdminProductInfo(ProductInfo):
-    initial_stock: Optional[int] = None
-    created_at:    datetime
-    updated_at:    datetime
-
 # ── variant ───────────────────────────────────────────────────────────────────
 class CreateProductVariant(BaseModel):
     size:   str
@@ -103,6 +51,61 @@ class ProductVariantInfo(BaseModel):
 class AdminProductVariantInfo(ProductVariantInfo):
     created_at: datetime
     updated_at: datetime
+
+# ── product ───────────────────────────────────────────────────────────────────
+class CreateProduct(BaseModel):
+    category_id:         int
+    name:                str
+    slug:                str
+    description:         str
+    image_url:           str
+    is_customisable:     bool = False
+    price:               Dec2
+    discount_percentage: Optional[Dec2] = None
+    is_on_discount:      bool = False
+    stock:               int
+    is_active:           bool = True
+    variants:            Optional[list[CreateProductVariant]] = None
+
+    @field_validator("slug", mode="before")
+    @classmethod
+    def lowercase_slug(cls, v):
+        return v.lower() if v else v
+
+class UpdateProduct(BaseModel):
+    category_id:         Optional[int]    = None
+    name:                Optional[str]    = None
+    slug:                Optional[str]    = None
+    description:         Optional[str]    = None
+    image_url:           Optional[str]    = None
+    is_customisable:     Optional[bool]   = None
+    price:               Optional[Dec2] = None
+    discount_percentage: Optional[Dec2] = None
+    is_on_discount:      Optional[bool]   = None
+    stock:               Optional[int]    = None
+    is_active:           Optional[bool]   = None
+
+class ProductInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id:                  int
+    name:                str
+    slug:                str
+    description:         str
+    image_url:           str
+    is_customisable:     bool
+    price:               Dec2
+    final_price:         Dec2
+    discount_percentage: Optional[Dec2]
+    is_on_discount:      bool
+    stock:               int
+    is_active:           bool
+    currency:            str = "KES"
+    variants:            list[ProductVariantInfo] = []
+
+class AdminProductInfo(ProductInfo):
+    initial_stock: Optional[int] = None
+    created_at:    datetime
+    updated_at:    datetime
 
 # ── admin ─────────────────────────────────────────────────────────────────────
 class AdminLogin(BaseModel):

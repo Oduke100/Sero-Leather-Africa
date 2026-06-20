@@ -41,6 +41,7 @@ def _build_product_info(p, currency, schema):
         is_customisable=p.is_customisable, price=convert(base, currency),
         final_price=convert(final, currency), discount_percentage=p.discount_percentage,
         is_on_discount=p.is_on_discount, stock=p.stock, is_active=p.is_active, currency=currency,
+        variants=p.variants,
     )
     if schema is AdminProductInfo:
         kwargs.update(initial_stock=p.initial_stock, created_at=p.created_at, updated_at=p.updated_at)
@@ -225,10 +226,14 @@ def admin_get_product(product_id: int, currency: str = "KES", db: Session = Depe
 def create_product(prod: CreateProduct, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
     if db.query(Product).filter(Product.name == prod.name).first():
         raise HTTPException(status_code=400, detail="Product already exists")
-    data = prod.model_dump()
+    data = prod.model_dump(exclude={"variants"})
     data["initial_stock"] = data.get("stock", 0)
     obj = Product(**data)
-    db.add(obj); db.commit(); db.refresh(obj)
+    db.add(obj); db.flush()
+    if prod.variants:
+        for v in prod.variants:
+            db.add(Variant(product_id=obj.id, **v.model_dump()))
+    db.commit(); db.refresh(obj)
     return obj
 
 @router.patch("/admin/products/{product_id}")
