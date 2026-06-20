@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProduct, type Product } from '../api/index';
+import { getProduct, getProductVariants, type Product } from '../api/index';
 import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
 
@@ -33,13 +33,14 @@ export default function ProductDetail() {
   const [qty,     setQty]     = useState(1);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(false);
+  const [variants, setVariants] = useState<{id: number; size: string; colour: string; stock: number}[]>([]);
   useReveal();
 
   useEffect(() => {
     
     if (!id) { setError(true); setLoading(false); return; }
     getProduct(id)
-      .then(p => setProduct(p))
+      .then(p => { setProduct(p); getProductVariants(p.id).then(setVariants).catch(() => {}); })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [id]);
@@ -148,6 +149,23 @@ export default function ProductDetail() {
               </button>
             </div>
           </div>
+
+          {/* ─── VARIANTS */}
+          {variants.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontSize: 9, letterSpacing: '.35em', textTransform: 'uppercase', color: 'rgba(245,237,216,0.4)', marginBottom: 12, fontWeight: 500 }}>Available Variants</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {variants.map(v => (
+                  <div key={v.id} style={{ padding: '8px 14px', border: '1px solid rgba(212,168,71,0.2)', background: 'rgba(44,30,22,0.6)', fontSize: 11, color: v.stock > 0 ? '#F5EDD8' : 'rgba(245,237,216,0.25)', position: 'relative' }}>
+                    <span style={{ fontWeight: 500 }}>{v.size}</span>
+                    <span style={{ color: 'rgba(245,237,216,0.4)', margin: '0 6px' }}>·</span>
+                    <span>{v.colour}</span>
+                    {v.stock === 0 && <span style={{ fontSize: 8, letterSpacing: '.1em', color: '#f87171', marginLeft: 8 }}>sold out</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ─── TRUST TILES ────────────────────────────────────────────── */}
           <div className="pd-tiles">
