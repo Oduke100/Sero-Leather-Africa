@@ -110,6 +110,9 @@ function parseProduct(p: Record<string, unknown>): Product {
     image:       (p.image_url   as string)  || '',
     qty:         p.stock        as number,
     available:   p.is_active    as boolean,
+    final_price:         parseFloat(String(p.final_price || p.price)),
+    discount_percentage: Number(p.discount_percentage || 0),
+    is_on_discount:      Boolean(p.is_on_discount),
   };
 }
 function parseOrder(o: unknown[]): Order {
