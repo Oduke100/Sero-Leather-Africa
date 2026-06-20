@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional, Annotated
 from enum import Enum
+from pydantic import field_validator
 
 Dec2 = Annotated[Decimal, Field(max_digits=10, decimal_places=2)]
 
@@ -43,6 +44,11 @@ class CreateProduct(BaseModel):
     stock:               int
     is_active:           bool = True
 
+    @field_validator("slug", mode="before")
+    @classmethod
+    def lowercase_slug(cls, v):
+        return v.lower() if v else v
+
 class UpdateProduct(BaseModel):
     category_id:         Optional[int]    = None
     name:                Optional[str]    = None
@@ -81,6 +87,11 @@ class CreateProductVariant(BaseModel):
     size:   str
     colour: str
     stock:  int
+
+    @field_validator("slug", mode="before")
+    @classmethod
+    def lowercase_slug(cls, v):
+        return v.lower() if v else v
 
 class UpdateProductVariant(BaseModel):
     size:   Optional[str] = None
