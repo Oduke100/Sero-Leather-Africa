@@ -44,7 +44,7 @@ export default function OrderConfirmation() {
             <p className="oc-eyebrow">Payment Received</p>
             <h1 className="oc-title">Order<br /><em>Confirmed</em></h1>
             <div className="oc-details">
-              <div className="oc-detail-row"><span>Order</span><span>#{status?.order_id}</span></div>
+              <div className="oc-detail-row"><span>Item</span><span>{status?.items?.length ? (status.items.length > 1 ? `${status.items[0]} + ${status.items.length - 1} more` : status.items[0]) : 'your order'}</span></div>
               <div className="oc-detail-row"><span>Amount Paid</span><span>KSh {status ? Number(status.total_price).toLocaleString() : ''}</span></div>
               <div className="oc-detail-row"><span>Payment</span><span className="oc-paid-badge">M-Pesa ✓</span></div>
             </div>
@@ -63,7 +63,7 @@ export default function OrderConfirmation() {
             </div>
             <p className="oc-eyebrow">Payment Unsuccessful</p>
             <h1 className="oc-title">Payment<br /><em>Failed</em></h1>
-            <p className="oc-note">The M-Pesa payment for order #{orderId} was not completed. No charges were made. Please try again.</p>
+            <p className="oc-note">The M-Pesa payment for {status?.items?.length ? (status.items.length > 1 ? `${status.items[0]} + ${status.items.length - 1} more` : status.items[0]) : 'your order'} was not completed. No charges were made. Please try again.</p>
             <div className="oc-actions">
               <button className="btn-savannah" onClick={() => navigate('/checkout')}>Try Again</button>
               <button className="oc-secondary-btn" onClick={() => navigate('/cart')}>Back to Bag</button>
@@ -79,7 +79,7 @@ export default function OrderConfirmation() {
             </div>
             <p className="oc-eyebrow">Taking Longer Than Expected</p>
             <h1 className="oc-title">Still<br /><em>Waiting</em></h1>
-            <p className="oc-note">Order #{orderId} — we haven't received payment confirmation yet. Check your M-Pesa messages. If you were charged, please contact us and we'll sort it out immediately.</p>
+            <p className="oc-note">We haven't received payment confirmation yet for {status?.items?.length ? (status.items.length > 1 ? `${status.items[0]} + ${status.items.length - 1} more` : status.items[0]) : 'your order'}. Check your M-Pesa messages. If you were charged, please contact us and we'll sort it out immediately.</p>
             <div className="oc-actions">
               <button className="btn-savannah" onClick={() => navigate('/')}>Return Home</button>
             </div>
@@ -98,7 +98,7 @@ export default function OrderConfirmation() {
             <p className="oc-note">An M-Pesa prompt has been sent to your phone. Enter your PIN to complete the payment.</p>
             <div className="oc-pulse-row">
               <span className="oc-pulse-dot" />
-              <span className="oc-pulse-label">Listening for payment · Order #{orderId}</span>
+              <span className="oc-pulse-label">Listening for payment · {status?.items?.length ? (status.items.length > 1 ? `${status.items[0]} + ${status.items.length - 1} more` : status.items[0]) : 'your order'}</span>
             </div>
           </>
         )}

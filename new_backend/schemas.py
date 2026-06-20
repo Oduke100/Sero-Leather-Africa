@@ -170,6 +170,7 @@ class OrderStatusOut(BaseModel):
     payment_status:     str
     total_price:        Dec2
     merchant_reference: Optional[str]
+    items:              list[str] = []
 
 class OrderStatusEnum(str, Enum):
     pending = "pending"

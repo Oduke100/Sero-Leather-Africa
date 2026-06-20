@@ -281,9 +281,15 @@ def delete_variant(product_id: int, variant_id: int, db: Session = Depends(get_d
 @router.get("/orders/{order_id}/status", response_model=OrderStatusOut)
 def get_order_status(order_id: int, db: Session = Depends(get_db)):
     o = _get_or_404(db, Order, id=order_id)
+    item_names = []
+    for oi in db.query(OrderItem).filter(OrderItem.order_id == o.id).all():
+        p = db.query(Product).filter(Product.id == oi.product_id).first()
+        if p:
+            item_names.append(p.name)
     return OrderStatusOut(
         order_id=o.id, status=o.status, payment_status=o.payment_status,
         total_price=o.total_price, merchant_reference=o.merchant_reference,
+        items=item_names,
     )
 
 @router.get("/admin/orders")

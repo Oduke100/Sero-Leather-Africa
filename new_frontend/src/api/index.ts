@@ -93,6 +93,7 @@ export interface OrderStatusResponse {
   payment_status:     string;
   total_price:        number;
   merchant_reference: string;
+  items:              string[];
 }
 export interface Currency {
   id:           number;
