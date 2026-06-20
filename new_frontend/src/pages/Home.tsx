@@ -99,12 +99,24 @@ function Categories() {
     if (!el) return;
     const card = el.querySelector('.category-card') as HTMLElement | null;
     const width = card ? card.offsetWidth + 8 : el.clientWidth;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    const next = el.scrollLeft + width * dir;
-    if (next < 0) { el.scrollTo({ left: maxScroll, behavior: 'smooth' }); }
-    else if (next > maxScroll + 4) { el.scrollTo({ left: 0, behavior: 'smooth' }); }
-    else { el.scrollBy({ left: width * dir, behavior: 'smooth' }); }
+    el.scrollBy({ left: width * dir, behavior: 'smooth' });
   }
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el || categories.length < 2) return;
+    function handleScrollEnd() {
+      const card = el!.querySelector('.category-card') as HTMLElement | null;
+      const width = card ? card.offsetWidth + 8 : el!.clientWidth;
+      const realCount = categories.length;
+      const lastRealStart = width * (realCount - 1);
+      if (el!.scrollLeft >= lastRealStart + width - 4) {
+        el!.scrollTo({ left: 0, behavior: 'auto' });
+      }
+    }
+    el.addEventListener('scrollend', handleScrollEnd);
+    return () => el.removeEventListener('scrollend', handleScrollEnd);
+  }, [categories.length]);
 
   useEffect(() => {
     if (categories.length < 2) return;
@@ -147,6 +159,15 @@ function Categories() {
                 </div>
               </div>
             ))}
+            {categories.length > 1 && (
+              <div className="category-card reveal" aria-hidden="true" onClick={() => window.location.href = `/collections/${categories[0].slug}`}>
+                {categories[0].image_url && <img src={categories[0].image_url.startsWith("http") ? categories[0].image_url : `${API_BASE}${categories[0].image_url}`} alt={categories[0].name} />}
+                <div className="category-card-content">
+                  <h3 className="category-name">{categories[0].name}</h3>
+                  <p className="category-desc">{categories[0].description}</p>
+                </div>
+              </div>
+            )}
           </div>
           <button className="categories-arrow categories-arrow--right" aria-label="Next" onClick={() => scrollByCard(1)}>›</button>
         </div>
