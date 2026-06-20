@@ -9,6 +9,9 @@ export interface Product {
   image:       string;
   qty:         number;
   available:   boolean;
+  final_price:         number;
+  discount_percentage: number;
+  is_on_discount:      boolean;
 }
 export interface Category {
   id:          number;
