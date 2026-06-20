@@ -52,7 +52,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     const row      = currencies.find(c => c.code === currency);
     const rate     = row ? Number(row.rate_to_kes) : 1;
     const symbol   = SYMBOLS[currency] ?? currency;
-    const converted = Math.floor(kes * rate) + 0.99;
+    const converted = Math.round(kes * rate * 100) / 100;
     const formatted = HIGH_VALUE.includes(currency)
       ? converted.toLocaleString()
       : converted.toFixed(2);
