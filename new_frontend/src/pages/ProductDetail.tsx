@@ -36,9 +36,9 @@ export default function ProductDetail() {
   useReveal();
 
   useEffect(() => {
-    const pid = parseInt(id || '');
-    if (!pid || isNaN(pid)) { setError(true); setLoading(false); return; }
-    getProduct(pid)
+    
+    if (!id) { setError(true); setLoading(false); return; }
+    getProduct(id)
       .then(p => setProduct(p))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
