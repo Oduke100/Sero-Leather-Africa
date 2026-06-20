@@ -51,6 +51,7 @@ async def lifespan(app: FastAPI):
     from sqlalchemy import text
     db = SessionLocal()
     db.execute(text("UPDATE product SET slug = lower(slug)"))
+    db.execute(text("ALTER TABLE variant ADD COLUMN IF NOT EXISTS initial_stock INTEGER"))
     db.commit()
     db.close()
     asyncio.create_task(rate_refresh_loop())
