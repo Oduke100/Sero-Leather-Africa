@@ -88,11 +88,6 @@ class CreateProductVariant(BaseModel):
     colour: str
     stock:  int
 
-    @field_validator("slug", mode="before")
-    @classmethod
-    def lowercase_slug(cls, v):
-        return v.lower() if v else v
-
 class UpdateProductVariant(BaseModel):
     size:   Optional[str] = None
     colour: Optional[str] = None
