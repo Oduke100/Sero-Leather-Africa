@@ -601,8 +601,9 @@ body {
   scrollbar-width: none; padding-bottom: 4px;
 }
 .categories-grid::-webkit-scrollbar { display: none; }
-.categories-grid .category-card { flex: 0 0 100%; scroll-snap-align: start; aspect-ratio: 16/7; }
-@media (max-width: 640px) { .categories-grid .category-card { aspect-ratio: 4/3; } }
+.categories-grid .category-card { flex: 0 0 100%; scroll-snap-align: start; aspect-ratio: 16/9; }
+.categories-grid .category-card img { object-position: center 40%; }
+@media (max-width: 640px) { .categories-grid .category-card { aspect-ratio: 1/1; } }
 .categories-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 40px; height: 40px; border-radius: 50%;
