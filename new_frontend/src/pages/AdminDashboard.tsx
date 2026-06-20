@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  getAdminProducts, deleteAdminProduct, toggleProduct, createVariant,
+  getAdminProducts, deleteAdminProduct, toggleProduct,
   updateAdminProduct, getOrders, updateOrderStatus,
   type Order,
   getCategories, createCategory, type Category,
